@@ -1,0 +1,240 @@
+.layout {
+    font-family: sans-serif;
+    min-height: 100vh;
+    background: #f5f5f3;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: #fff;
+    border-bottom: 1px solid #e5e5e3;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo {
+    font-size: 15px;
+    color: #1a1a1a;
+}
+
+.logo strong {
+    color: #185FA5;
+}
+
+.badge-rol {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    border: 1px solid #e5e5e3;
+    color: #888;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #B5D4F4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: #0C447C;
+}
+
+.user-name {
+    font-size: 13px;
+    color: #888;
+}
+
+.btn-logout {
+    font-size: 12px;
+    color: #aaa;
+    border: 1px solid #e5e5e3;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: transparent;
+}
+
+.role-toggle {
+    display: flex;
+    gap: 8px;
+    padding: 16px 24px 0;
+}
+
+.role-btn {
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 99px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    background: transparent;
+    color: #888;
+}
+
+.role-btn.active {
+    background: #185FA5;
+    color: #fff;
+    border-color: #185FA5;
+}
+
+.main {
+    padding: 20px 24px;
+}
+
+.section-label {
+    font-size: 11px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 10px;
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.metric-card {
+    background: #ebebea;
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.metric-label {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.metric-value {
+    font-size: 22px;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+.metric-sub {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 2px;
+}
+
+.actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.action-card {
+    background: #fff;
+    border: 1px solid #e5e5e3;
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+}
+
+.action-card:hover {
+    background: #f5f5f3;
+    border-color: #ccc;
+}
+
+.action-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+.action-desc {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 2px;
+}
+
+.table-wrap {
+    background: #fff;
+    border: 1px solid #e5e5e3;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e5e3;
+}
+
+.table-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+th {
+    text-align: left;
+    padding: 8px 16px;
+    color: #aaa;
+    font-weight: 400;
+    border-bottom: 1px solid #e5e5e3;
+}
+
+td {
+    padding: 10px 16px;
+    color: #555;
+    border-bottom: 1px solid #e5e5e3;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+.pill {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+}
+
+.pill-acreditado {
+    background: #EAF3DE;
+    color: #3B6D11;
+}
+
+.pill-atendido {
+    background: #EAF3DE;
+    color: #3B6D11;
+}
+
+.pill-pendiente {
+    background: #FAEEDA;
+    color: #854F0B;
+}
+
+.pill-cancelado {
+    background: #FCEBEB;
+    color: #A32D2D;
+}

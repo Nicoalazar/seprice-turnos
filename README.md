@@ -1,27 +1,50 @@
-# SepriceTurnos
+# SePrice — Sistema de Gestión de Consultorios Externos
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+Sistema de información para la gestión administrativa del Circuito A (Consultorios Externos) de la Clínica SePrice.
 
-## Development server
+Desarrollado como trabajo integrador de la materia **Práctica Profesionalizante II** — IFTS N° 29, Comisión A, Grupo 9.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+---
 
-## Code scaffolding
+## Descripción
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+La Clínica SePrice se encuentra en proceso de modernización tecnológica. Este sistema cubre el circuito completo de consultorios externos: desde la toma de turnos hasta la liquidación de honorarios médicos, pasando por la acreditación del paciente y el registro de atenciones.
 
-## Build
+## Funcionalidades
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- Registro, cancelación y reasignación de turnos
+- Gestión de sobreturnos
+- Acreditación de pacientes y verificación de obra social
+- Vista de agenda para médicos
+- Registro de atención y solicitud de turnos de seguimiento
+- Liquidación de honorarios
 
-## Running unit tests
+## Stack
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- **Frontend:** Angular 17
+- **Estilos:** CSS
+- **Backend:** Node.js _(próximas iteraciones)_
 
-## Running end-to-end tests
+## Estructura de sprints
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+| Sprint | Objetivo | HU cubiertas |
+|--------|----------|--------------|
+| Sprint 1 | Gestión de turnos | HU-01, HU-02, HU-03 |
+| Sprint 2 | Acreditación y atención médica | HU-04, HU-05, HU-06, HU-07, HU-08 |
+| Sprint 3 | Liquidación y cierre del circuito | HU-09 + pruebas integrales |
 
-## Further help
+## Instalación
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```bash
+npm install
+ng serve
+```
+
+Navegar a `http://localhost:4200`.
+
+## Equipo
+
+Albornoz · Blanco · Olivera · Tome · Zalazar
+
+**Docente:** Prof. Silvia Elizabeth Cañizares  
+**Institución:** IFTS N° 29 — 2026, 1° cuatrimestre
