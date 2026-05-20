@@ -4,21 +4,21 @@
   <header class="topbar">
     <div class="topbar-left">
       <span class="logo">Clínica <strong>SePrice</strong></span>
-      <span class="badge-rol">{{ rol() === 'admin' ? 'Personal administrativo' : 'Médico' }}</span>
+      <span class="badge-rol">{{ rol() === 'RECEPCIONISTA' ? 'Personal administrativo' : 'Médico' }}</span>
     </div>
     <div class="topbar-right">
-      <div class="avatar">{{ rol() === 'admin' ? 'MA' : 'DM' }}</div>
-      <span class="user-name">{{ rol() === 'admin' ? 'M. Albornoz' : 'Dr. Méndez' }}</span>
+      <div class="avatar">{{ rol() === 'RECEPCIONISTA' ? 'MA' : 'DM' }}</div>
+      <span class="user-name">{{ rol() === 'RECEPCIONISTA' ? 'M. Albornoz' : 'Dr. Méndez' }}</span>
       <button class="btn-logout">Cerrar sesión</button>
     </div>
   </header>
 
   <!-- Toggle de rol -->
   <div class="role-toggle">
-    <button class="role-btn" [class.active]="rol() === 'admin'" (click)="setRol('admin')">
-      Vista: Administrativo
+    <button class="role-btn" [class.active]="rol() === 'RECEPCIONISTA'" (click)="setRol('RECEPCIONISTA')">
+      Vista: Recepcionista
     </button>
-    <button class="role-btn" [class.active]="rol() === 'medico'" (click)="setRol('medico')">
+    <button class="role-btn" [class.active]="rol() === 'MEDICO'" (click)="setRol('MEDICO')">
       Vista: Médico
     </button>
   </div>
@@ -26,7 +26,7 @@
   <main class="main">
 
     <!-- Vista Admin -->
-    @if (rol() === 'admin') {
+    @if (rol() === 'RECEPCIONISTA') {
     <p class="section-label">resumen del día</p>
     <div class="metrics">
       <div class="metric-card">
@@ -99,7 +99,7 @@
     }
 
     <!-- Vista Médico -->
-    @if (rol() === 'medico') {
+    @if (rol() === 'MEDICO') {
     <p class="section-label">tu agenda de hoy</p>
     <div class="metrics">
       <div class="metric-card">

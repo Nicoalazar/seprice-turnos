@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RolUsuario } from './core/interfaces/usuario';
 
 
 @Component({
@@ -11,9 +12,9 @@ import { CommonModule } from '@angular/common';
 })
 export class AppComponent {
 
-  rol = signal<Rol>('admin');
+  rol = signal<RolUsuario>('RECEPCIONISTA');
 
-  setRol(nuevoRol: Rol): void {
+  setRol(nuevoRol: RolUsuario): void {
     this.rol.set(nuevoRol);
   }
 

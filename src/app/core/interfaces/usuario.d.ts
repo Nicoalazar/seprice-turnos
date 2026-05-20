@@ -1,13 +1,10 @@
-export type EstadoTurno = 'pendiente' | 'acreditado' | 'atendido' | 'cancelado';
-export type TipoTurno = 'normal' | 'sobreturno' | 'seguimiento';
+export type RolUsuario = 'SUPER' | 'RECEPCIONISTA' | 'MEDICO';
 
-export interface Turno {
+export interface Usuario {
   id: string;
-  fecha: Date;
-  hora: string;
-  pacienteId: string;
-  medicoId: string;
-  consultorio: string;
-  estado: EstadoTurno;
-  tipo: TipoTurno;
+  email: string;
+  password: string;
+  rol: RolUsuario;
+  activo: boolean;
+  creadoEn: Date;
 }
