@@ -1,4 +1,3 @@
-type Rol = 'admin' | 'medico';
 type EstadoTurno = 'acreditado' | 'pendiente' | 'cancelado' | 'atendido';
 
 interface FilaTurno {
