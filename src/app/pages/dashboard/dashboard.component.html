@@ -1,17 +1,6 @@
 <div class="layout">
 
-  <!-- Topbar -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <span class="logo">Clínica <strong>SePrice</strong></span>
-      <span class="badge-rol">{{ rol() === 'RECEPCIONISTA' ? 'Personal administrativo' : 'Médico' }}</span>
-    </div>
-    <div class="topbar-right">
-      <div class="avatar">{{ rol() === 'RECEPCIONISTA' ? 'MA' : 'DM' }}</div>
-      <span class="user-name">{{ rol() === 'RECEPCIONISTA' ? 'M. Albornoz' : 'Dr. Méndez' }}</span>
-      <button class="btn-logout">Cerrar sesión</button>
-    </div>
-  </header>
+  <app-header></app-header>
 
   <!-- Toggle de rol -->
   <div class="role-toggle">

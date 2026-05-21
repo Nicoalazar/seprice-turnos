@@ -1,0 +1,65 @@
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: #fff;
+    border-bottom: 1px solid #e5e5e3;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo {
+    font-size: 15px;
+    color: #1a1a1a;
+}
+
+.logo strong {
+    color: #185FA5;
+}
+
+.badge-rol {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    border: 1px solid #e5e5e3;
+    color: #888;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #B5D4F4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: #0C447C;
+}
+
+.user-name {
+    font-size: 13px;
+    color: #888;
+}
+
+.btn-logout {
+    font-size: 12px;
+    color: #aaa;
+    border: 1px solid #e5e5e3;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: transparent;
+}
