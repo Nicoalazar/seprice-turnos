@@ -33,6 +33,9 @@ La Clínica SePrice se encuentra en proceso de modernización tecnológica. Este
 | Sprint 2 | Acreditación y atención médica | HU-04, HU-05, HU-06, HU-07, HU-08 |
 | Sprint 3 | Liquidación y cierre del circuito | HU-09 + pruebas integrales |
 
+## Diseño en Figma
+[Clínica SePrice](https://www.figma.com/design/DxBbzFkg41HcKCtW0iVSpN/sePrice?node-id=0-1&t=QqmfKYE9RxaLLtIe-1)
+
 ## Instalación
 
 ```bash

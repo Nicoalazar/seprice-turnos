@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LoginService } from '../../../auth/login.service';
 import { Router } from '@angular/router';
+import { LoginService } from '../login.service';
 
 // Componente que muestra el formulario de login
 @Component({
