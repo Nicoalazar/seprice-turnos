@@ -21,7 +21,7 @@
 .gradient-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--color-gradient-orange)cc, var(--color-gradient-pink)cc, var(--color-gradient-purple)cc);
+  background: linear-gradient(135deg, rgba(var(--color-gradient-orange-rgb), 0.8), rgba(var(--color-gradient-pink-rgb), 0.8), rgba(var(--color-gradient-purple-rgb), 0.8));
   z-index: 0;
 }
 

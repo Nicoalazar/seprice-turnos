@@ -8,8 +8,11 @@
 
   /* Colores primarios del gradiente */
   --color-gradient-orange: #FF6B35;
+  --color-gradient-orange-rgb: 255, 107, 53;
   --color-gradient-pink: #E8195A;
+  --color-gradient-pink-rgb: 232, 25, 90;
   --color-gradient-purple: #9B1FE8;
+  --color-gradient-purple-rgb: 155, 31, 232;
 
   /* Colores de texto y UI */
   --color-text-primary: #fff;
