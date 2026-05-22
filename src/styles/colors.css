@@ -1,0 +1,29 @@
+/* Paleta de colores global - SePrice Turnos */
+
+:root {
+  /* Fondos principales */
+  --color-bg-dark: #1A0A2E;
+  --color-bg-card: #231242;
+  --color-bg-input: #2E1A50;
+
+  /* Colores primarios del gradiente */
+  --color-gradient-orange: #FF6B35;
+  --color-gradient-pink: #E8195A;
+  --color-gradient-purple: #9B1FE8;
+
+  /* Colores de texto y UI */
+  --color-text-primary: #fff;
+  --color-text-secondary: #8B6FB5;
+  --color-text-tertiary: #5C4080;
+
+  /* Borders */
+  --color-border-default: #3D2260;
+  --color-border-focus: #9B1FE8;
+
+  /* Transparencias comunes */
+  --color-overlay-light: rgba(255, 255, 255, 0.1);
+  --color-overlay-lighter: rgba(255, 255, 255, 0.15);
+  --color-overlay-subtle: rgba(255, 255, 255, 0.04);
+  --color-overlay-text: rgba(255, 255, 255, 0.7);
+  --color-overlay-text-light: rgba(255, 255, 255, 0.55);
+}

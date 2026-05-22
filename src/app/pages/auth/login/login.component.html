@@ -1,48 +1,79 @@
-<!-- Contenedor principal con el fondo -->
-<div class="contenedor-login">
-  <!-- La caja del formulario -->
-  <div class="caja-login">
-    <!-- Título de la aplicación -->
-    <h1>SePrice Turnos</h1>
-    <p class="subtitulo">Sistema de Agendamiento de Citas</p>
+<div class="login-layout">
 
-    <!-- Mensaje de error (si hay) -->
-    <div *ngIf="error" class="alerta-error">
-      {{ error }}
+  <!-- Panel izquierdo: muestra la marca y descripción del sistema -->
+  <div class="left-panel">
+    <div class="gradient-overlay"></div>
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+
+    <!-- Logo y nombre de la clínica -->
+    <div class="brand">
+      <div class="logo-box">
+        <div class="logo-cross"></div>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">SePrice</span>
+        <span class="brand-sub">Clínica · desde 1940</span>
+      </div>
     </div>
 
-    <!-- El formulario -->
-    <form (ngSubmit)="iniciarSesion()">
-      <!-- Campo de email -->
-      <div class="grupo-formulario">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          [(ngModel)]="email"
-          name="email"
-          placeholder="tu@email.com"
-        />
-      </div>
+    <!-- Texto principal -->
+    <div class="headline">
+      <p class="eyebrow">Clínica SePrice · Equipo 9</p>
+      <h1>Sistema de gestión de consultorios externos</h1>
+      <p class="description">
+        Administrá turnos, acreditá pacientes y gestioná la atención médica desde un solo lugar.
+      </p>
+    </div>
 
-      <!-- Campo de contraseña -->
-      <div class="grupo-formulario">
-        <label for="password">Contraseña</label>
-        <input
-          id="password"
-          type="password"
-          [(ngModel)]="password"
-          name="password"
-          placeholder="••••••••"
-        />
+    <!-- Badge del equipo de desarrollo -->
+    <div class="eq9-badge">
+      <div class="eq9-num">9</div>
+      <div class="eq9-info">
+        <span class="eq9-name">Equipo 9 — PP2 · IFTS N°29 · 2026</span>
+        <span class="eq9-members">Albornoz · Blanco · Olivera · Tome · Zalazar</span>
       </div>
-
-      <!-- Botón para enviar el formulario -->
-      <button type="submit" [disabled]="cargando" class="boton-login">
-        <!-- Si está cargando mostrar "Cargando..." si no mostrar "Iniciar Sesión" -->
-        <span *ngIf="!cargando">Iniciar Sesión</span>
-        <span *ngIf="cargando">Cargando...</span>
-      </button>
-    </form>
+    </div>
   </div>
+
+  <!-- Panel derecho: formulario de login -->
+  <div class="right-panel">
+    <div class="login-card">
+
+      <h2>Bienvenido</h2>
+      <p class="card-subtitle">Ingresá con tu cuenta institucional</p>
+
+      <!-- ngSubmit llama al método iniciarSesion() cuando se envía el formulario -->
+      <form (ngSubmit)="iniciarSesion()">
+
+        <!-- Campo email: ngModel enlaza el input con la variable email del componente -->
+        <div class="field">
+          <label>Correo electrónico</label>
+          <input
+            type="email"
+            placeholder="usuario@sePrice.com.ar"
+            [(ngModel)]="email"
+            name="email"
+          />
+        </div>
+
+        <!-- Campo contraseña -->
+        <div class="field">
+          <label>Contraseña</label>
+          <input
+            type="password"
+            placeholder="••••••••••"
+            [(ngModel)]="password"
+            name="password"
+          />
+        </div>
+
+        <button type="submit" class="btn-submit">
+          Ingresar al sistema
+        </button>
+
+      </form>
+    </div>
+  </div>
+
 </div>
