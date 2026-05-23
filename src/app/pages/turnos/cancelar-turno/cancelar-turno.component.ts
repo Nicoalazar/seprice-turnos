@@ -1,47 +1,85 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms'; // HERRAMIENTAS DE FORMULARIOS
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'; // Sumamos FormsModule
 
 @Component({
   selector: 'app-cancelar-turno',
   standalone: true,
-  // AGREGO EL REACTIVEFORMSMODULE EN LOS IMPORTS
-  imports: [CommonModule, ReactiveFormsModule], 
+  // Agregamos FormsModule en los imports para poder usar [(ngModel)] abajo
+  imports: [CommonModule, ReactiveFormsModule, FormsModule], 
   templateUrl: './cancelar-turno.component.html',
   styleUrl: './cancelar-turno.component.css'
 })
 export class CancelarTurnoComponent implements OnInit {
   
-  //CONTROL INDEPENDIENTE PARA EL INPUT DE BÚSQUEDA
   buscadorControl = new FormControl('');
-
   turnoEncontrado: boolean = false; 
   errorTurnoNoEncontrado: boolean = false;
 
-  ngOnInit(): void {
-  }
+  // VARIABLES PARA CAPTURAR LOS DATOS DEL FORMULARIO DE ABAJO
+  // Columna Cancelar
+  motivoCancelacion: string = '';
+  notaCancelacion: string = '';
 
-  // MEJORAS FUNCIÓN DE BÚSQUEDA
+  // Columna Reasignar
+  nuevaFecha: string = '';
+  nuevaHora: string = '';
+  nuevoMedico: string = 'Dr. Méndez, Carlos'; // Dejamos el que viene por defecto
+
+  ngOnInit(): void {}
+
   simularBuscar() {
-    // Obtenemos el valor limpio de lo que escribió el usuario
     const valorBusqueda = this.buscadorControl.value?.trim();
-
-    // Si el usuario no escribió nada, limpiamos la pantalla y salimos
     if (!valorBusqueda) {
-      this.turnoEncontrado = false;
-      this.errorTurnoNoEncontrado = false;
+      this.reseteoCompleto();
       return;
     }
 
-    // SIMULACIÓN DEL FLUJO:
-    // Si escribe el DNI de Luis ("28456789" o "28.456.789") o su apellido "Garcia", lo encuentra.
     if (valorBusqueda.includes('28') || valorBusqueda.toLowerCase().includes('garcia')) {
       this.turnoEncontrado = true;
       this.errorTurnoNoEncontrado = false;
     } else {
-      // FLUJO ALTERNATIVO FA2: Si escribe cualquier otra cosa, da error
       this.turnoEncontrado = false;
       this.errorTurnoNoEncontrado = true;
     }
+  }
+
+  // FUNCIÓN 1: PROCESAR LA CANCELACIÓN
+  ejecutarCancelacion() {
+    if (!this.motivoCancelacion) {
+      alert('Por favor, seleccioná un motivo de cancelación.');
+      return;
+    }
+
+    // Simulamos el éxito de la operación
+    alert(`¡Turno Cancelado con Éxito!\nMotivo: ${this.motivoCancelacion}\nNota: ${this.notaCancelacion || 'Ninguna'}`);
+    
+    // Una vez cancelado, limpiamos la pantalla
+    this.reseteoCompleto();
+  }
+
+  // FUNCIÓN 2: PROCESAR LA REASIGNACIÓN
+  ejecutarReasignacion() {
+    if (!this.nuevaFecha || !this.nuevaHora) {
+      alert('Por favor, completá la nueva fecha y hora para la reasignación.');
+      return;
+    }
+
+    // Simulamos el éxito de la operación
+    alert(`¡Turno Reasignado con Éxito!\nNuevo Médico: ${this.nuevoMedico}\nFecha: ${this.nuevaFecha}\nHora: ${this.nuevaHora}`);
+    
+    // Una vez reasignado, limpiamos la pantalla
+    this.reseteoCompleto();
+  }
+
+  // Función auxiliar para limpiar todo y volver al estado inicial
+  private reseteoCompleto() {
+    this.turnoEncontrado = false;
+    this.errorTurnoNoEncontrado = false;
+    this.buscadorControl.setValue('');
+    this.motivoCancelacion = '';
+    this.notaCancelacion = '';
+    this.nuevaFecha = '';
+    this.nuevaHora = '';
   }
 }
