@@ -1,0 +1,105 @@
+<div class="cancelar-container">
+    <div class="scroll-interno">
+
+        <header class="page-header">
+            <h1>Cancelar o reasignar turno</h1>
+            <p class="subtitle">Buscá el turno activo del paciente para cancelarlo o reasignarlo</p>
+        </header>
+
+        <section class="search-section">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Buscar por DNI, nombre o número de turno..." class="search-input"
+                    [formControl]="buscadorControl">
+            </div>
+            <button type="button" class="btn-buscar" (click)="simularBuscar()">
+                Buscar turno
+            </button>
+        </section>
+
+        <section class="turno-card" *ngIf="turnoEncontrado">
+            <h3 class="card-title">Turno encontrado</h3>
+            <div class="turno-grid">
+                <div class="info-group"><label>Paciente</label>
+                    <p class="info-value">García, Luis</p>
+                </div>
+                <div class="info-group"><label>DNI</label>
+                    <p class="info-value">28.456.789</p>
+                </div>
+                <div class="info-group"><label>Médico</label>
+                    <p class="info-value">Dr. Méndez</p>
+                </div>
+                <div class="info-group"><label>Especialidad</label>
+                    <p class="info-value">Clínica Médica</p>
+                </div>
+                <div class="info-group"><label>Fecha</label>
+                    <p class="info-value">05/05/2026</p>
+                </div>
+                <div class="info-group"><label>Hora</label>
+                    <p class="info-value">09:15 hs</p>
+                </div>
+            </div>
+            <div class="estado-container">
+                <span class="badge-confirmado">Confirmado</span>
+            </div>
+        </section>
+
+        <div class="acciones-layout" *ngIf="turnoEncontrado">
+            <section class="card-accion card-cancelar">
+                <h2>Cancelar turno</h2>
+                <p class="card-desc">El turno será cancelado y la franja quedará disponible para otros pacientes.</p>
+                <div class="form-group-local">
+                    <label for="motivo">Motivo de cancelación</label>
+                    <select id="motivo" class="input-local">
+                        <option value="">Seleccioná el motivo...</option>
+                        <option value="medico">Ausencia del médico</option>
+                        <option value="paciente">Falta del paciente</option>
+                        <option value="fuerza-mayor">Fuerza mayor</option>
+                    </select>
+                </div>
+                <div class="form-group-local">
+                    <label for="nota">Nota adicional (opcional)</label>
+                    <textarea id="nota" rows="4" placeholder="Observaciones..."
+                        class="input-local textarea-local"></textarea>
+                </div>
+                <button type="button" class="btn-confirmar-cancelar">Confirmar cancelación</button>
+            </section>
+
+            <section class="card-accion card-reasignar">
+                <h2>Reasignar turno</h2>
+                <p class="card-desc">El turno actual será cancelado y se asignará uno nuevo con los datos actualizados.
+                </p>
+                <div class="row-local">
+                    <div class="form-group-local flex-1"><label for="nueva-fecha">Nueva fecha</label><input type="date"
+                            id="nueva-fecha" class="input-local"></div>
+                    <div class="form-group-local flex-1">
+                        <label for="nueva-hora">Nueva hora</label>
+                        <select id="nueva-hora" class="input-local">
+                            <option value="">10:00 hs</option>
+                            <option value="09:15">09:15 hs</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group-local">
+                    <label for="nuevo-medico">Médico</label>
+                    <select id="nuevo-medico" class="input-local">
+                        <option value="Dr. Méndez">Dr. Méndez, Carlos</option>
+                    </select>
+                </div>
+                <div class="form-group-local"><label>Motivo del cambio</label>
+                    <p class="motivo-cambio-texto">Se mantiene el motivo original de la consulta.</p>
+                </div>
+                <button type="button" class="btn-confirmar-reasignar">Confirmar reasignación</button>
+            </section>
+        </div>
+
+        <div class="alert-warning-banner" *ngIf="errorTurnoNoEncontrado">
+            <span class="warning-icon">⚠️</span>
+            <p class="warning-text">
+                <strong>FA2 — Turno no encontrado:</strong> si la búsqueda no arroja resultados, el sistema informará al
+                operador para verificar los datos ingresados.
+            </p>
+        </div>
+
+    </div>
+</div>
