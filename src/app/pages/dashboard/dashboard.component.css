@@ -1,14 +1,37 @@
 /* ── Contenedor principal ── */
 .layout {
   font-family: 'Inter', sans-serif;
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   background: #0F0A1E;
   color: #fff;
 }
 
 /* ── Contenido principal ── */
 .main {
+  flex: 1;
   padding: 24px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4a3575 #1a0e30;
+}
+
+.main::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main::-webkit-scrollbar-track {
+  background: #1a0e30;
+}
+
+.main::-webkit-scrollbar-thumb {
+  background: #4a3575;
+  border-radius: 4px;
+}
+
+.main::-webkit-scrollbar-thumb:hover {
+  background: #6b4fa0;
 }
 
 /* Etiqueta de sección */
