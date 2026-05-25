@@ -18,7 +18,7 @@ export class HeaderComponent {
   
   @Output() rolActivoChange = new EventEmitter<RolUsuario>();
 
-  rolActivo: RolUsuario = 'MEDICO';
+  rolActivo: RolUsuario = 'RECEPCIONISTA';
 
   cambiarRol(rolActivo: RolUsuario): void {
     this.rolActivo = rolActivo;

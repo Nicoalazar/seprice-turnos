@@ -36,4 +36,34 @@ export class DashboardComponent {
   getClasePill(estado: string): string {
     return 'pill-' + estado;
   }
+
+  // Funciones para manejar las acciones rápidas (solo muestran alertas por ahora)
+  nuevoTurno() {
+    alert('Función para registrar nuevo turno');
+  }
+
+  sobreturno() {
+    alert('Función para agregar sobreturno');
+  }
+
+  acreditarPaciente() {
+    alert('Función para acreditar paciente');
+  }
+
+  liquidarHonorarios() {
+    alert('Función para liquidar honorarios');
+  }
+
+  verAgenda() {
+    alert('Función para ver agenda completa');
+  }
+
+  registrarAtencion() {
+    alert('Función para registrar atención');
+  }
+
+  turnoSeguimiento() {
+    alert('Función para recitar turno de seguimiento');
+  }
+
 }
