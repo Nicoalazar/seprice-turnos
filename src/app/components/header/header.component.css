@@ -1,0 +1,132 @@
+/* ── Barra superior ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 64px;
+  background: #1C1035;
+  border-bottom: 1px solid #2E1A50;
+}
+
+.topbar-izquierda {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-derecha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Logo con cruz médica */
+.logo-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #FF6B35, #E8195A, #9B1FE8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-cross {
+  position: relative;
+  width: 16px;
+  height: 16px;
+}
+.logo-cross::before {
+  content: '';
+  position: absolute;
+  left: 7px; top: 0;
+  width: 2px; height: 16px;
+  background: #fff;
+  border-radius: 1px;
+}
+.logo-cross::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 7px;
+  width: 16px; height: 2px;
+  background: #fff;
+  border-radius: 1px;
+}
+
+.brand-nombre {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Badge que muestra el rol activo */
+.badge-rol {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid #2E1A50;
+  color: #8B6FB5;
+}
+
+/* Toggle para cambiar entre vistas */
+.toggle-rol {
+  display: flex;
+  gap: 4px;
+  background: #0F0A1E;
+  border-radius: 99px;
+  padding: 4px;
+}
+
+.btn-rol {
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 99px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: #8B6FB5;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Clase .activo se aplica con [class.activo] en el HTML */
+.btn-rol.activo {
+  background: linear-gradient(90deg, #FF6B35, #E8195A, #9B1FE8);
+  color: #fff;
+}
+
+/* Avatar del usuario */
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF6B35, #9B1FE8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.usuario-nombre {
+  font-size: 13px;
+  color: #8B6FB5;
+}
+
+.avatar:hover {
+  opacity: 0.8;
+}
+
+/* Menu items typography */
+::ng-deep .mat-mdc-menu-panel .mat-mdc-menu-item {
+  font-size: 13px;
+}
+
+/* Item danger style for logout button */
+::ng-deep .mat-mdc-menu-panel .item-danger,
+::ng-deep .mat-mdc-menu-panel .item-danger .mat-icon {
+  color: #E8195A !important;
+}
