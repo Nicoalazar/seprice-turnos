@@ -1,0 +1,81 @@
+<div class="page-container">
+
+    <header class="header-pagina">
+        <div class="info-izquierda">
+            <h1>Mi agenda del día</h1>
+            <p class="fecha-info">Lunes 5 de mayo, 2026 — Clínica Médica</p>
+        </div>
+    </header>
+
+    <section class="stats-container">
+        <div class="stat-card">
+            <span class="stat-label">Pacientes asignados</span>
+            <div class="stat-valor color-violeta">8</div>
+            <span class="stat-subtext">Para hoy</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Atendidos</span>
+            <div class="stat-valor color-verde">3</div>
+            <span class="stat-subtext">registrados</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">En espera</span>
+            <div class="stat-valor color-naranja">2</div>
+            <span class="stat-subtext">en sala</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Seguimiento</span>
+            <div class="stat-valor color-azul">1</div>
+            <span class="stat-subtext">solicitados</span>
+        </div>
+    </section>
+
+    <div class="agenda-container">
+
+        <h3 class="titulo-agenda">PACIENTES DEL DÍA</h3>
+
+        <div class="tabla-scroll">
+            <table class="tabla-agenda">
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Paciente</th>
+                        <th>Motivo</th>
+                        <th>Obra social</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let franja of franjasHorarias" [class.fila-libre]="franja.estado === 'Libre'">
+                        <td class="col-hora"><strong>{{ franja.hora }}</strong></td>
+                        <td class="col-paciente">{{ franja.paciente || '---' }}</td>
+                        <td>{{ franja.motivo || '---' }}</td>
+                        <td>{{ franja.obraSocial || '---' }}</td>
+                        <td>
+                            <span class="badge-tipo" [ngClass]="franja.tipo.toLowerCase()">{{ franja.tipo }}</span>
+                        </td>
+                        <td>
+                            <span class="badge-estado" [ngClass]="franja.estado.toLowerCase().replace(' ', '-')">{{
+                                franja.estado }}</span>
+                        </td>
+                        <td>
+                            <button *ngIf="franja.estado === 'Libre'" (click)="seleccionarFranja(franja)"
+                                class="btn-accion btn-seleccionar">Seleccionar</button>
+                            <button *ngIf="franja.estado !== 'Libre'" class="btn-accion btn-ver">Registrar
+                                atención</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer class="alert-banner">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <p><strong>FAT —</strong> Si no hay pacientes asignados para el día, el sistema mostrará un mensaje informando
+            que la agenda está vacía.</p>
+    </footer>
+
+</div>

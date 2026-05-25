@@ -1,0 +1,248 @@
+.page-container {
+    background-color: #0f0a1e;
+    height: auto;
+    min-height: 100vh;
+    padding: 40px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #ffffff;
+    /* Forzamos el scroll vertical e ignoramos bloqueos externos */
+    overflow-y: visible !important;
+    display: block !important;
+}
+
+/* Encabezado Principal */
+.header-pagina h1 {
+    font-size: 32px;
+    margin: 0;
+    font-weight: 700;
+}
+
+.fecha-info {
+    color: #726e8d;
+    font-size: 16px;
+    margin-top: 8px;
+}
+
+/* TARJETAS DE ESTADÍSTICAS  */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background-color: #1a152e;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.stat-label {
+    color: #726e8d;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.stat-valor {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.stat-subtext {
+    color: #5c5972;
+    font-size: 12px;
+}
+
+/* Colores dinámicos para los números */
+.color-violeta {
+    color: #d946ef;
+}
+
+.color-verde {
+    color: #34d399;
+}
+
+.color-naranja {
+    color: #f97316;
+}
+
+.color-azul {
+    color: #38bdf8;
+}
+
+
+/* SECCIÓN DE LA TABLA DE LA AGENDA */
+.agenda-container {
+    background-color: #1a152e;
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+/* scroll manejado por la tabla */
+.tabla-scroll {
+    max-height: 350px;
+    overflow-y: auto;
+    /* Activa el scroll solo para la tabla */
+}
+
+.titulo-agenda {
+    color: #a5a1b8;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.tabla-agenda {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.tabla-agenda th {
+    color: #5c5972;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 12px 16px;
+    border-bottom: 1px solid #2b244d;
+
+    /* Cabecera fija al hacer scroll */
+    position: sticky;
+    top: 0;
+    background-color: #1a152e;
+    /* Mismo color de fondo de la tarjeta para tapar las filas que suben */
+    z-index: 10;
+    /* Se asegura de quedar siempre por encima de los pacientes */
+}
+
+.tabla-agenda tbody tr {
+    border-bottom: 1px solid #251e42;
+    transition: background-color 0.2s;
+}
+
+.tabla-agenda tbody tr:hover {
+    background-color: #211b38;
+}
+
+.tabla-agenda tbody tr.fila-libre {
+    background-color: rgba(3, 105, 161, 0.04);
+}
+
+.tabla-agenda td {
+    padding: 16px;
+    font-size: 14px;
+    vertical-align: middle;
+    color: #d1d0da;
+}
+
+/* Detalles de textos importantes */
+.col-hora strong {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.col-paciente {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+/* Alineación de las últimas columnas a la derecha */
+.tabla-agenda th:nth-last-child(-n+3),
+.tabla-agenda td:nth-last-child(-n+3) {
+    text-align: right;
+}
+
+/* ETIQUETAS (BADGES) DE ESTADO Y TIPO */
+.badge-tipo,
+.badge-estado {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+    text-transform: capitalize;
+}
+
+/* Variaciones de Tipo */
+.badge-tipo.normal {
+    background-color: #2b244d;
+    color: #a5a1b8;
+}
+
+.badge-tipo.seguimiento {
+    background-color: #4c1d5c;
+    color: #f0abfc;
+}
+
+.badge-tipo.sobreturno {
+    background-color: #581c87;
+    color: #e9d5ff;
+}
+
+/* Variaciones de Estado */
+.badge-estado.atendido {
+    background-color: #052e16;
+    color: #4ade80;
+}
+
+.badge-estado.en-espera {
+    background-color: #451a03;
+    color: #fbbf24;
+}
+
+.badge-estado.acreditado {
+    background-color: #064e3b;
+    color: #34d399;
+}
+
+.badge-estado.confirmado {
+    background-color: #1e1b4b;
+    color: #a5b4fc;
+}
+
+.badge-estado.libre {
+    background-color: #0c4a6e;
+    color: #38bdf8;
+}
+
+/*  BOTONES DE ACCIÓN */
+.btn-accion {
+    padding: 6px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s;
+    color: white;
+}
+
+.btn-accion:active {
+    transform: scale(0.98);
+}
+
+.btn-ver {
+    background: linear-gradient(90deg, #f97316 0%, #d946ef 100%);
+}
+
+.btn-seleccionar {
+    background-color: #0284c7;
+}
+
+/*    BANNER DE ALERTA (BOTOM) */
+.alert-banner {
+    background-color: #f97316;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 14px;
+}

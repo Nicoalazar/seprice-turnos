@@ -41,4 +41,22 @@ export class TurnosService {
         console.log('--- ESTADO DE LA BASE DE DATOS MOCK ---', this.sobreturnosMock);
         return of({ success: true, data: turnoConId });
     }
+
+
+    // Agenda para el componente visual
+    obtenerAgendaDelDia(medicoId: string, fecha: string): Observable<any[]> {
+        // lista basada en el figma que hizo Nico
+        const agenda = [
+            { hora: '09:00', paciente: 'García, Luis', motivo: 'Control', obraSocial: 'OSDE 310', tipo: 'Normal', estado: 'Atendido' },
+            { hora: '09:15', paciente: 'Romero, Ana', motivo: 'Consulta', obraSocial: 'Swiss Medical', tipo: 'Normal', estado: 'Atendido' },
+            { hora: '09:30', paciente: '', motivo: '', obraSocial: '', tipo: 'Normal', estado: 'Libre' },
+            { hora: '09:45', paciente: 'Soria, Elena', motivo: 'Primera vez', obraSocial: 'Galeno', tipo: 'Normal', estado: 'En espera' },
+            { hora: '10:00', paciente: 'Castro, Tomás', motivo: 'Control', obraSocial: 'Particular', tipo: 'Normal', estado: 'Acreditado' },
+            { hora: '10:15', paciente: 'Flores, Diana', motivo: 'Derivación', obraSocial: 'OSDE 410', tipo: 'Sobreturno', estado: 'Acreditado' },
+            { hora: '10:30', paciente: '', motivo: '', obraSocial: '', tipo: 'Normal', estado: 'Libre' },
+            { hora: '10:45', paciente: 'Ríos, Patricia', motivo: 'Control', obraSocial: 'Medifé', tipo: 'Normal', estado: 'Confirmado' }
+        ];
+
+        return of(agenda);
+    }
 }
