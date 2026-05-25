@@ -176,7 +176,8 @@ tr:hover td {
   border-radius: 99px;
 }
 
-.pill-acreditado { background: #052014; color: #5DCAA5; }
-.pill-atendido   { background: #052014; color: #5DCAA5; }
-.pill-pendiente  { background: #1A1002; color: #EF9F27; }
-.pill-cancelado  { background: #200606; color: #F87171; }
+.pill-confirmado     { background: #1A1002; color: #EF9F27; }
+.pill-presente-en-sala { background: #052014; color: #5DCAA5; }
+.pill-atendido       { background: #052014; color: #5DCAA5; }
+.pill-cancelado      { background: #200606; color: #F87171; }
+.pill-ausente        { background: #200606; color: #F87171; }

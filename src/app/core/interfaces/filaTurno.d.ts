@@ -1,4 +1,6 @@
-type EstadoTurno = 'acreditado' | 'pendiente' | 'cancelado' | 'atendido';
+import { EstadoTurno } from './turno';
+
+export type EstadoTurno = 'confirmado' | 'presente en sala' | 'atendido' | 'cancelado' | 'ausente';
 
 interface FilaTurno {
   hora: string;
