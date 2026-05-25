@@ -1,12 +1,42 @@
 <!-- Topbar -->
-<header class="topbar">
-    <div class="topbar-left">
-        <span class="logo">Clínica <strong>SePrice</strong></span>
-        <span class="badge-rol">{{ rol() === 'RECEPCIONISTA' ? 'Personal administrativo' : 'Médico' }}</span>
+  <header class="topbar">
+    <div class="topbar-izquierda">
+      <div class="logo-box">
+        <div class="logo-cross"></div>
+      </div>
+      <span class="brand-nombre">SePrice</span>
+
+      <!-- Badge que muestra el rol actual -->
+      <span class="badge-rol">
+        {{ rolActivo === 'RECEPCIONISTA' ? 'Personal administrativo' : 'Médico' }}
+      </span>
     </div>
-    <div class="topbar-right">
-        <div class="avatar">{{ rol() === 'RECEPCIONISTA' ? 'MA' : 'DM' }}</div>
-        <span class="user-name">{{ rol() === 'RECEPCIONISTA' ? 'M. Albornoz' : 'Dr. Méndez' }}</span>
-        <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+
+    <div class="topbar-derecha">
+      <!-- Toggle para cambiar la vista -->
+      <div class="toggle-rol">
+        <button
+          class="btn-rol"
+          [class.activo]="rolActivo === 'RECEPCIONISTA'"
+          (click)="cambiarRol('RECEPCIONISTA')"
+        >
+          Administrativo
+        </button>
+        <button
+          class="btn-rol"
+          [class.activo]="rolActivo === 'MEDICO'"
+          (click)="cambiarRol('MEDICO')"
+        >
+          Médico
+        </button>
+      </div>
+
+      <!-- Avatar del usuario -->
+      <div class="avatar">
+        {{ rolActivo === 'RECEPCIONISTA' ? 'MA' : 'DM' }}
+      </div>
+      <span class="usuario-nombre">
+        {{ rolActivo === 'RECEPCIONISTA' ? 'M. Albornoz' : 'Dr. Méndez' }}
+      </span>
     </div>
-</header>
+  </header>

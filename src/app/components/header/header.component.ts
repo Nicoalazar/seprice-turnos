@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { RolUsuario } from '../../core/interfaces/usuario';
 import { LoginService } from '../../auth/login.service';
 import Swal from 'sweetalert2';
@@ -15,31 +15,30 @@ import Swal from 'sweetalert2';
 export class HeaderComponent {
 
   private loginService = inject(LoginService);
-
-  rol = signal<RolUsuario>('MEDICO');
   
-    setRol(nuevoRol: RolUsuario): void {
-      this.rol.set(nuevoRol);
-    }
-  
-    getPillClass(estado: EstadoTurno): string {
-      return `pill-${estado}`;
-    }
+  @Output() rolActivoChange = new EventEmitter<RolUsuario>();
 
-    logout(): void {
-      Swal.fire({
-        title: '¿Cerrar sesión?',
-        text: '¿Estás seguro de que quieres cerrar sesión?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, cerrar sesión',
-        cancelButtonText: 'No, cancelar'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.loginService.logout();
-          Swal.fire('¡Sesión cerrada!', 'Has cerrado sesión exitosamente.', 'success');
-        }
-      });
-    }
+  rolActivo: RolUsuario = 'MEDICO';
+
+  cambiarRol(rolActivo: RolUsuario): void {
+    this.rolActivo = rolActivo;
+    this.rolActivoChange.emit(rolActivo);
+  }
+
+  logout(): void {
+    Swal.fire({
+      title: '¿Cerrar sesión?',
+      text: '¿Estás seguro de que quieres cerrar sesión?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cerrar sesión',
+      cancelButtonText: 'No, cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loginService.logout();
+        Swal.fire('¡Sesión cerrada!', 'Has cerrado sesión exitosamente.', 'success');
+      }
+    });
+  }
 
 }

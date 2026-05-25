@@ -1,155 +1,167 @@
 <div class="layout">
 
-  <app-header></app-header>
+  <!-- Barra superior -->
+  <app-header (rolActivoChange)="rolActivo = $event"></app-header>
 
-  <!-- Toggle de rol -->
-  <div class="role-toggle">
-    <button class="role-btn" [class.active]="rol() === 'RECEPCIONISTA'" (click)="setRol('RECEPCIONISTA')">
-      Vista: Recepcionista
-    </button>
-    <button class="role-btn" [class.active]="rol() === 'MEDICO'" (click)="setRol('MEDICO')">
-      Vista: Médico
-    </button>
-  </div>
-
+  <!-- Contenido principal -->
   <main class="main">
 
-    <!-- Vista Admin -->
-    @if (rol() === 'RECEPCIONISTA') {
-    <p class="section-label">resumen del día</p>
-    <div class="metrics">
-      <div class="metric-card">
-        <div class="metric-label">Turnos hoy</div>
-        <div class="metric-value">24</div>
-        <div class="metric-sub">3 pendientes de acreditación</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Sobreturnos</div>
-        <div class="metric-value">2</div>
-        <div class="metric-sub">del día</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Cancelaciones</div>
-        <div class="metric-value">1</div>
-        <div class="metric-sub">slot liberado</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Autorizaciones</div>
-        <div class="metric-value">21</div>
-        <div class="metric-sub">obras sociales</div>
-      </div>
-    </div>
+    <!-- ════════ VISTA ADMINISTRATIVO ════════ -->
+    <div *ngIf="rolActivo === 'RECEPCIONISTA'">
 
-    <p class="section-label">acciones rápidas</p>
-    <div class="actions">
-      <div class="action-card">
-        <div class="action-title">Nuevo turno</div>
-        <div class="action-desc">Registrar desde mostrador o telefónico</div>
-      </div>
-      <div class="action-card">
-        <div class="action-title">Sobreturno</div>
-        <div class="action-desc">Agregar fuera de agenda</div>
-      </div>
-      <div class="action-card">
-        <div class="action-title">Acreditar paciente</div>
-        <div class="action-desc">Verificar identidad y cobertura</div>
-      </div>
-      <div class="action-card">
-        <div class="action-title">Liquidación</div>
-        <div class="action-desc">Generar honorarios médicos</div>
-      </div>
-    </div>
+      <p class="seccion-label">Resumen del día</p>
 
-    <div class="table-wrap">
-      <div class="table-header">
-        <span class="table-title">Próximos turnos</span>
+      <!-- Tarjetas de métricas -->
+      <div class="metricas">
+        <div class="metrica-card">
+          <p class="metrica-label">Turnos hoy</p>
+          <p class="metrica-valor">24</p>
+          <p class="metrica-sub">3 pendientes de acreditación</p>
+        </div>
+        <div class="metrica-card">
+          <p class="metrica-label">Sobreturnos</p>
+          <p class="metrica-valor">2</p>
+          <p class="metrica-sub">del día</p>
+        </div>
+        <div class="metrica-card">
+          <p class="metrica-label">Cancelaciones</p>
+          <p class="metrica-valor">1</p>
+          <p class="metrica-sub">slot liberado</p>
+        </div>
+        <div class="metrica-card">
+          <p class="metrica-label">Autorizaciones</p>
+          <p class="metrica-valor">21</p>
+          <p class="metrica-sub">obras sociales</p>
+        </div>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Hora</th>
-            <th>Paciente</th>
-            <th>Médico</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (turno of turnosAdmin; track turno.hora) {
-          <tr>
-            <td>{{ turno.hora }}</td>
-            <td>{{ turno.paciente }}</td>
-            <td>{{ turno.medico }}</td>
-            <td><span class="pill" [ngClass]="getPillClass(turno.estado)">{{ turno.estado }}</span></td>
-          </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-    }
 
-    <!-- Vista Médico -->
-    @if (rol() === 'MEDICO') {
-    <p class="section-label">tu agenda de hoy</p>
-    <div class="metrics">
-      <div class="metric-card">
-        <div class="metric-label">Pacientes asignados</div>
-        <div class="metric-value">8</div>
-        <div class="metric-sub">para hoy</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Atendidos</div>
-        <div class="metric-value">3</div>
-        <div class="metric-sub">registrados</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">En espera</div>
-        <div class="metric-value">2</div>
-        <div class="metric-sub">en sala</div>
-      </div>
-    </div>
+      <p class="seccion-label">Acciones rápidas</p>
 
-    <p class="section-label">acciones rápidas</p>
-    <div class="actions">
-      <div class="action-card">
-        <div class="action-title">Ver agenda</div>
-        <div class="action-desc">Lista completa del día</div>
+      <!-- Accesos directos a las funciones principales -->
+      <div class="acciones">
+        <div class="accion-card">
+          <p class="accion-titulo">Nuevo turno</p>
+          <p class="accion-desc">Registrar desde mostrador o telefónico</p>
+        </div>
+        <div class="accion-card">
+          <p class="accion-titulo">Sobreturno</p>
+          <p class="accion-desc">Agregar fuera de agenda</p>
+        </div>
+        <div class="accion-card">
+          <p class="accion-titulo">Acreditar paciente</p>
+          <p class="accion-desc">Verificar identidad y cobertura</p>
+        </div>
+        <div class="accion-card">
+          <p class="accion-titulo">Liquidación</p>
+          <p class="accion-desc">Generar honorarios médicos</p>
+        </div>
       </div>
-      <div class="action-card">
-        <div class="action-title">Registrar atención</div>
-        <div class="action-desc">Cerrar turno atendido</div>
-      </div>
-      <div class="action-card">
-        <div class="action-title">Turno de seguimiento</div>
-        <div class="action-desc">Recitar desde consultorio</div>
-      </div>
-    </div>
 
-    <div class="table-wrap">
-      <div class="table-header">
-        <span class="table-title">Sala de espera</span>
+      <p class="seccion-label">Próximos turnos</p>
+
+      <!-- Tabla de turnos del día -->
+      <div class="tabla-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Paciente</th>
+              <th>Médico</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Iteramos sobre el array de turnos con ngFor -->
+            <tr *ngFor="let turno of turnosAdmin">
+              <td class="col-hora">{{ turno.hora }}</td>
+              <td>{{ turno.paciente }}</td>
+              <td class="col-secundario">{{ turno.medico }}</td>
+              <td>
+                <!-- ngClass aplica la clase de color según el estado -->
+                <span class="pill" [ngClass]="getClasePill(turno.estado)">
+                  {{ turno.estado }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Hora</th>
-            <th>Paciente</th>
-            <th>Motivo</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (turno of turnosMedico; track turno.hora) {
-          <tr>
-            <td>{{ turno.hora }}</td>
-            <td>{{ turno.paciente }}</td>
-            <td>{{ turno.motivo }}</td>
-            <td><span class="pill" [ngClass]="getPillClass(turno.estado)">{{ turno.estado }}</span></td>
-          </tr>
-          }
-        </tbody>
-      </table>
+
     </div>
-    }
+    <!-- ════════ FIN VISTA ADMINISTRATIVO ════════ -->
+
+
+    <!-- ════════ VISTA MÉDICO ════════ -->
+    <div *ngIf="rolActivo === 'MEDICO'">
+
+      <p class="seccion-label">Tu agenda de hoy</p>
+
+      <!-- Tarjetas de métricas del médico -->
+      <div class="metricas">
+        <div class="metrica-card">
+          <p class="metrica-label">Pacientes asignados</p>
+          <p class="metrica-valor">8</p>
+          <p class="metrica-sub">para hoy</p>
+        </div>
+        <div class="metrica-card">
+          <p class="metrica-label">Atendidos</p>
+          <p class="metrica-valor">3</p>
+          <p class="metrica-sub">registrados</p>
+        </div>
+        <div class="metrica-card">
+          <p class="metrica-label">En espera</p>
+          <p class="metrica-valor">2</p>
+          <p class="metrica-sub">en sala</p>
+        </div>
+      </div>
+
+      <p class="seccion-label">Acciones rápidas</p>
+
+      <div class="acciones">
+        <div class="accion-card">
+          <p class="accion-titulo">Ver agenda</p>
+          <p class="accion-desc">Lista completa del día</p>
+        </div>
+        <div class="accion-card">
+          <p class="accion-titulo">Registrar atención</p>
+          <p class="accion-desc">Cerrar turno atendido</p>
+        </div>
+        <div class="accion-card">
+          <p class="accion-titulo">Turno de seguimiento</p>
+          <p class="accion-desc">Recitar desde consultorio</p>
+        </div>
+      </div>
+
+      <p class="seccion-label">Sala de espera</p>
+
+      <!-- Tabla de pacientes en sala -->
+      <div class="tabla-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Paciente</th>
+              <th>Motivo</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let turno of turnosMedico">
+              <td class="col-hora">{{ turno.hora }}</td>
+              <td>{{ turno.paciente }}</td>
+              <td class="col-secundario">{{ turno.motivo }}</td>
+              <td>
+                <span class="pill" [ngClass]="getClasePill(turno.estado)">
+                  {{ turno.estado }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    <!-- ════════ FIN VISTA MÉDICO ════════ -->
 
   </main>
 </div>
