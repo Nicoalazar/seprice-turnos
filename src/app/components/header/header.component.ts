@@ -1,5 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
 import { RolUsuario } from '../../core/interfaces/usuario';
 import { LoginService } from '../../auth/login.service';
 import Swal from 'sweetalert2';
@@ -7,7 +11,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatButtonModule, MatMenuModule, MatIconModule, MatDividerModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
@@ -39,6 +43,10 @@ export class HeaderComponent {
         Swal.fire('¡Sesión cerrada!', 'Has cerrado sesión exitosamente.', 'success');
       }
     });
+  }
+
+  irAPerfil(): void {
+    alert('Función para ir al perfil del usuario');
   }
 
 }

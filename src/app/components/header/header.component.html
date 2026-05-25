@@ -31,12 +31,26 @@
         </button>
       </div>
 
-      <!-- Avatar del usuario -->
-      <div class="avatar">
-        {{ rolActivo === 'RECEPCIONISTA' ? 'MA' : 'DM' }}
-      </div>
+      <!-- Usuario nombre  -->
       <span class="usuario-nombre">
         {{ rolActivo === 'RECEPCIONISTA' ? 'M. Albornoz' : 'Dr. Méndez' }}
       </span>
+      <!-- Usuario Menu Button en Avatar -->
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" class="avatar">
+        {{ rolActivo === 'RECEPCIONISTA' ? 'MA' : 'DM' }}
+      </button>
+
+      <!-- User Menu -->
+      <mat-menu #userMenu="matMenu" xPosition="before">
+        <button mat-menu-item (click)="irAPerfil()">
+          <mat-icon>person</mat-icon>
+          <span>Ir a perfil</span>
+        </button>
+        <mat-divider />
+        <button mat-menu-item (click)="logout()" class="item-danger">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar sesión</span>
+        </button>
+      </mat-menu>
     </div>
   </header>

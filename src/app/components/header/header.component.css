@@ -115,3 +115,18 @@
   font-size: 13px;
   color: #8B6FB5;
 }
+
+.avatar:hover {
+  opacity: 0.8;
+}
+
+/* Menu items typography */
+::ng-deep .mat-mdc-menu-panel .mat-mdc-menu-item {
+  font-size: 13px;
+}
+
+/* Item danger style for logout button */
+::ng-deep .mat-mdc-menu-panel .item-danger,
+::ng-deep .mat-mdc-menu-panel .item-danger .mat-icon {
+  color: #E8195A !important;
+}
