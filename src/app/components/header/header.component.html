@@ -1,12 +1,56 @@
 <!-- Topbar -->
-<header class="topbar">
-    <div class="topbar-left">
-        <span class="logo">Clínica <strong>SePrice</strong></span>
-        <span class="badge-rol">{{ rol() === 'RECEPCIONISTA' ? 'Personal administrativo' : 'Médico' }}</span>
+  <header class="topbar">
+    <div class="topbar-izquierda">
+      <div class="logo-box">
+        <div class="logo-cross"></div>
+      </div>
+      <span class="brand-nombre">SePrice</span>
+
+      <!-- Badge que muestra el rol actual -->
+      <span class="badge-rol">
+        {{ rolActivo === 'RECEPCIONISTA' ? 'Personal administrativo' : 'Médico' }}
+      </span>
     </div>
-    <div class="topbar-right">
-        <div class="avatar">{{ rol() === 'RECEPCIONISTA' ? 'MA' : 'DM' }}</div>
-        <span class="user-name">{{ rol() === 'RECEPCIONISTA' ? 'M. Albornoz' : 'Dr. Méndez' }}</span>
-        <button class="btn-logout">Cerrar sesión</button>
+
+    <div class="topbar-derecha">
+      <!-- Toggle para cambiar la vista -->
+      <div class="toggle-rol">
+        <button
+          class="btn-rol"
+          [class.activo]="rolActivo === 'RECEPCIONISTA'"
+          (click)="cambiarRol('RECEPCIONISTA')"
+        >
+          Administrativo
+        </button>
+        <button
+          class="btn-rol"
+          [class.activo]="rolActivo === 'MEDICO'"
+          (click)="cambiarRol('MEDICO')"
+        >
+          Médico
+        </button>
+      </div>
+
+      <!-- Usuario nombre  -->
+      <span class="usuario-nombre">
+        {{ rolActivo === 'RECEPCIONISTA' ? 'M. Albornoz' : 'Dr. Méndez' }}
+      </span>
+      <!-- Usuario Menu Button en Avatar -->
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" class="avatar">
+        {{ rolActivo === 'RECEPCIONISTA' ? 'MA' : 'DM' }}
+      </button>
+
+      <!-- User Menu -->
+      <mat-menu #userMenu="matMenu" xPosition="before">
+        <button mat-menu-item (click)="irAPerfil()">
+          <mat-icon>person</mat-icon>
+          <span>Ir a perfil</span>
+        </button>
+        <mat-divider />
+        <button mat-menu-item (click)="logout()" class="item-danger">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar sesión</span>
+        </button>
+      </mat-menu>
     </div>
-</header>
+  </header>
