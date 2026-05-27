@@ -5,8 +5,8 @@
   justify-content: space-between;
   padding: 0 24px;
   height: 64px;
-  background: #1C1035;
-  border-bottom: 1px solid #2E1A50;
+  background: var(--color-bg-header);
+  border-bottom: 1px solid var(--color-bg-input);
 }
 
 .topbar-izquierda {
@@ -26,7 +26,7 @@
   width: 36px;
   height: 36px;
   border-radius: 9px;
-  background: linear-gradient(135deg, #FF6B35, #E8195A, #9B1FE8);
+  background: linear-gradient(135deg, var(--color-gradient-orange), var(--color-gradient-pink), var(--color-gradient-purple));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,7 +43,7 @@
   position: absolute;
   left: 7px; top: 0;
   width: 2px; height: 16px;
-  background: #fff;
+  background: var(--color-text-primary);
   border-radius: 1px;
 }
 .logo-cross::after {
@@ -51,14 +51,14 @@
   position: absolute;
   left: 0; top: 7px;
   width: 16px; height: 2px;
-  background: #fff;
+  background: var(--color-text-primary);
   border-radius: 1px;
 }
 
 .brand-nombre {
   font-size: 18px;
   font-weight: 700;
-  color: #fff;
+  color: var(--color-text-primary);
 }
 
 /* Badge que muestra el rol activo */
@@ -66,15 +66,15 @@
   font-size: 11px;
   padding: 4px 12px;
   border-radius: 99px;
-  border: 1px solid #2E1A50;
-  color: #8B6FB5;
+  border: 1px solid var(--color-bg-input);
+  color: var(--color-text-secondary);
 }
 
 /* Toggle para cambiar entre vistas */
 .toggle-rol {
   display: flex;
   gap: 4px;
-  background: #0F0A1E;
+  background: var(--color-bg-dark);
   border-radius: 99px;
   padding: 4px;
 }
@@ -86,15 +86,15 @@
   border: none;
   cursor: pointer;
   background: transparent;
-  color: #8B6FB5;
+  color: var(--color-text-secondary);
   font-family: inherit;
   transition: background 0.2s, color 0.2s;
 }
 
 /* Clase .activo se aplica con [class.activo] en el HTML */
 .btn-rol.activo {
-  background: linear-gradient(90deg, #FF6B35, #E8195A, #9B1FE8);
-  color: #fff;
+  background: linear-gradient(90deg, var(--color-gradient-orange), var(--color-gradient-pink), var(--color-gradient-purple));
+  color: var(--color-text-primary);
 }
 
 /* Avatar del usuario */
@@ -102,18 +102,18 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FF6B35, #9B1FE8);
+  background: linear-gradient(135deg, var(--color-gradient-orange), var(--color-gradient-purple));
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
   font-weight: 700;
-  color: #fff;
+  color: var(--color-text-primary);
 }
 
 .usuario-nombre {
   font-size: 13px;
-  color: #8B6FB5;
+  color: var(--color-text-secondary);
 }
 
 .avatar:hover {
@@ -128,5 +128,5 @@
 /* Item danger style for logout button */
 ::ng-deep .mat-mdc-menu-panel .item-danger,
 ::ng-deep .mat-mdc-menu-panel .item-danger .mat-icon {
-  color: #E8195A !important;
+  color: var(--color-gradient-pink) !important;
 }

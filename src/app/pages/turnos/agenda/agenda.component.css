@@ -1,10 +1,10 @@
 .page-container {
-    background-color: #0f0a1e;
+    background-color: var(--color-bg-dark);
     height: auto;
     min-height: 100vh;
     padding: 40px;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    color: #ffffff;
+    color: var(--color-text-primary);
     /* Forzamos el scroll vertical e ignoramos bloqueos externos */
     overflow-y: visible !important;
     display: block !important;
@@ -18,7 +18,7 @@
 }
 
 .fecha-info {
-    color: #726e8d;
+    color: var(--color-gray-tertiary);
     font-size: 16px;
     margin-top: 8px;
 }
@@ -33,13 +33,13 @@
 }
 
 .stat-card {
-    background-color: #1a152e;
+    background-color: var(--color-bg-card-alt);
     padding: 20px;
     border-radius: 12px;
 }
 
 .stat-label {
-    color: #726e8d;
+    color: var(--color-gray-tertiary);
     font-size: 13px;
     display: block;
     margin-bottom: 8px;
@@ -52,31 +52,31 @@
 }
 
 .stat-subtext {
-    color: #5c5972;
+    color: var(--color-gray-secondary);
     font-size: 12px;
 }
 
 /* Colores dinámicos para los números */
 .color-violeta {
-    color: #d946ef;
+    color: var(--color-accent-violet);
 }
 
 .color-verde {
-    color: #34d399;
+    color: var(--color-status-success);
 }
 
 .color-naranja {
-    color: #f97316;
+    color: var(--color-status-warning);
 }
 
 .color-azul {
-    color: #38bdf8;
+    color: var(--color-status-info);
 }
 
 
 /* SECCIÓN DE LA TABLA DE LA AGENDA */
 .agenda-container {
-    background-color: #1a152e;
+    background-color: var(--color-bg-card-alt);
     padding: 24px;
     border-radius: 12px;
     margin-bottom: 30px;
@@ -90,7 +90,7 @@
 }
 
 .titulo-agenda {
-    color: #a5a1b8;
+    color: var(--color-gray-lighter);
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -105,28 +105,28 @@
 }
 
 .tabla-agenda th {
-    color: #5c5972;
+    color: var(--color-gray-secondary);
     font-size: 12px;
     font-weight: 500;
     padding: 12px 16px;
-    border-bottom: 1px solid #2b244d;
+    border-bottom: 1px solid var(--color-border-darkest);
 
     /* Cabecera fija al hacer scroll */
     position: sticky;
     top: 0;
-    background-color: #1a152e;
+    background-color: var(--color-bg-card-alt);
     /* Mismo color de fondo de la tarjeta para tapar las filas que suben */
     z-index: 10;
     /* Se asegura de quedar siempre por encima de los pacientes */
 }
 
 .tabla-agenda tbody tr {
-    border-bottom: 1px solid #251e42;
+    border-bottom: 1px solid var(--color-border-darker);
     transition: background-color 0.2s;
 }
 
 .tabla-agenda tbody tr:hover {
-    background-color: #211b38;
+    background-color: var(--color-bg-card);
 }
 
 .tabla-agenda tbody tr.fila-libre {
@@ -137,18 +137,18 @@
     padding: 16px;
     font-size: 14px;
     vertical-align: middle;
-    color: #d1d0da;
+    color: var(--color-gray-light);
 }
 
 /* Detalles de textos importantes */
 .col-hora strong {
-    color: #ffffff;
+    color: var(--color-text-primary);
     font-size: 15px;
     font-weight: 700;
 }
 
 .col-paciente {
-    color: #ffffff;
+    color: var(--color-text-primary);
     font-weight: 700;
 }
 
@@ -171,44 +171,44 @@
 
 /* Variaciones de Tipo */
 .badge-tipo.normal {
-    background-color: #2b244d;
-    color: #a5a1b8;
+    background-color: var(--color-border-darkest);
+    color: var(--color-gray-lighter);
 }
 
 .badge-tipo.seguimiento {
-    background-color: #4c1d5c;
-    color: #f0abfc;
+    background-color: var(--color-bg-purple-dark-1);
+    color: var(--color-accent-purple-light);
 }
 
 .badge-tipo.sobreturno {
-    background-color: #581c87;
-    color: #e9d5ff;
+    background-color: var(--color-bg-purple-dark-2);
+    color: var(--color-accent-purple-lightest);
 }
 
 /* Variaciones de Estado */
 .badge-estado.atendido {
-    background-color: #052e16;
-    color: #4ade80;
+    background-color: var(--color-status-success-dark);
+    color: var(--color-status-success-light);
 }
 
 .badge-estado.en-espera {
-    background-color: #451a03;
-    color: #fbbf24;
+    background-color: var(--color-status-warning-dark);
+    color: var(--color-status-warning-accent);
 }
 
 .badge-estado.acreditado {
-    background-color: #064e3b;
-    color: #34d399;
+    background-color: var(--color-bg-green-dark);
+    color: var(--color-status-success);
 }
 
 .badge-estado.confirmado {
-    background-color: #1e1b4b;
-    color: #a5b4fc;
+    background-color: var(--color-bg-blue-dark);
+    color: var(--color-accent-indigo);
 }
 
 .badge-estado.libre {
-    background-color: #0c4a6e;
-    color: #38bdf8;
+    background-color: var(--color-status-info-dark);
+    color: var(--color-status-info);
 }
 
 /*  BOTONES DE ACCIÓN */
@@ -220,7 +220,7 @@
     font-weight: 700;
     cursor: pointer;
     transition: transform 0.1s;
-    color: white;
+    color: var(--color-text-primary);
 }
 
 .btn-accion:active {
@@ -228,17 +228,17 @@
 }
 
 .btn-ver {
-    background: linear-gradient(90deg, #f97316 0%, #d946ef 100%);
+    background: linear-gradient(90deg, var(--color-status-warning) 0%, var(--color-accent-violet) 100%);
 }
 
 .btn-seleccionar {
-    background-color: #0284c7;
+    background-color: var(--color-bg-blue-bright);
 }
 
 /*    BANNER DE ALERTA (BOTOM) */
 .alert-banner {
-    background-color: #f97316;
-    color: white;
+    background-color: var(--color-status-warning);
+    color: var(--color-text-primary);
     padding: 12px 24px;
     border-radius: 8px;
     display: flex;

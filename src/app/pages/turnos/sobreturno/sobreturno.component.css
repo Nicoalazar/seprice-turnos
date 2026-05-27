@@ -41,7 +41,7 @@
 .alert-info-box p {
     margin: 0;
     font-size: 14px;
-    color: #e2bfff;
+    color: var(--color-accent-purple-lighter);
 }
 
 /* LAYOUT DE DOS COLUMNAS */
@@ -226,11 +226,11 @@ button {
 
 /* ALERTA FA1 (ROJA) */
 .alert-danger-box {
-    background-color: #590F0F;
-    border: 1px solid #D92626;
+    background-color: var(--color-red-very-dark);
+    border: 1px solid var(--color-status-error);
     border-radius: 8px;
     padding: 16px;
-    color: #ffcccc;
+    color: var(--color-status-error-muted);
     font-size: 13px;
     margin-top: 20px;
 }
