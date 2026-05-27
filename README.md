@@ -23,7 +23,8 @@ La Clínica SePrice se encuentra en proceso de modernización tecnológica. Este
 
 - **Frontend:** Angular 17
 - **Estilos:** CSS
-- **Backend:** Node.js _(próximas iteraciones)_
+- **Backend:** Supabase (PostgreSQL) + Supabase Auth
+- **Backend Node.js:** _(próximas iteraciones)_
 
 ## Estructura de sprints
 
