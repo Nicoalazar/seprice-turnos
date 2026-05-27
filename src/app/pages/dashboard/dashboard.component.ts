@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { HeaderComponent } from "../../components/header/header.component";
 import { RolUsuario } from '../../core/interfaces/usuario';
 
@@ -11,6 +12,7 @@ import { RolUsuario } from '../../core/interfaces/usuario';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
+  private router = inject(Router);
 
   // Rol activo: determina qué vista se muestra lo recibe de HeaderComponent
   @Input() rolActivo: RolUsuario = 'RECEPCIONISTA';
@@ -36,17 +38,21 @@ export class DashboardComponent {
     return 'pill-' + estado.replace(/ /g, '-');
   }
 
-  // Funciones para manejar las acciones rápidas (solo muestran alertas por ahora)
+  // Funciones para manejar las acciones rápidas y navegar a las páginas correspondientes
   nuevoTurno() {
-    alert('Función para registrar nuevo turno');
+    this.router.navigate(['/atencion/agenda-medico']);
   }
 
   sobreturno() {
-    alert('Función para agregar sobreturno');
+    this.router.navigate(['/atencion/agenda-medico']);
   }
 
   acreditarPaciente() {
-    alert('Función para acreditar paciente');
+    this.router.navigate(['/acreditacion']);
+  }
+
+  verificarAutorizacion() {
+    this.router.navigate(['/verificar-autorizacion']);
   }
 
   liquidarHonorarios() {
@@ -54,7 +60,7 @@ export class DashboardComponent {
   }
 
   verAgenda() {
-    alert('Función para ver agenda completa');
+    this.router.navigate(['/atencion/agenda-medico']);
   }
 
   registrarAtencion() {

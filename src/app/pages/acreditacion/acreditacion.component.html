@@ -1,0 +1,235 @@
+<div class="layout" translate="no">
+
+  <!-- Header compartido -->
+  <app-header (rolActivoChange)="rolActivo = $event"></app-header>
+
+  <!-- Contenido de la página -->
+  <main class="main">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+      <span class="breadcrumb-link" (click)="volverAlDashboard()">Dashboard</span>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Acreditar paciente</span>
+    </nav>
+
+    <!-- Título -->
+    <div class="page-title-section">
+      <h1 class="page-title">Acreditar paciente</h1>
+      <p class="page-subtitle">Verificá identidad, turno activo y modalidad de pago del paciente</p>
+    </div>
+
+    <!-- Barra de búsqueda -->
+    <div class="search-bar">
+      <div class="search-input-wrap">
+        <span class="material-icons search-icon" translate="no">search</span>
+        <input
+          type="text"
+          class="search-input"
+          [(ngModel)]="busqueda"
+          placeholder="Buscar por apellido o DNI..."
+          (keyup)="onEnter($event)"
+        />
+      </div>
+      <button class="btn-buscar" (click)="buscarPaciente()">Buscar paciente</button>
+    </div>
+
+    <!-- Paciente no encontrado -->
+    <div *ngIf="pacienteNoEncontrado" class="alerta alerta-info">
+      <span class="material-icons" translate="no">person_search</span>
+      No se encontró ningún paciente con ese DNI o nombre.
+    </div>
+
+    <!-- Grid principal -->
+    <div *ngIf="paciente" class="main-grid">
+
+      <!-- ══════════ PANEL IZQUIERDO — Info del paciente ══════════ -->
+      <div class="panel-paciente">
+
+        <!-- Avatar + nombre -->
+        <div class="paciente-header">
+          <div class="avatar" [style.background]="paciente.colorAvatar">
+            {{ paciente.iniciales }}
+          </div>
+          <div>
+            <h2 class="paciente-nombre">{{ paciente.apellido }}, {{ paciente.nombre }}</h2>
+            <p class="paciente-dni">DNI {{ paciente.dniDisplay }}</p>
+          </div>
+        </div>
+
+        <!-- Grid de datos -->
+        <div class="datos-grid">
+          <div class="dato">
+            <p class="dato-label">Fecha de nacimiento</p>
+            <p class="dato-valor">{{ paciente.fechaNacimiento }}</p>
+          </div>
+          <div class="dato">
+            <p class="dato-label">Teléfono</p>
+            <p class="dato-valor">{{ paciente.telefono }}</p>
+          </div>
+          <div class="dato">
+            <p class="dato-label">Obra social</p>
+            <p class="dato-valor">{{ paciente.obraSocial ?? 'Particular' }}</p>
+          </div>
+          <div class="dato">
+            <p class="dato-label">Nro. afiliado</p>
+            <p class="dato-valor">{{ paciente.nroAfiliado ?? '—' }}</p>
+          </div>
+
+          <!-- Datos del turno (si existe) -->
+          <ng-container *ngIf="tieneTurnoHoy">
+            <div class="dato">
+              <p class="dato-label">Fecha del turno</p>
+              <p class="dato-valor">{{ paciente.turnoHoy!.fecha }}</p>
+            </div>
+            <div class="dato">
+              <p class="dato-label">Hora del turno</p>
+              <p class="dato-valor">{{ paciente.turnoHoy!.hora }} hs</p>
+            </div>
+            <div class="dato">
+              <p class="dato-label">Médico asignado</p>
+              <p class="dato-valor">{{ paciente.turnoHoy!.medico }}</p>
+            </div>
+            <div class="dato">
+              <p class="dato-label">Especialidad</p>
+              <p class="dato-valor">{{ paciente.turnoHoy!.especialidad }}</p>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Badge de estado del turno -->
+        <div *ngIf="tieneTurnoHoy && !acreditacionConfirmada" class="estado-turno estado-confirmado">
+          <span class="dot"></span>
+          Turno activo — confirmado para el día de hoy
+        </div>
+
+        <div *ngIf="acreditacionConfirmada" class="estado-turno estado-sala">
+          <span class="dot"></span>
+          Paciente presente en sala de espera
+        </div>
+
+        <!-- FA1: paciente sin turno hoy -->
+        <div *ngIf="esSinTurno" class="estado-turno estado-sin-turno">
+          <span class="material-icons" translate="no" style="font-size:16px;">event_busy</span>
+          FA1 — Sin turno activo para hoy
+        </div>
+
+      </div>
+      <!-- ══════════ FIN PANEL IZQUIERDO ══════════ -->
+
+
+      <!-- ══════════ PANEL DERECHO — Acreditación ══════════ -->
+      <div class="panel-acreditacion">
+
+        <h3 class="acreditacion-titulo">Acreditación</h3>
+
+        <!-- ──────── Paso 1: Verificar identidad ──────── -->
+        <div class="paso">
+          <p class="paso-label">PASO 1 — VERIFICAR IDENTIDAD</p>
+
+          <div *ngIf="!identidadVerificada">
+            <p class="paso-desc">
+              El paciente presentó DNI físico y coincide con los datos del sistema.
+            </p>
+            <button class="btn-verificar" (click)="verificarIdentidad()">
+              ✓ Identidad verificada
+            </button>
+          </div>
+
+          <div *ngIf="identidadVerificada" class="chip-verificado">
+            ✓ Identidad verificada
+          </div>
+        </div>
+
+        <!-- ──────── Paso 2: Modalidad de pago ──────── -->
+        <div class="paso">
+          <p class="paso-label">PASO 2 — MODALIDAD DE PAGO</p>
+          <div class="toggle-pago">
+            <button
+              class="btn-pago"
+              [class.activo]="modalidadPago === 'obraSocial'"
+              (click)="modalidadPago = 'obraSocial'"
+            >
+              Obra social
+            </button>
+            <button
+              class="btn-pago"
+              [class.activo]="modalidadPago === 'particular'"
+              (click)="modalidadPago = 'particular'"
+            >
+              Particular
+            </button>
+          </div>
+        </div>
+
+        <!-- ──────── Paso 3: Verificar cobertura ──────── -->
+        <div class="paso" *ngIf="mostrarCoberturaOS">
+          <p class="paso-label">PASO 3 — VERIFICAR COBERTURA OBRA SOCIAL</p>
+
+          <!-- Autorizado -->
+          <div *ngIf="paciente.cobertura.estado === 'autorizado'" class="cobertura-card cobertura-autorizado">
+            <p class="cobertura-titulo">✓ Autorizado — {{ paciente.cobertura.obraSocial }}</p>
+            <p class="cobertura-sub">{{ paciente.cobertura.prestacion }} · Código: {{ paciente.cobertura.codigo }}</p>
+          </div>
+
+          <!-- Rechazado (FA3) -->
+          <div *ngIf="paciente.cobertura.estado === 'rechazado'" class="cobertura-card cobertura-rechazado">
+            <p class="cobertura-titulo">✗ Sin cobertura — {{ paciente.cobertura.obraSocial }}</p>
+            <p class="cobertura-sub">{{ paciente.cobertura.prestacion }}</p>
+          </div>
+        </div>
+
+        <!-- ──────── Paso 4: Derivar a sala ──────── -->
+        <div class="paso">
+          <p class="paso-label">PASO 4 — DERIVAR A SALA DE ESPERA</p>
+
+          <ng-container *ngIf="!acreditacionConfirmada">
+
+            <p class="paso-desc" *ngIf="tieneTurnoHoy">
+              Al confirmar, el turno cambiará a "Presente en sala" y el médico
+              podrá verlo en su agenda.
+            </p>
+
+            <!-- FA1 dentro del paso 4 -->
+            <div *ngIf="esSinTurno" class="alerta alerta-warning">
+              ⚠ FA1 — El paciente no tiene turno para hoy. Derivar a sobreturno.
+              <button class="btn-link" (click)="irASobreturno()">Gestionar sobreturno →</button>
+            </div>
+
+            <!-- FA3 dentro del paso 4 -->
+            <div *ngIf="mostrarAdvertenciaFA3" class="alerta alerta-fa3">
+              ⚠ FA3 — Sin cobertura válida: registrar como particular o cancelar el turno
+              <button class="btn-link" (click)="registrarComoParticular()">Registrar como particular →</button>
+            </div>
+
+            <button
+              class="btn-confirmar"
+              [disabled]="!puedeConfirmar"
+              (click)="confirmarAcreditacion()"
+            >
+              Confirmar acreditación — Derivar a sala
+            </button>
+
+          </ng-container>
+
+          <!-- Confirmación exitosa -->
+          <div *ngIf="acreditacionConfirmada" class="confirmado-banner">
+            <span class="confirmado-icon">✓</span>
+            <div>
+              <p class="confirmado-titulo">Acreditación confirmada</p>
+              <p class="confirmado-sub">
+                {{ paciente.apellido }}, {{ paciente.nombre }} fue derivado/a a sala de espera
+                como <strong>{{ modalidadPago === 'obraSocial' ? 'obra social' : 'particular' }}</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- ══════════ FIN PANEL DERECHO ══════════ -->
+
+    </div>
+    <!-- Fin main-grid -->
+
+  </main>
+</div>

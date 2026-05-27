@@ -1,0 +1,455 @@
+/* ── Contenedor global ─────────────────────────────────────────────────────── */
+.layout {
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #0F0A1E;
+  color: #fff;
+}
+
+/* ── Área principal ────────────────────────────────────────────────────────── */
+.main {
+  flex: 1;
+  padding: 24px 28px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4a3575 #1a0e30;
+}
+
+.main::-webkit-scrollbar { width: 8px; }
+.main::-webkit-scrollbar-track { background: #1a0e30; }
+.main::-webkit-scrollbar-thumb { background: #4a3575; border-radius: 4px; }
+.main::-webkit-scrollbar-thumb:hover { background: #6b4fa0; }
+
+/* ── Breadcrumb ────────────────────────────────────────────────────────────── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #8B6FB5;
+  margin-bottom: 14px;
+}
+
+.breadcrumb-link {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.breadcrumb-link:hover { color: #c9b8eb; }
+
+.breadcrumb-sep { color: #4a3575; }
+
+.breadcrumb-current { color: #d6c2f0; }
+
+/* ── Título de página ──────────────────────────────────────────────────────── */
+.page-title-section { margin-bottom: 20px; }
+
+.page-title {
+  margin: 0 0 4px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #8B6FB5;
+}
+
+/* ── Barra de búsqueda ─────────────────────────────────────────────────────── */
+.search-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.search-input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1C1035;
+  border: 1px solid #2E1A50;
+  border-radius: 14px;
+  padding: 12px 16px;
+}
+
+.search-icon {
+  font-size: 20px;
+  color: #8B6FB5;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 14px;
+}
+.search-input::placeholder { color: #4a3575; }
+
+.btn-buscar {
+  padding: 12px 22px;
+  border: 2px solid #7B2FBE;
+  border-radius: 14px;
+  background: transparent;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+.btn-buscar:hover { background: #2E1A50; border-color: #9B1FE8; }
+
+/* ── Alertas globales ──────────────────────────────────────────────────────── */
+.alerta {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.alerta-info {
+  background: #1a1240;
+  border: 1px solid #3D2260;
+  color: #c9b8eb;
+}
+
+.alerta-warning {
+  background: #1f1500;
+  border: 1px solid #7a4b00;
+  color: #f5c842;
+}
+
+.alerta-fa3 {
+  background: #201000;
+  border: 1px solid #8a4e00;
+  color: #FF9800;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+/* ── Grid principal ────────────────────────────────────────────────────────── */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .main-grid { grid-template-columns: 1fr; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PANEL IZQUIERDO — Tarjeta de paciente
+═══════════════════════════════════════════════════════════════════════════ */
+.panel-paciente {
+  background: #1C1035;
+  border: 1px solid #2E1A50;
+  border-radius: 18px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Avatar + nombre */
+.paciente-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.paciente-nombre {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.paciente-dni {
+  margin: 0;
+  font-size: 13px;
+  color: #8B6FB5;
+}
+
+/* Grid de datos */
+.datos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 20px;
+}
+
+.dato-label {
+  margin: 0 0 3px;
+  font-size: 11px;
+  color: #5C4080;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dato-valor {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #E0D4F5;
+}
+
+/* Badge de estado del turno */
+.estado-turno {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.estado-confirmado {
+  background: #052014;
+  color: #5DCAA5;
+  border: 1px solid #0a4028;
+}
+
+.estado-sala {
+  background: #0a2e50;
+  color: #60C8FF;
+  border: 1px solid #1a4a7a;
+}
+
+.estado-sin-turno {
+  background: #1f1500;
+  color: #f5c842;
+  border: 1px solid #7a4b00;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PANEL DERECHO — Pasos de acreditación
+═══════════════════════════════════════════════════════════════════════════ */
+.panel-acreditacion {
+  background: #1C1035;
+  border: 1px solid #2E1A50;
+  border-radius: 18px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.acreditacion-titulo {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ── Paso genérico ─────────────────────────────────────────────────────────── */
+.paso {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.paso-label {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: #5C4080;
+  letter-spacing: 0.1em;
+}
+
+.paso-desc {
+  margin: 0;
+  font-size: 13px;
+  color: #b9aadb;
+  line-height: 1.5;
+}
+
+/* ── Paso 1: botón verificar ───────────────────────────────────────────────── */
+.btn-verificar {
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: none;
+  background: #1E1435;
+  border: 1px solid #3D2260;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  align-self: flex-start;
+}
+.btn-verificar:hover { background: #2a1850; border-color: #7B2FBE; }
+
+.chip-verificado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #052014;
+  color: #5DCAA5;
+  border: 1px solid #0a4028;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+/* ── Paso 2: toggle modalidad de pago ─────────────────────────────────────── */
+.toggle-pago {
+  display: flex;
+  background: #120b22;
+  border: 1px solid #2E1A50;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  align-self: flex-start;
+}
+
+.btn-pago {
+  padding: 9px 20px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: #8B6FB5;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-pago.activo {
+  background: linear-gradient(135deg, #FF6B35, #9B1FE8);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ── Paso 3: cobertura ─────────────────────────────────────────────────────── */
+.cobertura-card {
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.cobertura-autorizado {
+  background: #052014;
+  border: 1px solid #0a4028;
+  color: #5DCAA5;
+}
+
+.cobertura-rechazado {
+  background: #200606;
+  border: 1px solid #4a1010;
+  color: #F87171;
+}
+
+.cobertura-titulo {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cobertura-sub {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* ── Paso 4: botón confirmar ───────────────────────────────────────────────── */
+.btn-confirmar {
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #FF6B35, #9B1FE8);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.btn-confirmar:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.btn-confirmar:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Botón link (dentro de alertas) ───────────────────────────────────────── */
+.btn-link {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  align-self: flex-start;
+  transition: opacity 0.2s;
+}
+.btn-link:hover { opacity: 0.8; }
+
+/* ── Banner de acreditación confirmada ─────────────────────────────────────── */
+.confirmado-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #052014;
+  border: 1px solid #0a4028;
+  border-radius: 14px;
+  padding: 16px;
+  color: #5DCAA5;
+}
+
+.confirmado-icon { font-size: 26px; font-weight: 700; flex-shrink: 0; line-height: 1; }
+
+.confirmado-titulo {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.confirmado-sub {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.85;
+  color: #a8e8cc;
+}

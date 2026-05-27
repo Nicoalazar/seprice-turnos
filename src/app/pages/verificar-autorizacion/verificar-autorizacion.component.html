@@ -1,0 +1,279 @@
+<div class="layout" translate="no">
+
+  <app-header (rolActivoChange)="rolActivo = $event"></app-header>
+
+  <main class="main">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+      <span class="breadcrumb-link" (click)="volverAlDashboard()">Dashboard</span>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-link" (click)="irAcreditacion()">Acreditar paciente</span>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Verificar cobertura</span>
+    </nav>
+
+    <!-- Título -->
+    <div class="page-title-section">
+      <h1 class="page-title">Verificar cobertura de obra social</h1>
+      <p class="page-subtitle">Verificá que la prestación esté autorizada antes de derivar al paciente a sala</p>
+    </div>
+
+    <!-- Buscador -->
+    <div class="search-bar">
+      <div class="search-input-wrap">
+        <span class="search-icon">&#128269;</span>
+        <input
+          type="text"
+          class="search-input"
+          [(ngModel)]="busqueda"
+          placeholder="Buscar por apellido o DNI..."
+          (keyup)="onEnter($event)"
+        />
+      </div>
+      <button class="btn-buscar" (click)="buscarPaciente()">Buscar paciente</button>
+    </div>
+
+    <!-- No encontrado -->
+    <div *ngIf="pacienteNoEncontrado" class="alerta alerta-info">
+      No se encontró ningún paciente con ese DNI o nombre.
+    </div>
+
+    <!-- ── Contenido principal (aparece cuando hay paciente) ────────────── -->
+    <ng-container *ngIf="paciente">
+
+      <!-- Barra de datos del paciente -->
+      <div class="paciente-bar">
+        <div class="bar-dato">
+          <p class="bar-label">Paciente</p>
+          <p class="bar-valor">{{ paciente.apellido }}, {{ paciente.nombre }}</p>
+        </div>
+        <div class="bar-dato">
+          <p class="bar-label">DNI</p>
+          <p class="bar-valor">{{ paciente.dniDisplay }}</p>
+        </div>
+        <div class="bar-dato">
+          <p class="bar-label">Obra social</p>
+          <p class="bar-valor">{{ paciente.obraSocial }}</p>
+        </div>
+        <div class="bar-dato">
+          <p class="bar-label">Nro. afiliado</p>
+          <p class="bar-valor">{{ paciente.nroAfiliado }}</p>
+        </div>
+        <div class="bar-dato">
+          <p class="bar-label">Médico</p>
+          <p class="bar-valor">{{ paciente.medico }}</p>
+        </div>
+        <div class="bar-dato">
+          <p class="bar-label">Prestación</p>
+          <p class="bar-valor">{{ paciente.prestacionNombre }}</p>
+        </div>
+      </div>
+
+      <!-- Grid de dos columnas -->
+      <div class="main-grid">
+
+        <!-- ════ COLUMNA IZQUIERDA — Formulario ════ -->
+        <div class="panel">
+          <h3 class="panel-titulo">Datos de la cobertura</h3>
+
+          <!-- Obra social + Plan -->
+          <div class="form-row-2">
+            <div class="campo">
+              <label class="campo-label">Obra social</label>
+              <select class="campo-select" [(ngModel)]="paciente.obraSocial">
+                <option>Swiss Medical</option>
+                <option>OSDE</option>
+                <option>Galeno</option>
+                <option>Medifé</option>
+                <option>Particular</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label class="campo-label">Plan / categoría</label>
+              <select class="campo-select" [(ngModel)]="planSeleccionado">
+                <option *ngFor="let plan of paciente.planesDisponibles" [value]="plan">{{ plan }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Tipo de prestación -->
+          <div class="campo">
+            <label class="campo-label">Tipo de prestación</label>
+            <select class="campo-select" [(ngModel)]="tipoPrestacion">
+              <option *ngFor="let tipo of tiposPrestacion" [value]="tipo">{{ tipo }}</option>
+            </select>
+          </div>
+
+          <!-- Código + Fecha -->
+          <div class="form-row-2">
+            <div class="campo">
+              <label class="campo-label">Código de prestación</label>
+              <input type="text" class="campo-input" [(ngModel)]="codigoPrestacion" />
+            </div>
+            <div class="campo">
+              <label class="campo-label">Fecha de atención</label>
+              <input type="text" class="campo-input" [(ngModel)]="fechaAtencion" />
+            </div>
+          </div>
+
+          <!-- Documentación -->
+          <div class="doc-section">
+            <p class="doc-label">Documentación presentada</p>
+            <label class="check-item">
+              <input type="checkbox" [(ngModel)]="docCredencial" />
+              <span class="check-text">Credencial de obra social</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" [(ngModel)]="docDni" />
+              <span class="check-text">DNI del afiliado</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" [(ngModel)]="docOrden" />
+              <span class="check-text">Orden médica (si aplica)</span>
+            </label>
+          </div>
+
+          <!-- Botón verificar -->
+          <button class="btn-verificar" (click)="verificarCobertura()">
+            Verificar cobertura con obra social
+          </button>
+        </div>
+
+        <!-- ════ COLUMNA DERECHA — Resultado ════ -->
+        <div class="panel">
+          <h3 class="panel-titulo">Resultado de verificación</h3>
+
+          <!-- Estado previo a la verificación -->
+          <div *ngIf="!verificacionRealizada" class="resultado-placeholder">
+            <p>Completá el formulario y hacé clic en<br><strong>"Verificar cobertura"</strong> para ver el resultado.</p>
+          </div>
+
+          <!-- ─── RESULTADO AUTORIZADO ─── -->
+          <ng-container *ngIf="resultadoActual === 'autorizado'">
+            <div class="resultado-card resultado-autorizado">
+              <span class="resultado-dot dot-verde"></span>
+              <div>
+                <p class="resultado-titulo">AUTORIZADO</p>
+                <p class="resultado-desc">{{ paciente.cobertura.descripcion }}</p>
+                <p class="resultado-codigo" *ngIf="paciente.cobertura.codigoAutorizacion">
+                  Código de autorización: {{ paciente.cobertura.codigoAutorizacion }}
+                </p>
+              </div>
+            </div>
+
+            <p class="detalle-label">Detalle de cobertura</p>
+            <div class="detalle-grid">
+              <div class="detalle-item">
+                <p class="detalle-key">Cobertura</p>
+                <p class="detalle-val">{{ paciente.cobertura.coberturaPct }}</p>
+              </div>
+              <div class="detalle-item">
+                <p class="detalle-key">Copago</p>
+                <p class="detalle-val">{{ paciente.cobertura.copago }}</p>
+              </div>
+              <div class="detalle-item">
+                <p class="detalle-key">Tope por año</p>
+                <p class="detalle-val">{{ paciente.cobertura.topeAnual }}</p>
+              </div>
+              <div class="detalle-item">
+                <p class="detalle-key">Requiere orden</p>
+                <p class="detalle-val">{{ paciente.cobertura.requiereOrden }}</p>
+              </div>
+            </div>
+
+            <p class="detalle-label">Estados posibles</p>
+            <div class="estado-ref estado-ref-rojo">
+              <span class="resultado-dot dot-rojo"></span>
+              <div>
+                <p class="ref-titulo">No autorizado</p>
+                <p class="ref-desc">Prestación no cubierta por el plan</p>
+              </div>
+            </div>
+            <div class="estado-ref estado-ref-amarillo">
+              <span class="resultado-dot dot-amarillo"></span>
+              <div>
+                <p class="ref-titulo">Pendiente</p>
+                <p class="ref-desc">En proceso de verificación con la OS</p>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- ─── RESULTADO NO AUTORIZADO ─── -->
+          <ng-container *ngIf="resultadoActual === 'no-autorizado'">
+            <div class="resultado-card resultado-rechazado">
+              <span class="resultado-dot dot-rojo"></span>
+              <div>
+                <p class="resultado-titulo">NO AUTORIZADO</p>
+                <p class="resultado-desc">{{ paciente.cobertura.descripcion }}</p>
+              </div>
+            </div>
+
+            <p class="detalle-label">Estados posibles</p>
+            <div class="estado-ref estado-ref-verde">
+              <span class="resultado-dot dot-verde"></span>
+              <div>
+                <p class="ref-titulo">Autorizado</p>
+                <p class="ref-desc">Prestación cubierta por el plan</p>
+              </div>
+            </div>
+            <div class="estado-ref estado-ref-amarillo">
+              <span class="resultado-dot dot-amarillo"></span>
+              <div>
+                <p class="ref-titulo">Pendiente</p>
+                <p class="ref-desc">En proceso de verificación con la OS</p>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- ─── RESULTADO PENDIENTE ─── -->
+          <ng-container *ngIf="resultadoActual === 'pendiente'">
+            <div class="resultado-card resultado-pendiente">
+              <span class="resultado-dot dot-amarillo"></span>
+              <div>
+                <p class="resultado-titulo">PENDIENTE</p>
+                <p class="resultado-desc">{{ paciente.cobertura.descripcion }}</p>
+              </div>
+            </div>
+
+            <p class="detalle-label">Estados posibles</p>
+            <div class="estado-ref estado-ref-verde">
+              <span class="resultado-dot dot-verde"></span>
+              <div>
+                <p class="ref-titulo">Autorizado</p>
+                <p class="ref-desc">Prestación cubierta por el plan</p>
+              </div>
+            </div>
+            <div class="estado-ref estado-ref-rojo">
+              <span class="resultado-dot dot-rojo"></span>
+              <div>
+                <p class="ref-titulo">No autorizado</p>
+                <p class="ref-desc">Prestación no cubierta por el plan</p>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Botón registrar -->
+          <button
+            *ngIf="verificacionRealizada && !resultadoRegistrado"
+            class="btn-registrar"
+            (click)="registrarYContinuar()"
+          >
+            Registrar resultado y continuar
+          </button>
+
+          <!-- Confirmación -->
+          <div *ngIf="resultadoRegistrado" class="registro-confirmado">
+            ✓ Resultado registrado en el turno correctamente
+          </div>
+
+        </div>
+        <!-- Fin columna derecha -->
+
+      </div>
+      <!-- Fin main-grid -->
+
+    </ng-container>
+
+  </main>
+</div>

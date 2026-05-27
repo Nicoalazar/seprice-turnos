@@ -87,12 +87,15 @@
 }
 
 .accion-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   background: #1C1035;
   border: 1px solid #2E1A50;
   border-radius: 14px;
-  padding: 16px 18px;
+  padding: 18px;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
   border-left: 4px solid transparent;
   border-image: linear-gradient(180deg, #FF6B35, #9B1FE8) 1;
 }
@@ -100,6 +103,19 @@
 .accion-card:hover {
   background: #231242;
   border-color: #3D2260;
+  transform: translateY(-1px);
+}
+
+.accion-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 20px;
 }
 
 .accion-titulo {
