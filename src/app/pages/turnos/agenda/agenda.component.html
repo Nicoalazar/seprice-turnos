@@ -62,9 +62,19 @@
                         </td>
                         <td>
                             <button *ngIf="franja.estado === 'Libre'" (click)="seleccionarFranja(franja)"
-                                class="btn-accion btn-seleccionar">Seleccionar</button>
-                            <button *ngIf="franja.estado !== 'Libre'" class="btn-accion btn-ver">Registrar
-                                atención</button>
+                                class="btn-accion btn-seleccionar">
+                                Seleccionar
+                            </button>
+
+                            <button *ngIf="franja.estado !== 'Libre' && franja.estado !== 'Atendido'"
+                                (click)="registrarAtencion(franja)" class="btn-accion btn-ver">
+                                Registrar atención
+                            </button>
+
+                            <button *ngIf="franja.estado === 'Atendido'" (click)="verDetalle(franja)" class="btn-accion"
+                                style="background-color: #2b244d; color: #a5a1b8;">
+                                Ver detalle
+                            </button>
                         </td>
                     </tr>
                 </tbody>
