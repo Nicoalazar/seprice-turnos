@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SupabaseService } from '../core/services/supabase.service';
 import { Usuario } from '../core/interfaces/usuario.d';
+import { Router } from '@angular/router';
 
 // Servicio encargado de manejar el login de usuarios
 @Injectable({
@@ -10,9 +11,13 @@ export class LoginService {
   // Variable que guarda los datos del usuario que está logueado
   private usuarioActual: Usuario | null = null;
 
-  constructor(private supabaseService: SupabaseService) {
+  constructor(
+    private supabaseService: SupabaseService,
+    private router: Router
+  ) {
     // Cuando se crea el servicio, verifica si hay un usuario guardado en el navegador
-    this.cargarUsuarioGuardado();
+    //this.cargarUsuarioGuardado();
+
   }
 
   // Método para hacer login - recibe email y password
@@ -48,7 +53,7 @@ export class LoginService {
 
       // Si todo está bien, guardar el usuario en la sesión
       this.usuarioActual = usuario;
-      this.guardarUsuario(usuario);
+      // this.guardarUsuario(usuario);
 
       return { exito: true, usuario };
     } catch (error: any) {
@@ -60,35 +65,35 @@ export class LoginService {
   // Método para cerrar sesión
   logout(): void {
     this.usuarioActual = null;
-    localStorage.removeItem('usuarioLogueado');
+    this.router.navigate(['/login']);
   }
 
-  // Método que devuelve el usuario actual
-  obtenerUsuarioActual(): Usuario | null {
-    return this.usuarioActual;
-  }
+  // // Método que devuelve el usuario actual
+  // obtenerUsuarioActual(): Usuario | null {
+  //   return this.usuarioActual;
+  // }
 
-  // Método que verifica si hay un usuario logueado
-  estaLogueado(): boolean {
-    return this.usuarioActual !== null;
-  }
+  // // Método que verifica si hay un usuario logueado
+  // estaLogueado(): boolean {
+  //   return this.usuarioActual !== null;
+  // }
 
-  // Método privado que guarda el usuario en el almacenamiento local del navegador
-  private guardarUsuario(usuario: Usuario): void {
-    localStorage.setItem('usuarioLogueado', JSON.stringify(usuario));
-  }
+  // // Método privado que guarda el usuario en el almacenamiento local del navegador
+  // private guardarUsuario(usuario: Usuario): void {
+  //   localStorage.setItem('usuarioLogueado', JSON.stringify(usuario));
+  // }
 
-  // Método privado que carga un usuario guardado en el navegador (si existe)
-  private cargarUsuarioGuardado(): void {
-    const usuarioGuardado = localStorage.getItem('usuarioLogueado');
+  // // Método privado que carga un usuario guardado en el navegador (si existe)
+  // private cargarUsuarioGuardado(): void {
+  //   const usuarioGuardado = localStorage.getItem('usuarioLogueado');
 
-    if (usuarioGuardado) {
-      try {
-        this.usuarioActual = JSON.parse(usuarioGuardado) as Usuario;
-      } catch {
-        // Si hay error al parsear, eliminar el usuario guardado
-        localStorage.removeItem('usuarioLogueado');
-      }
-    }
-  }
+  //   if (usuarioGuardado) {
+  //     try {
+  //       this.usuarioActual = JSON.parse(usuarioGuardado) as Usuario;
+  //     } catch {
+  //       // Si hay error al parsear, eliminar el usuario guardado
+  //       localStorage.removeItem('usuarioLogueado');
+  //     }
+  //   }
+  // }
 }
