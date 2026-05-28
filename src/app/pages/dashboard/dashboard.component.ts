@@ -1,19 +1,28 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeaderComponent } from "../../components/header/header.component";
 import { RolUsuario } from '../../core/interfaces/usuario';
+import { Router } from '@angular/router';
+import { RolService } from '../../core/services/rol.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, HeaderComponent],
+  imports: [CommonModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
 
-  // Rol activo: determina qué vista se muestra lo recibe de HeaderComponent
-  @Input() rolActivo: RolUsuario = 'RECEPCIONISTA';
+  private router = inject(Router);
+  private rolService = inject(RolService);
+
+  rolActivo: RolUsuario = 'RECEPCIONISTA';
+
+  constructor() {
+    this.rolService.rolActivo$.subscribe(rol => {
+      this.rolActivo = rol;
+    });
+  }
 
   // Datos mockeados para el dashboard del administrativo
   turnosAdmin = [
@@ -42,7 +51,7 @@ export class DashboardComponent {
   }
 
   sobreturno() {
-    alert('Función para agregar sobreturno');
+    this.router.navigate(['/sobreturnos'])
   }
 
   acreditarPaciente() {
@@ -54,7 +63,7 @@ export class DashboardComponent {
   }
 
   verAgenda() {
-    alert('Función para ver agenda completa');
+    this.router.navigate(['agenda'])
   }
 
   registrarAtencion() {
