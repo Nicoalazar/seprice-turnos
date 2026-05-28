@@ -1,27 +1,130 @@
-/* Paleta de colores global - SePrice Turnos */
+/* src/app/styles/colors.css */
+/* ═══════════════════════════════════════════════
+   PALETA DE COLORES — SePrice
+   Clínica SePrice · Equipo 9 · PP2 IFTS N°29 2026
+   ═══════════════════════════════════════════════ */
 
 :root {
-  /* Fondos principales */
-  --color-bg-dark: #1A0A2E;
-  --color-bg-card: #231242;
-  --color-bg-input: #2E1A50;
+
+  /* ── Gradiente de marca ── */
+  /* Uso: background: var(--grad-marca) */
+  --grad-marca: linear-gradient(90deg, #FF6B35, #E8195A, #9B1FE8);
+  --grad-marca-diagonal: linear-gradient(135deg, #FF6B35, #E8195A, #9B1FE8);
+  --grad-marca-vertical: linear-gradient(180deg, #FF6B35, #E8195A, #9B1FE8);
+
+  /* ── Colores primarios ── */
+  --color-naranja:  #FF6B35;   /* Primario cálido — botones, acentos */
+  --color-magenta:  #E8195A;   /* Acento principal */
+  --color-violeta:  #9B1FE8;   /* Acento secundario */
+
+  /* ── Fondos de la aplicación ── */
+  --bg-app:         #0F0A1E;   /* Fondo general de la app */
+  --bg-noche:       #1A0A2E;   /* Fondo oscuro profundo (login) */
+  --bg-surface:     #1C1035;   /* Cards y paneles */
+  --bg-surface-2:   #231242;   /* Cards hover / inputs */
+  --bg-input:       #2E1A50;   /* Fondo de inputs y selects */
+
+  /* ── Bordes ── */
+  --border-color:   #2E1A50;   /* Borde estándar */
+  --border-focus:   #9B1FE8;   /* Borde cuando el input está activo */
+  --border-light:   #3D2260;   /* Borde claro para inputs */
+
+  /* ── Textos ── */
+  --texto-primario:    #FFFFFF;   /* Texto principal */
+  --texto-secundario:  #C8B8E8;   /* Texto de tabla y contenido */
+  --texto-muted:       #8B6FB5;   /* Labels, subtítulos, secundarios */
+  --texto-hint:        #5C4080;   /* Placeholders */
+  --texto-hora:        #CDB8F5;   /* Color especial para horas en tablas */
+
+  /* ── Estados de turno ── */
+
+  /* Acreditado / Atendido — verde */
+  --estado-ok-texto: #5DCAA5;
+  --estado-ok-fondo: #052014;
+  --estado-ok-borde: #0F6E56;
+
+  /* Pendiente / En espera — ámbar */
+  --estado-pendiente-texto: #EF9F27;
+  --estado-pendiente-fondo: #1A1002;
+  --estado-pendiente-borde: #854F0B;
+
+  /* Cancelado / Error — rojo */
+  --estado-cancelado-texto: #F87171;
+  --estado-cancelado-fondo: #200606;
+  --estado-cancelado-borde: #8C1A1A;
+
+  /* Sobreturno / Seguimiento — violeta */
+  --estado-especial-texto: #C084FC;
+  --estado-especial-fondo: #2D0A45;
+  --estado-especial-borde: #6B1FCC;
+
+  /* Autorizado (obra social) — verde intenso */
+  --estado-autorizado-texto: #34D399;
+  --estado-autorizado-fondo: #052014;
+  --estado-autorizado-borde: #059669;
+
+  /* No autorizado — rojo */
+  --estado-no-autorizado-texto: #F87171;
+  --estado-no-autorizado-fondo: #200606;
+  --estado-no-autorizado-borde: #DC2626;
+
+  /* ── Tipografía ── */
+  --fuente-principal: 'Inter', sans-serif;
+  --fuente-size-xs:   10px;
+  --fuente-size-sm:   12px;
+  --fuente-size-md:   14px;
+  --fuente-size-lg:   18px;
+  --fuente-size-xl:   24px;
+  --fuente-size-2xl:  32px;
+  --fuente-size-3xl:  48px;
+
+  /* ── Bordes redondeados ── */
+  --radio-sm:   8px;
+  --radio-md:   10px;
+  --radio-lg:   14px;
+  --radio-xl:   16px;
+  --radio-2xl:  20px;
+  --radio-pill: 99px;
+
+  /* ── Sombras ── */
+  --sombra-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --sombra-btn:  0 4px 16px rgba(232, 25, 90, 0.3);
+
+  /* ── Transiciones ── */
+  --transicion: 0.2s ease;
+
+  /* ═══════════════════════════════════════════════
+     ALIASES PARA COMPATIBILIDAD CON CÓDIGO EXISTENTE
+     (Mantienen los nombres antiguos mapeados a nuevas variables)
+     ═══════════════════════════════════════════════ */
+
+  /* Fondos */
+  --color-bg-dark: var(--bg-noche);
+  --color-bg-card: var(--bg-surface-2);
+  --color-bg-input: var(--bg-input);
+  --color-bg-card-alt: var(--bg-surface);
+  --color-bg-overlay-dark: #0d0620;
+  --color-bg-header: var(--bg-surface);
 
   /* Colores primarios del gradiente */
-  --color-gradient-orange: #FF6B35;
+  --color-gradient-orange: var(--color-naranja);
   --color-gradient-orange-rgb: 255, 107, 53;
-  --color-gradient-pink: #E8195A;
+  --color-gradient-pink: var(--color-magenta);
   --color-gradient-pink-rgb: 232, 25, 90;
-  --color-gradient-purple: #9B1FE8;
+  --color-gradient-purple: var(--color-violeta);
   --color-gradient-purple-rgb: 155, 31, 232;
 
-  /* Colores de texto y UI */
-  --color-text-primary: #fff;
-  --color-text-secondary: #8B6FB5;
-  --color-text-tertiary: #5C4080;
+  /* Textos */
+  --color-text-primary: var(--texto-primario);
+  --color-text-secondary: var(--texto-muted);
+  --color-text-tertiary: var(--texto-hint);
 
-  /* Borders */
-  --color-border-default: #3D2260;
-  --color-border-focus: #9B1FE8;
+  /* Bordes */
+  --color-border-default: var(--border-light);
+  --color-border-focus: var(--border-focus);
+  --color-border-light: #291e54;
+  --color-border-darker: #251e42;
+  --color-border-darkest: #2b244d;
 
   /* Transparencias comunes */
   --color-overlay-light: rgba(255, 255, 255, 0.1);
@@ -29,4 +132,56 @@
   --color-overlay-subtle: rgba(255, 255, 255, 0.04);
   --color-overlay-text: rgba(255, 255, 255, 0.7);
   --color-overlay-text-light: rgba(255, 255, 255, 0.55);
+
+  /* Grises y variaciones */
+  --color-gray-secondary: var(--texto-muted);
+  --color-gray-tertiary: #726e8d;
+  --color-gray-muted: #6d648e;
+  --color-gray-dim: #5d537a;
+  --color-gray-light: #d1d0da;
+  --color-gray-lighter: #a5a1b8;
+  --color-gray-darkest: #928ca1;
+
+  /* Estados y badges */
+  --color-status-success: #34d399;
+  --color-status-success-dark: var(--estado-ok-fondo);
+  --color-status-success-light: #4ade80;
+  --color-status-warning: #f97316;
+  --color-status-warning-dark: #451a03;
+  --color-status-warning-accent: #fbbf24;
+  --color-status-info: #38bdf8;
+  --color-status-info-dark: #0c4a6e;
+  --color-status-error: #ef4444;
+  --color-status-error-dark: var(--estado-cancelado-fondo);
+  --color-status-error-muted: var(--estado-cancelado-texto);
+
+  /* Acentos */
+  --color-accent-cyan: var(--estado-ok-texto);
+  --color-accent-purple-light: #f0abfc;
+  --color-accent-purple-lighter: #e2bfff;
+  --color-accent-purple-lightest: #e9d5ff;
+  --color-accent-indigo: #a5b4fc;
+  --color-accent-violet: #d946ef;
+  --color-accent-orange-light: var(--estado-pendiente-texto);
+
+  /* Específicos */
+  --color-divider: #1A0E30;
+  --color-scrollbar: #4a3575;
+  --color-scrollbar-hover: #6b4fa0;
+  --color-table-header-bg: #150D2A;
+  --color-table-cell-text: var(--texto-secundario);
+  --color-table-col-hora: var(--texto-hora);
+  --color-bg-purple-dark-1: #4c1d5c;
+  --color-bg-purple-dark-2: #581c87;
+  --color-bg-green-dark: #064e3b;
+  --color-bg-blue-dark: #1e1b4b;
+  --color-bg-blue-bright: #0284c7;
+  --color-input-bg-dark: #170f33;
+  --color-purple-accent: #a855f7;
+  --color-orange-accent: #ff6b4a;
+  --color-green-bright: var(--estado-autorizado-texto);
+  --color-red-dark: #7f1d1d;
+  --color-orange-warning: #d97706;
+  --color-orange-warning-accent: #f59e0b;
+  --color-red-very-dark: #590F0F;
 }
