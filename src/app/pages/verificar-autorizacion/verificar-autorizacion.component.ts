@@ -246,10 +246,6 @@ export class VerificarAutorizacionComponent {
     return this.paciente.cobertura.estado;
   }
 
-  volverAlDashboard(): void {
-    this.router.navigate(['/dashboard']);
-  }
-
   irAcreditacion(): void {
     this.router.navigate(['/acreditacion']);
   }

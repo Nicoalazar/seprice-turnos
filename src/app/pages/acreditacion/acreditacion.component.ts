@@ -248,7 +248,4 @@ export class AcreditacionComponent {
     this.router.navigate(['/atencion/agenda-medico']);
   }
 
-  volverAlDashboard(): void {
-    this.router.navigate(['/dashboard']);
-  }
 }
