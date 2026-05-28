@@ -51,14 +51,8 @@ export class AgendaComponent implements OnChanges, OnInit {
   } 
 
   registrarAtencion(franja: any): void {
-    console.log('Iniciando flujo de atención para el paciente:', franja.paciente);
-    console.log('Detalles de la franja:', franja);
-    
-    // Emitimos la franja hacia afuera por si el sistema lo necesita
+    franja.estado = 'Atendido';
     this.atencionRegistrada.emit(franja);
-
-    // Alerta simple para probar en el navegador que captura los datos correctos
-    alert(`Atendiendo a: ${franja.paciente}\nMotivo: ${franja.motivo}\nTipo: ${franja.tipo}`);
   }
 
   verDetalle(franja: any): void {

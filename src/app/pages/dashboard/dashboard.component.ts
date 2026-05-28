@@ -40,11 +40,11 @@ export class DashboardComponent {
 
   // Funciones para manejar las acciones rápidas y navegar a las páginas correspondientes
   nuevoTurno() {
-    this.router.navigate(['/atencion/agenda-medico']);
+    this.router.navigate(['/agenda']);
   }
 
   sobreturno() {
-    this.router.navigate(['/atencion/agenda-medico']);
+    this.router.navigate(['/sobreturnos']);
   }
 
   acreditarPaciente() {
@@ -60,7 +60,7 @@ export class DashboardComponent {
   }
 
   verAgenda() {
-    this.router.navigate(['/atencion/agenda-medico']);
+    this.router.navigate(['/agenda']);
   }
 
   registrarAtencion() {
