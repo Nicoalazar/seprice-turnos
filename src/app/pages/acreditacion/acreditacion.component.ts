@@ -3,67 +3,35 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-
-interface TurnoHoy {
-  fecha: string;
-  hora: string;
-  medico: string;
-  especialidad: string;
-  estado: 'confirmado' | 'presente en sala' | 'atendido' | 'cancelado';
-}
-
-interface Cobertura {
-  estado: 'autorizado' | 'rechazado' | 'sin-cobertura';
-  obraSocial?: string;
-  prestacion?: string;
-  codigo?: string;
-}
-
-interface PacienteAcreditacion {
-  id: number;
-  iniciales: string;
-  colorAvatar: string;
-  nombre: string;
-  apellido: string;
-  dni: string;            // sin puntos → para búsqueda
-  dniDisplay: string;     // con puntos → para mostrar
-  fechaNacimiento: string;
-  telefono: string;
-  obraSocial: string | null;
-  nroAfiliado: string | null;
-  turnoHoy: TurnoHoy | null;
-  cobertura: Cobertura;
-}
+import { HeaderComponent } from '../../components/header/header.component';
+import { RolUsuario } from '../../core/interfaces/usuario';
+import { PacienteAcreditacion } from '../../core/interfaces/acreditacion';
 
 @Component({
   selector: 'app-acreditacion',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, FormsModule, HeaderComponent, MatIconModule],
   templateUrl: './acreditacion.component.html',
   styleUrls: ['./acreditacion.component.css']
 })
 export class AcreditacionComponent {
   private router = inject(Router);
 
+  rolActivo: RolUsuario = 'RECEPCIONISTA';
+
   busqueda = '';
   paciente: PacienteAcreditacion | null = null;
   pacienteNoEncontrado = false;
 
-  // Paso 1
   identidadVerificada = false;
-
-  // Paso 2
   modalidadPago: 'obraSocial' | 'particular' = 'obraSocial';
-
-  // Paso 4
   acreditacionConfirmada = false;
 
-  // ── Datos mockeados ──────────────────────────────────────────────────────────
   private pacientes: PacienteAcreditacion[] = [
     {
       id: 1,
       iniciales: 'GL',
-      colorAvatar: 'linear-gradient(135deg,#E91E8C,#9B1FE8)',
+      colorAvatar: 'linear-gradient(135deg, var(--color-magenta), var(--color-violeta))',
       nombre: 'Luis Alberto',
       apellido: 'García',
       dni: '28456789',
@@ -89,7 +57,7 @@ export class AcreditacionComponent {
     {
       id: 2,
       iniciales: 'ML',
-      colorAvatar: 'linear-gradient(135deg,#7B2FBE,#4A1580)',
+      colorAvatar: 'linear-gradient(135deg, var(--color-violeta), var(--bg-purple-dark-1, #4A1580))',
       nombre: 'Marta',
       apellido: 'López',
       dni: '45678901',
@@ -114,7 +82,7 @@ export class AcreditacionComponent {
     {
       id: 3,
       iniciales: 'AR',
-      colorAvatar: 'linear-gradient(135deg,#FF6B35,#F7931E)',
+      colorAvatar: 'linear-gradient(135deg, var(--color-naranja), var(--color-status-warning))',
       nombre: 'Ana',
       apellido: 'Romero',
       dni: '34567890',
@@ -135,7 +103,7 @@ export class AcreditacionComponent {
     {
       id: 4,
       iniciales: 'JP',
-      colorAvatar: 'linear-gradient(135deg,#1565C0,#1976D2)',
+      colorAvatar: 'linear-gradient(135deg, var(--color-status-info-dark), var(--color-bg-blue-bright))',
       nombre: 'Juan',
       apellido: 'Pérez',
       dni: '12345678',
@@ -144,7 +112,7 @@ export class AcreditacionComponent {
       telefono: '11 2345-6789',
       obraSocial: 'Galeno',
       nroAfiliado: 'GAL-00567-C',
-      turnoHoy: null,   // FA1 — sin turno hoy
+      turnoHoy: null,
       cobertura: {
         estado: 'autorizado',
         obraSocial: 'Galeno',
@@ -154,13 +122,10 @@ export class AcreditacionComponent {
     }
   ];
 
-  // ── Búsqueda ──────────────────────────────────────────────────────────────────
-
-  /** Quita tildes y pasa a minúsculas para comparar sin importar acentos */
   private normalizar(texto: string): string {
     return texto
       .normalize('NFD')
-      .replace(/\p{Mn}/gu, '')   // elimina todos los diacríticos (á→a, é→e, ñ→n…)
+      .replace(/\p{Mn}/gu, '')
       .toLowerCase()
       .replace(/\./g, '');
   }
@@ -200,12 +165,10 @@ export class AcreditacionComponent {
     this.modalidadPago = 'obraSocial';
   }
 
-  // ── Paso 1 ────────────────────────────────────────────────────────────────────
   verificarIdentidad(): void {
     this.identidadVerificada = true;
   }
 
-  // ── Computed ──────────────────────────────────────────────────────────────────
   get tieneTurnoHoy(): boolean {
     return !!this.paciente?.turnoHoy;
   }
@@ -229,7 +192,6 @@ export class AcreditacionComponent {
     return !!this.paciente?.turnoHoy && this.identidadVerificada;
   }
 
-  // ── Paso 4 ────────────────────────────────────────────────────────────────────
   confirmarAcreditacion(): void {
     if (!this.paciente?.turnoHoy) return;
     this.paciente.turnoHoy.estado = 'presente en sala';
@@ -240,9 +202,11 @@ export class AcreditacionComponent {
     this.modalidadPago = 'particular';
   }
 
-  // ── Navegación ────────────────────────────────────────────────────────────────
   irASobreturno(): void {
-    this.router.navigate(['/atencion/agenda-medico']);
+    this.router.navigate(['/sobreturnos']);
   }
 
+  volverAlDashboard(): void {
+    this.router.navigate(['/dashboard']);
+  }
 }

@@ -1,7 +1,17 @@
 <div class="layout" translate="no">
 
+  <!-- Header compartido -->
+  <app-header (rolActivoChange)="rolActivo = $event"></app-header>
+
   <!-- Contenido de la página -->
   <main class="main">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+      <span class="breadcrumb-link" (click)="volverAlDashboard()">Dashboard</span>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Acreditar paciente</span>
+    </nav>
 
     <!-- Título -->
     <div class="page-title-section">
@@ -12,7 +22,7 @@
     <!-- Barra de búsqueda -->
     <div class="search-bar">
       <div class="search-input-wrap">
-        <mat-icon class="search-icon" translate="no">search</mat-icon>
+        <mat-icon class="search-icon">search</mat-icon>
         <input
           type="text"
           class="search-input"
@@ -26,7 +36,7 @@
 
     <!-- Paciente no encontrado -->
     <div *ngIf="pacienteNoEncontrado" class="alerta alerta-info">
-      <mat-icon translate="no">person_search</mat-icon>
+      <mat-icon>person_search</mat-icon>
       No se encontró ningún paciente con ese DNI o nombre.
     </div>
 
@@ -100,7 +110,7 @@
 
         <!-- FA1: paciente sin turno hoy -->
         <div *ngIf="esSinTurno" class="estado-turno estado-sin-turno">
-          <mat-icon translate="no" style="font-size:16px;">event_busy</mat-icon>
+          <mat-icon style="font-size:16px;">event_busy</mat-icon>
           FA1 — Sin turno activo para hoy
         </div>
 
@@ -122,12 +132,12 @@
               El paciente presentó DNI físico y coincide con los datos del sistema.
             </p>
             <button class="btn-verificar" (click)="verificarIdentidad()">
-              ✓ Identidad verificada
+              <mat-icon>check</mat-icon> Identidad verificada
             </button>
           </div>
 
           <div *ngIf="identidadVerificada" class="chip-verificado">
-            ✓ Identidad verificada
+            <mat-icon>check</mat-icon> Identidad verificada
           </div>
         </div>
 
@@ -158,13 +168,13 @@
 
           <!-- Autorizado -->
           <div *ngIf="paciente.cobertura.estado === 'autorizado'" class="cobertura-card cobertura-autorizado">
-            <p class="cobertura-titulo">✓ Autorizado — {{ paciente.cobertura.obraSocial }}</p>
+            <p class="cobertura-titulo"><mat-icon>check_circle</mat-icon> Autorizado — {{ paciente.cobertura.obraSocial }}</p>
             <p class="cobertura-sub">{{ paciente.cobertura.prestacion }} · Código: {{ paciente.cobertura.codigo }}</p>
           </div>
 
           <!-- Rechazado (FA3) -->
           <div *ngIf="paciente.cobertura.estado === 'rechazado'" class="cobertura-card cobertura-rechazado">
-            <p class="cobertura-titulo">✗ Sin cobertura — {{ paciente.cobertura.obraSocial }}</p>
+            <p class="cobertura-titulo"><mat-icon>cancel</mat-icon> Sin cobertura — {{ paciente.cobertura.obraSocial }}</p>
             <p class="cobertura-sub">{{ paciente.cobertura.prestacion }}</p>
           </div>
         </div>
@@ -182,13 +192,13 @@
 
             <!-- FA1 dentro del paso 4 -->
             <div *ngIf="esSinTurno" class="alerta alerta-warning">
-              ⚠ FA1 — El paciente no tiene turno para hoy. Derivar a sobreturno.
+              <mat-icon>warning</mat-icon> FA1 — El paciente no tiene turno para hoy. Derivar a sobreturno.
               <button class="btn-link" (click)="irASobreturno()">Gestionar sobreturno →</button>
             </div>
 
             <!-- FA3 dentro del paso 4 -->
             <div *ngIf="mostrarAdvertenciaFA3" class="alerta alerta-fa3">
-              ⚠ FA3 — Sin cobertura válida: registrar como particular o cancelar el turno
+              <mat-icon>warning</mat-icon> FA3 — Sin cobertura válida: registrar como particular o cancelar el turno
               <button class="btn-link" (click)="registrarComoParticular()">Registrar como particular →</button>
             </div>
 
@@ -204,7 +214,7 @@
 
           <!-- Confirmación exitosa -->
           <div *ngIf="acreditacionConfirmada" class="confirmado-banner">
-            <span class="confirmado-icon">✓</span>
+            <mat-icon class="confirmado-icon">check_circle</mat-icon>
             <div>
               <p class="confirmado-titulo">Acreditación confirmada</p>
               <p class="confirmado-sub">

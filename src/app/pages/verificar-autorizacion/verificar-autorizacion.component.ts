@@ -2,53 +2,27 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-
-export type ResultadoVerificacion = 'autorizado' | 'no-autorizado' | 'pendiente';
-
-export interface CoberturaMock {
-  estado: ResultadoVerificacion;
-  descripcion: string;
-  codigoAutorizacion?: string;
-  coberturaPct: string;
-  copago: string;
-  topeAnual: string;
-  requiereOrden: string;
-}
-
-export interface PacienteVerificacion {
-  id: number;
-  iniciales: string;
-  colorAvatar: string;
-  nombre: string;
-  apellido: string;
-  dni: string;
-  dniDisplay: string;
-  obraSocial: string;
-  planesDisponibles: string[];
-  planPredeterminado: string;
-  nroAfiliado: string;
-  medico: string;
-  prestacionNombre: string;
-  codigoPrestacionDefault: string;
-  cobertura: CoberturaMock;
-}
+import { MatIconModule } from '@angular/material/icon';
+import { HeaderComponent } from '../../components/header/header.component';
+import { RolUsuario } from '../../core/interfaces/usuario';
+import { ResultadoVerificacion, PacienteVerificacion } from '../../core/interfaces/verificacion';
 
 @Component({
   selector: 'app-verificar-autorizacion',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HeaderComponent, MatIconModule],
   templateUrl: './verificar-autorizacion.component.html',
   styleUrls: ['./verificar-autorizacion.component.css']
 })
 export class VerificarAutorizacionComponent {
   private router = inject(Router);
 
-  // ── Búsqueda ──────────────────────────────────────────────────────────────
+  rolActivo: RolUsuario = 'RECEPCIONISTA';
+
   busqueda = '';
   paciente: PacienteVerificacion | null = null;
   pacienteNoEncontrado = false;
 
-  // ── Formulario de cobertura ───────────────────────────────────────────────
   planSeleccionado    = '';
   tipoPrestacion      = 'Consulta clínica — primer nivel';
   codigoPrestacion    = '';
@@ -57,11 +31,9 @@ export class VerificarAutorizacionComponent {
   docDni              = true;
   docOrden            = false;
 
-  // ── Estado de verificación ────────────────────────────────────────────────
   verificacionRealizada = false;
   resultadoRegistrado   = false;
 
-  // ── Opciones de formulario ────────────────────────────────────────────────
   readonly tiposPrestacion = [
     'Consulta clínica — primer nivel',
     'Consulta especialista',
@@ -70,12 +42,11 @@ export class VerificarAutorizacionComponent {
     'Internación programada',
   ];
 
-  // ── Datos mockeados ───────────────────────────────────────────────────────
   private readonly pacientes: PacienteVerificacion[] = [
     {
       id: 1,
       iniciales: 'GL',
-      colorAvatar: 'linear-gradient(135deg,#E91E8C,#9B1FE8)',
+      colorAvatar: 'linear-gradient(135deg, var(--color-magenta), var(--color-violeta))',
       nombre: 'Luis Alberto',
       apellido: 'García',
       dni: '28456789',
@@ -100,7 +71,7 @@ export class VerificarAutorizacionComponent {
     {
       id: 2,
       iniciales: 'ML',
-      colorAvatar: 'linear-gradient(135deg,#7B2FBE,#4A1580)',
+      colorAvatar: 'linear-gradient(135deg, var(--color-violeta), var(--color-bg-purple-dark-1))',
       nombre: 'Marta',
       apellido: 'López',
       dni: '45678901',
@@ -124,7 +95,7 @@ export class VerificarAutorizacionComponent {
     {
       id: 3,
       iniciales: 'AR',
-      colorAvatar: 'linear-gradient(135deg,#FF6B35,#F7931E)',
+      colorAvatar: 'linear-gradient(135deg, var(--color-naranja), var(--color-status-warning))',
       nombre: 'Ana',
       apellido: 'Romero',
       dni: '34567890',
@@ -148,7 +119,7 @@ export class VerificarAutorizacionComponent {
     {
       id: 4,
       iniciales: 'SE',
-      colorAvatar: 'linear-gradient(135deg,#1565C0,#1976D2)',
+      colorAvatar: 'linear-gradient(135deg, var(--color-status-info-dark), var(--color-bg-blue-bright))',
       nombre: 'Elena',
       apellido: 'Soria',
       dni: '56789012',
@@ -172,7 +143,6 @@ export class VerificarAutorizacionComponent {
     },
   ];
 
-  // ── Búsqueda sin acentos ──────────────────────────────────────────────────
   private normalizar(texto: string): string {
     return texto
       .normalize('NFD')
@@ -226,7 +196,6 @@ export class VerificarAutorizacionComponent {
     this.docOrden      = false;
   }
 
-  // ── Acciones ──────────────────────────────────────────────────────────────
   verificarCobertura(): void {
     if (!this.paciente) return;
     this.verificacionRealizada = true;
@@ -240,6 +209,10 @@ export class VerificarAutorizacionComponent {
   get resultadoActual(): ResultadoVerificacion | null {
     if (!this.paciente || !this.verificacionRealizada) return null;
     return this.paciente.cobertura.estado;
+  }
+
+  volverAlDashboard(): void {
+    this.router.navigate(['/dashboard']);
   }
 
   irAcreditacion(): void {
