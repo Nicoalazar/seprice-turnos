@@ -3,14 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { HeaderComponent } from '../../components/header/header.component';
 import { RolUsuario } from '../../core/interfaces/usuario';
 import { PacienteAcreditacion } from '../../core/interfaces/acreditacion';
 
 @Component({
   selector: 'app-acreditacion',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderComponent, MatIconModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './acreditacion.component.html',
   styleUrls: ['./acreditacion.component.css']
 })

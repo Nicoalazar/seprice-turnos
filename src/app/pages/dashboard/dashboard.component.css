@@ -172,8 +172,8 @@ tr:hover td {
   border-radius: 99px;
 }
 
-.pill-confirmado     { background: #1A1002; color: var(--color-accent-orange-light); }
-.pill-presente-en-sala { background: #052014; color: var(--color-accent-cyan); }
-.pill-atendido       { background: #052014; color: var(--color-accent-cyan); }
+.pill-confirmado     { background: var(--estado-pendiente-fondo); color: var(--color-accent-orange-light); }
+.pill-presente-en-sala { background: var(--estado-ok-fondo); color: var(--color-accent-cyan); }
+.pill-atendido       { background: var(--estado-ok-fondo); color: var(--color-accent-cyan); }
 .pill-cancelado      { background: var(--color-status-error-dark); color: var(--color-status-error-muted); }
 .pill-ausente        { background: var(--color-status-error-dark); color: var(--color-status-error-muted); }
