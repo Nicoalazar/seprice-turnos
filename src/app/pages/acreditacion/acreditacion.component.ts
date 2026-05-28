@@ -2,8 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HeaderComponent } from '../../components/header/header.component';
-import { RolUsuario } from '../../core/interfaces/usuario';
+import { MatIconModule } from '@angular/material/icon';
 
 interface TurnoHoy {
   fecha: string;
@@ -39,14 +38,12 @@ interface PacienteAcreditacion {
 @Component({
   selector: 'app-acreditacion',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderComponent],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './acreditacion.component.html',
   styleUrls: ['./acreditacion.component.css']
 })
 export class AcreditacionComponent {
   private router = inject(Router);
-
-  rolActivo: RolUsuario = 'RECEPCIONISTA';
 
   busqueda = '';
   paciente: PacienteAcreditacion | null = null;

@@ -12,7 +12,7 @@
     <!-- Barra de búsqueda -->
     <div class="search-bar">
       <div class="search-input-wrap">
-        <span class="material-icons search-icon" translate="no">search</span>
+        <mat-icon class="search-icon" translate="no">search</mat-icon>
         <input
           type="text"
           class="search-input"
@@ -26,7 +26,7 @@
 
     <!-- Paciente no encontrado -->
     <div *ngIf="pacienteNoEncontrado" class="alerta alerta-info">
-      <span class="material-icons" translate="no">person_search</span>
+      <mat-icon translate="no">person_search</mat-icon>
       No se encontró ningún paciente con ese DNI o nombre.
     </div>
 
@@ -100,7 +100,7 @@
 
         <!-- FA1: paciente sin turno hoy -->
         <div *ngIf="esSinTurno" class="estado-turno estado-sin-turno">
-          <span class="material-icons" translate="no" style="font-size:16px;">event_busy</span>
+          <mat-icon translate="no" style="font-size:16px;">event_busy</mat-icon>
           FA1 — Sin turno activo para hoy
         </div>
 

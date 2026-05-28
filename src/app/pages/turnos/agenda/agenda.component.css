@@ -10,24 +10,6 @@
     display: block !important;
 }
 
-/* Botón volver al dashboard */
-.btn-volver {
-    background: transparent;
-    border: 1px solid var(--color-border-default);
-    color: var(--color-text-secondary);
-    padding: 6px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    margin-bottom: 12px;
-    display: inline-block;
-}
-
-.btn-volver:hover {
-    background: var(--color-bg-card);
-    color: var(--color-text-primary);
-}
-
 /* Encabezado Principal */
 .header-pagina h1 {
     font-size: 32px;

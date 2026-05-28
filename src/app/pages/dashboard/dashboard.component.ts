@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RolUsuario } from '../../core/interfaces/usuario';
 import { Router } from '@angular/router';
 import { RolService } from '../../core/services/rol.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })

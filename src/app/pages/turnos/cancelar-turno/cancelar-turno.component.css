@@ -11,24 +11,6 @@
     overflow: hidden;
 }
 
-/* Botón volver al dashboard */
-.btn-volver {
-    background: transparent;
-    border: 1px solid var(--color-border-default);
-    color: var(--color-text-secondary);
-    padding: 6px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    margin-bottom: 12px;
-    display: inline-block;
-}
-
-.btn-volver:hover {
-    background: var(--color-bg-card);
-    color: var(--color-text-primary);
-}
-
 /* CONTENEDOR GENERAL */
 .cancelar-container {
     background-color: var(--color-bg-overlay-dark);

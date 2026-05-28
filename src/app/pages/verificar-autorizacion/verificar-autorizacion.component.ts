@@ -2,8 +2,6 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HeaderComponent } from '../../components/header/header.component';
-import { RolUsuario } from '../../core/interfaces/usuario';
 
 export type ResultadoVerificacion = 'autorizado' | 'no-autorizado' | 'pendiente';
 
@@ -38,14 +36,12 @@ export interface PacienteVerificacion {
 @Component({
   selector: 'app-verificar-autorizacion',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './verificar-autorizacion.component.html',
   styleUrls: ['./verificar-autorizacion.component.css']
 })
 export class VerificarAutorizacionComponent {
   private router = inject(Router);
-
-  rolActivo: RolUsuario = 'RECEPCIONISTA';
 
   // ── Búsqueda ──────────────────────────────────────────────────────────────
   busqueda = '';
