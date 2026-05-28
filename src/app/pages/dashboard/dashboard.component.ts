@@ -16,7 +16,7 @@ export class DashboardComponent {
   private router = inject(Router);
   private rolService = inject(RolService);
 
-  rolActivo: RolUsuario = 'RECEPCIONISTA';
+  @Input() rolActivo: RolUsuario = 'RECEPCIONISTA';
 
   constructor() {
     this.rolService.rolActivo$.subscribe(rol => {
@@ -26,32 +26,31 @@ export class DashboardComponent {
 
   // Datos mockeados para el dashboard del administrativo
   turnosAdmin = [
-    { hora: '09:00', paciente: 'García, Luis',   medico: 'Dr. Méndez',  estado: 'presente en sala' },
-    { hora: '09:15', paciente: 'Romero, Ana',    medico: 'Dr. Méndez',  estado: 'confirmado'  },
-    { hora: '09:30', paciente: 'López, Marta',   medico: 'Dra. Torres', estado: 'presente en sala' },
-    { hora: '09:45', paciente: 'Pérez, Juan',    medico: 'Dra. Torres', estado: 'cancelado'  },
-    { hora: '10:00', paciente: 'Soria, Elena',   medico: 'Dr. Méndez',  estado: 'confirmado'  },
+    { hora: '09:00', paciente: 'García, Luis', medico: 'Dr. Méndez', estado: 'presente en sala' },
+    { hora: '09:15', paciente: 'Romero, Ana', medico: 'Dr. Méndez', estado: 'confirmado' },
+    { hora: '09:30', paciente: 'López, Marta', medico: 'Dra. Torres', estado: 'presente en sala' },
+    { hora: '09:45', paciente: 'Pérez, Juan', medico: 'Dra. Torres', estado: 'cancelado' },
+    { hora: '10:00', paciente: 'Soria, Elena', medico: 'Dr. Méndez', estado: 'confirmado' },
   ];
 
   // Datos mockeados para el dashboard del médico
   turnosMedico = [
-    { hora: '09:00', paciente: 'García, Luis',  motivo: 'Control',     estado: 'atendido'  },
-    { hora: '09:15', paciente: 'Romero, Ana',   motivo: 'Consulta',    estado: 'atendido'  },
-    { hora: '09:30', paciente: 'López, Marta',  motivo: 'Seguimiento', estado: 'presente en sala' },
-    { hora: '09:45', paciente: 'Soria, Elena',  motivo: 'Primera vez', estado: 'presente en sala' },
+    { hora: '09:00', paciente: 'García, Luis', motivo: 'Control', estado: 'atendido' },
+    { hora: '09:15', paciente: 'Romero, Ana', motivo: 'Consulta', estado: 'atendido' },
+    { hora: '09:30', paciente: 'López, Marta', motivo: 'Seguimiento', estado: 'presente en sala' },
+    { hora: '09:45', paciente: 'Soria, Elena', motivo: 'Primera vez', estado: 'presente en sala' },
   ];
 
   getClasePill(estado: string): string {
     return 'pill-' + estado.replace(/ /g, '-');
   }
 
-  // Funciones para manejar las acciones rápidas (solo muestran alertas por ahora)
   nuevoTurno() {
     alert('Función para registrar nuevo turno');
   }
 
   sobreturno() {
-    this.router.navigate(['/sobreturnos'])
+    this.router.navigate(['/sobreturnos']);
   }
 
   acreditarPaciente() {
@@ -63,7 +62,7 @@ export class DashboardComponent {
   }
 
   verAgenda() {
-    this.router.navigate(['agenda'])
+    this.router.navigate(['agenda']);
   }
 
   registrarAtencion() {
@@ -73,5 +72,4 @@ export class DashboardComponent {
   turnoSeguimiento() {
     alert('Función para recitar turno de seguimiento');
   }
-
 }
