@@ -1,0 +1,211 @@
+<div class="rt-page">
+
+  <app-header></app-header>
+
+  <div class="breadcrumb">
+    <span class="bc-link" (click)="cancelar()">Dashboard</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">Registrar turno</span>
+  </div>
+
+  <div class="exito-wrap" *ngIf="confirmado()">
+    <div class="exito-icon">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M20 6L9 17l-5-5"/>
+      </svg>
+    </div>
+    <h2 class="exito-title">¡Turno registrado!</h2>
+    <p class="exito-sub">El turno fue confirmado exitosamente.</p>
+    <div class="exito-data" *ngIf="turnoConfirmado() as t">
+      <div class="exito-row"><span>Médico</span><strong>{{ getNombreMedico() }}</strong></div>
+      <div class="exito-row"><span>Consultorio</span><strong>{{ t.consultorio }}</strong></div>
+      <div class="exito-row"><span>Fecha</span><strong>{{ formatFecha(t.fecha) }}</strong></div>
+      <div class="exito-row"><span>Hora</span><strong>{{ t.hora }} hs</strong></div>
+      <div class="exito-row"><span>Tipo</span><strong style="text-transform:capitalize">{{ t.tipo }}</strong></div>
+      <div class="exito-row"><span>Estado</span><span class="badge-confirmado">{{ t.estado }}</span></div>
+    </div>
+    <button class="btn-volver" (click)="cancelar()">Volver al dashboard</button>
+  </div>
+
+  <div class="rt-layout" *ngIf="!confirmado()">
+
+    <div class="col-form">
+      <h1 class="page-title">Registrar turno</h1>
+      <p class="page-sub">Completá los datos para asignar un nuevo turno</p>
+
+      <div class="section-card">
+        <p class="section-label">1. DATOS DEL PACIENTE</p>
+
+        <label class="fa2-toggle">
+          <div class="toggle-wrap">
+            <input type="checkbox" [checked]="pacienteNoRegistrado()" (change)="toggleFA2()">
+            <div class="toggle-slider"></div>
+          </div>
+          <span>Paciente no registrado</span>
+        </label>
+
+        <ng-container *ngIf="!pacienteNoRegistrado()">
+          <label class="field-label">DNI / Nombre del paciente</label>
+          <div class="search-row">
+            <input class="field-input" type="text" placeholder="Buscar por DNI o nombre..."
+              [formControl]="$any(formPaciente.get('busqueda'))"
+              (keyup.enter)="buscar()">
+          </div>
+          <div class="search-results" *ngIf="resultadosBusqueda().length > 0">
+            <div class="result-row" *ngFor="let p of resultadosBusqueda()" (click)="elegirPaciente(p)">
+              <div class="result-avatar">{{ p.nombre[0] }}{{ p.apellido[0] }}</div>
+              <div class="result-info">
+                <strong>{{ p.apellido }}, {{ p.nombre }}</strong>
+                <span>DNI {{ p.dni }} · {{ p.obraSocial }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="paciente-chip" *ngIf="pacienteSeleccionado()">
+            <div class="chip-avatar">{{ pacienteSeleccionado()!.nombre[0] }}{{ pacienteSeleccionado()!.apellido[0] }}</div>
+            <div class="chip-info">
+              <strong>{{ pacienteSeleccionado()!.apellido }}, {{ pacienteSeleccionado()!.nombre }}</strong>
+              <span>DNI {{ pacienteSeleccionado()!.dni }}</span>
+            </div>
+            <span class="chip-ok">✓</span>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="pacienteNoRegistrado()">
+          <div class="fa2-alert">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+            </svg>
+            FA2 — Paciente sin registro en el sistema.
+          </div>
+          <label class="field-label">Nombre completo <span class="req">*</span></label>
+          <input class="field-input" type="text" placeholder="Apellido, Nombre"
+            [formControl]="$any(formPaciente.get('nombreManual'))">
+        </ng-container>
+
+        <div class="two-col" [formGroup]="formPaciente" style="margin-top:14px">
+          <div>
+            <label class="field-label">Obra social</label>
+            <select class="field-select" formControlName="obraSocial">
+              <option value="">— Seleccioná —</option>
+              <option value="Swiss Medical">Swiss Medical</option>
+              <option value="OSDE 310">OSDE 310</option>
+              <option value="Medifé">Medifé</option>
+              <option value="Galeno">Galeno</option>
+              <option value="PAMI">PAMI</option>
+              <option value="Particular">Particular</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Modalidad de pago</label>
+            <select class="field-select" formControlName="modalidadPago">
+              <option value="obra social">Obra social</option>
+              <option value="particular">Particular</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card" [formGroup]="formTurno">
+        <p class="section-label">2. ESPECIALIDAD Y MÉDICO</p>
+        <div class="two-col">
+          <div>
+            <label class="field-label">Especialidad</label>
+            <select class="field-select" formControlName="especialidad">
+              <option value="">— Seleccioná —</option>
+              <option *ngFor="let e of especialidades" [value]="e.id">{{ e.nombre }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Médico</label>
+            <select class="field-select" formControlName="medicoId">
+              <option value="">— Elegí especialidad —</option>
+              <option *ngFor="let m of medicos()" [value]="m.id"> {{ m.apellido }}, {{ m.nombre }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card" [formGroup]="formTurno">
+        <p class="section-label">3. FECHA</p>
+        <div class="two-col">
+          <div>
+            <label class="field-label">Fecha del turno</label>
+            <input class="field-input" type="date" formControlName="fecha" [min]="hoy" [max]="fechaMax">
+          </div>
+          <div>
+            <label class="field-label">Tipo de turno</label>
+            <div class="tipo-group">
+              <button type="button" class="tipo-btn"
+                [class.active-normal]="formTurno.get('tipo')?.value === 'normal'"
+                (click)="setTipo('normal')">Normal</button>
+              <button type="button" class="tipo-btn"
+                [class.active-sobre]="formTurno.get('tipo')?.value === 'sobreturno'"
+                (click)="setTipo('sobreturno')">Sobreturno</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card" [formGroup]="formTurno">
+        <label class="field-label">Nota (opcional)</label>
+        <textarea class="field-textarea" formControlName="observaciones"
+          placeholder="Observaciones del turno..." rows="3"></textarea>
+      </div>
+
+      <div class="error-box" *ngIf="errorMsg()">{{ errorMsg() }}</div>
+
+      <div class="form-actions">
+        <button class="btn-cancelar" type="button" (click)="cancelar()">Cancelar</button>
+        <button class="btn-confirmar" type="button" (click)="confirmar()" [disabled]="!formularioValido">
+          Confirmar turno
+        </button>
+      </div>
+    </div>
+
+    <div class="col-disp">
+
+      <div class="disp-empty" *ngIf="!medicoSeleccionado()">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+        </svg>
+        <p>Seleccioná especialidad y médico<br>para ver la disponibilidad</p>
+      </div>
+
+      <ng-container *ngIf="medicoSeleccionado()">
+        <h3 class="disp-title">Disponibilidad — {{ medicoSeleccionado()!.apellido }}</h3>
+        <p class="disp-fecha">{{ fechaDisplay() }}</p>
+
+        <div class="disp-leyenda">
+          <span class="leyenda-dot disponible"></span><span>Disponible</span>
+          <span class="leyenda-dot ocupado"></span><span>Ocupado</span>
+          <span class="leyenda-dot sobreturno"></span><span>Sobreturno</span>
+        </div>
+
+        <div class="franjas-grid">
+          <button
+            *ngFor="let f of franjas()"
+            type="button"
+            class="franja-card"
+            [class.f-disponible]="f.disponible && !f.esSobreturno"
+            [class.f-ocupado]="!f.disponible && !f.esSobreturno"
+            [class.f-sobreturno]="f.esSobreturno"
+            [class.f-elegido]="franjaSeleccionada()?.hora === f.hora"
+            [disabled]="!f.disponible"
+            (click)="elegirFranja(f)">
+            <span class="franja-hora">{{ f.hora }}</span>
+            <span class="franja-estado">
+              {{ f.esSobreturno ? 'Sobreturno' : f.disponible ? 'Disponible' : 'Ocupado' }}
+            </span>
+          </button>
+        </div>
+
+        <div class="disp-resumen" *ngIf="franjaSeleccionada()">
+          Franja seleccionada: &nbsp;
+          <strong>{{ franjaSeleccionada()!.hora }} hs</strong>
+           {{ getNombreMedico() }}          
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+</div>
