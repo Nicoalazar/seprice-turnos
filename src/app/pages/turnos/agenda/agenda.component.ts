@@ -42,7 +42,7 @@ export class AgendaComponent implements OnChanges, OnInit {
 
   cargarAgenda(): void {
     this.turnosService.obtenerAgendaDelDia(this.medicoSeleccionado, this.fechaSeleccionada)
-      .subscribe((datos: FranjaAgenda[]) => {
+      .subscribe((datos) => {
         this.franjasHorarias = datos;
       });
   }
