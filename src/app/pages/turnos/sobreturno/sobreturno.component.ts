@@ -57,6 +57,7 @@ export class SobreturnoComponent implements OnInit {
     const formValues = this.sobreturnoForm.value;
     if (!formValues.medicoId || !formValues.fecha || !formValues.hora) return;
 
+    // acá solo quiero avisar que se llama GET SOBURNOS DEL DIA
     this.turnosService.getSoburnosDelDia(formValues.medicoId, formValues.fecha, formValues.hora)
       .subscribe(data => {
         this.sobreturnosDelDia = data;
