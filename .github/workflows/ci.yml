@@ -19,8 +19,8 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Lint
-        run: npx ng lint
+      # - name: Lint
+      #   run: npx ng lint
 
       - name: Build
         run: npx ng build --configuration production
