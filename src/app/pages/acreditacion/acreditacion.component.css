@@ -22,21 +22,6 @@
 .main::-webkit-scrollbar-thumb { background: var(--color-scrollbar); border-radius: 4px; }
 .main::-webkit-scrollbar-thumb:hover { background: var(--color-scrollbar-hover); }
 
-/* ── Breadcrumb ────────────────────────────────────────────────────────────── */
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--fuente-size-sm);
-  color: var(--texto-muted);
-  margin-bottom: 14px;
-}
-
-.breadcrumb-link { cursor: pointer; transition: color var(--transicion); }
-.breadcrumb-link:hover { color: var(--texto-secundario); }
-.breadcrumb-sep { color: var(--color-scrollbar); }
-.breadcrumb-current { color: var(--color-accent-purple-lightest); }
-
 /* ── Título de página ──────────────────────────────────────────────────────── */
 .page-title-section { margin-bottom: 20px; }
 

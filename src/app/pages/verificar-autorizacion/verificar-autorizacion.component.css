@@ -19,21 +19,6 @@
 .main::-webkit-scrollbar-track { background: var(--bg-noche); }
 .main::-webkit-scrollbar-thumb { background: var(--color-scrollbar); border-radius: 4px; }
 
-/* ── Breadcrumb ───────────────────────────────────────────────────────────── */
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--fuente-size-sm);
-  color: var(--texto-muted);
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-.breadcrumb-link { cursor: pointer; transition: color var(--transicion); }
-.breadcrumb-link:hover { color: var(--texto-secundario); }
-.breadcrumb-sep { color: var(--color-scrollbar); }
-.breadcrumb-current { color: var(--color-accent-purple-lightest); }
-
 /* ── Título ───────────────────────────────────────────────────────────────── */
 .page-title-section { margin-bottom: 20px; }
 .page-title { margin: 0 0 4px; font-size: 26px; font-weight: 700; }
