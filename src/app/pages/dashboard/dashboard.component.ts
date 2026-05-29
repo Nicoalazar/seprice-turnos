@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RolUsuario } from '../../core/interfaces/usuario';
 import { Router } from '@angular/router';
 import { RolService } from '../../core/services/rol.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -45,9 +46,9 @@ export class DashboardComponent {
     return 'pill-' + estado.replace(/ /g, '-');
   }
 
-  // Funciones para manejar las acciones rápidas (solo muestran alertas por ahora)
+  // Funciones para manejar las acciones rápidas y navegar a las páginas correspondientes
   nuevoTurno() {
-    alert('Función para registrar nuevo turno');
+    this.router.navigate(['/agenda']);
   }
 
   sobreturno() {
@@ -55,7 +56,11 @@ export class DashboardComponent {
   }
 
   acreditarPaciente() {
-    alert('Función para acreditar paciente');
+    this.router.navigate(['/acreditacion']);
+  }
+
+  verificarAutorizacion() {
+    this.router.navigate(['/verificar-autorizacion']);
   }
 
   liquidarHonorarios() {
