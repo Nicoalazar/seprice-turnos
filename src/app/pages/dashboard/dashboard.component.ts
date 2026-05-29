@@ -48,7 +48,7 @@ export class DashboardComponent {
 
   // Funciones para manejar las acciones rápidas y navegar a las páginas correspondientes
   nuevoTurno() {
-    this.router.navigate(['/agenda']);
+    this.router.navigate(['/turnos/registrar']);
   }
 
   sobreturno() {

@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { Turno, EstadoTurno, TipoTurno } from '../interfaces/turno.d';
 import { Paciente } from '../interfaces/paciente.d';
 import { Medico } from '../interfaces/medico.d';
+import { FranjaAgenda } from '../interfaces/franja-agenda';
  
 // Consultorio fijo por médico (mock hasta integración con Supabase)
 const CONSULTORIOS: Record<string, string> = {
@@ -17,16 +18,7 @@ export interface FranjaHoraria {
   disponible: boolean;
   esSobreturno: boolean;
 }
- 
-export interface ItemAgenda {
-  hora: string;
-  paciente: string;
-  motivo: string;
-  obraSocial: string;
-  tipo: string;
-  estado: string;
-}
- 
+  
 export interface RespuestaRegistro {
   ok: boolean;
   turno?: Turno;
@@ -171,8 +163,8 @@ export class TurnosService {
  
   // ── Métodos para agenda ───────────────────────────────────────────────────
  
-  obtenerAgendaDelDia(medicoId: string, fecha: string): Observable<ItemAgenda[]> {
-    const agenda: ItemAgenda[] = [
+  obtenerAgendaDelDia(medicoId: string, fecha: string): Observable<FranjaAgenda[]> {
+    const agenda: FranjaAgenda[] = [
       { hora: '09:00', paciente: 'García, Luis',   motivo: 'Control',     obraSocial: 'OSDE 310',      tipo: 'Normal',     estado: 'Atendido'   },
       { hora: '09:15', paciente: 'Romero, Ana',    motivo: 'Consulta',    obraSocial: 'Swiss Medical', tipo: 'Normal',     estado: 'Atendido'   },
       { hora: '09:30', paciente: 'López, Marta',   motivo: 'Seguimiento', obraSocial: 'Medifé',        tipo: 'Seguimiento',estado: 'En espera'  },

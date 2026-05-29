@@ -1,14 +1,5 @@
 <div class="rt-page">
  
-  <app-header></app-header>
- 
-  <!-- Breadcrumb -->
-  <div class="breadcrumb">
-    <span class="bc-link" (click)="cancelar()">Dashboard</span>
-    <span class="bc-sep">/</span>
-    <span class="bc-current">Registrar turno</span>
-  </div>
- 
   <!-- ── PANTALLA ÉXITO ── -->
   <div class="exito-wrap" *ngIf="confirmado()">
     <mat-icon class="exito-icon-mat">check_circle</mat-icon>
