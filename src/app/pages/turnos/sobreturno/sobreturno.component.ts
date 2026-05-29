@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-// Importamos el servicio mock que cree
-import { TurnosService } from '../../../core/services/turnos.service'; 
+import { Router } from '@angular/router';
+import { TurnosService } from '../../../core/services/turnos.service';
+import { SobreturnoItem } from '../../../core/interfaces/franja-agenda';
 
 @Component({
   selector: 'app-sobreturno',
@@ -12,10 +13,13 @@ import { TurnosService } from '../../../core/services/turnos.service';
   styleUrl: './sobreturno.component.css'
 })
 export class SobreturnoComponent implements OnInit {
+  private router = inject(Router);
   sobreturnoForm!: FormGroup;
+
+  volverAlDashboard(): void { this.router.navigate(['/dashboard']); }
   limiteSobreturnoAlcanzado: boolean = false; 
   sobreturnosAsignados: number = 0;
-  sobreturnosDelDia: any[] = [];
+  sobreturnosDelDia: SobreturnoItem[] = [];
 
   // Inyectamos el TurnosService mockeado
   constructor(
@@ -53,6 +57,7 @@ export class SobreturnoComponent implements OnInit {
     const formValues = this.sobreturnoForm.value;
     if (!formValues.medicoId || !formValues.fecha || !formValues.hora) return;
 
+    // acá solo quiero avisar que se llama GET SOBURNOS DEL DIA
     this.turnosService.getSoburnosDelDia(formValues.medicoId, formValues.fecha, formValues.hora)
       .subscribe(data => {
         this.sobreturnosDelDia = data;

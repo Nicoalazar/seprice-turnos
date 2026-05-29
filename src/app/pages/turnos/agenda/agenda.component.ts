@@ -1,7 +1,9 @@
 // Agregamos 'OnInit' a los imports de Angular
-import { Component, Input, Output, EventEmitter, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { TurnosService } from '../../../core/services/turnos.service';
+import { FranjaAgenda } from '../../../core/interfaces/franja-agenda';
 
 @Component({
   selector: 'app-agenda',
@@ -15,12 +17,16 @@ export class AgendaComponent implements OnChanges, OnInit {
 
   @Input() medicoSeleccionado: string = '';
   @Input() fechaSeleccionada: string = '';
-  @Output() turnoSeleccionado = new EventEmitter<any>();
-  @Output() atencionRegistrada = new EventEmitter<any>(); // <-- Nuevo Output agregado
+  @Output() turnoSeleccionado = new EventEmitter<FranjaAgenda>();
+  @Output() atencionRegistrada = new EventEmitter<FranjaAgenda>();
 
-  franjasHorarias: any[] = [];
+  franjasHorarias: FranjaAgenda[] = [];
+
+  private router = inject(Router);
 
   constructor(private turnosService: TurnosService) { }
+
+  volverAlDashboard(): void { this.router.navigate(['/dashboard']); }
 
   // Este método se ejecuta SÍ O SÍ apenas carga la pantalla independiente
   ngOnInit(): void {
@@ -28,7 +34,7 @@ export class AgendaComponent implements OnChanges, OnInit {
   }
 
   // Este se ejecutará más adelante cuando lo usemos dentro de los flujos reales
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(_changes: SimpleChanges): void {
     if (this.medicoSeleccionado && this.fechaSeleccionada) {
       this.cargarAgenda();
     }
@@ -36,33 +42,23 @@ export class AgendaComponent implements OnChanges, OnInit {
 
   cargarAgenda(): void {
     this.turnosService.obtenerAgendaDelDia(this.medicoSeleccionado, this.fechaSeleccionada)
-      .subscribe((datos: any[]) => {
+      .subscribe((datos) => {
         this.franjasHorarias = datos;
       });
   }
 
-  seleccionarFranja(franja: any): void {
+  seleccionarFranja(franja: FranjaAgenda): void {
     if (franja.estado === 'Libre') {
       this.turnoSeleccionado.emit(franja);
-      console.log('Turno libre seleccionado:', franja);
-    } else {
-      console.log('Esta franja no está disponible para selección.');
     }
-  } 
-
-  registrarAtencion(franja: any): void {
-    console.log('Iniciando flujo de atención para el paciente:', franja.paciente);
-    console.log('Detalles de la franja:', franja);
-    
-    // Emitimos la franja hacia afuera por si el sistema lo necesita
-    this.atencionRegistrada.emit(franja);
-
-    // Alerta simple para probar en el navegador que captura los datos correctos
-    alert(`Atendiendo a: ${franja.paciente}\nMotivo: ${franja.motivo}\nTipo: ${franja.tipo}`);
   }
 
-  verDetalle(franja: any): void {
-    console.log('Mostrando el detalle del paciente ya atendido:', franja.paciente);
+  registrarAtencion(franja: FranjaAgenda): void {
+    franja.estado = 'Atendido';
+    this.atencionRegistrada.emit(franja);
+  }
+
+  verDetalle(franja: FranjaAgenda): void {
     alert(`Detalle de la atención:\nPaciente: ${franja.paciente}\nEstado: Ya fue Atendido`);
   }
 }
