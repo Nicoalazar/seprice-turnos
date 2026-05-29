@@ -1,9 +1,59 @@
 import { Routes } from '@angular/router';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { LoginComponent } from './auth/login/login.component';
 
 export const routes: Routes = [
-    {path: 'login', component: LoginComponent},
-    {path: 'dashboard', component: DashboardComponent},
-    {path: '', redirectTo: 'dashboard', pathMatch: 'full'}
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./auth/login/login.component')
+        .then(m => m.LoginComponent)
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard.component')
+        .then(m => m.DashboardComponent)
+  },
+  {
+    path: 'acreditacion',
+    loadComponent: () =>
+      import('./pages/acreditacion/acreditacion.component')
+        .then(m => m.AcreditacionComponent)
+  },
+
+  {
+    path: 'verificar-autorizacion',
+    loadComponent: () =>
+      import('./pages/verificar-autorizacion/verificar-autorizacion.component')
+        .then(m => m.VerificarAutorizacionComponent)
+  },
+
+  {
+    path: 'sobreturnos',
+    loadComponent: () =>
+      import('./pages/turnos/sobreturno/sobreturno.component')
+        .then(m => m.SobreturnoComponent)
+  },
+  {
+    path: 'cancelar-turno',
+    loadComponent: () =>
+      import('./pages/turnos/cancelar-turno/cancelar-turno.component')
+        .then(m => m.CancelarTurnoComponent)
+  },
+  {
+    path: 'agenda',
+    loadComponent: () =>
+      import('./pages/turnos/agenda/agenda.component')
+        .then(m => m.AgendaComponent)
+  },
+  {
+    path: 'turnos/registrar',
+    loadComponent: () =>
+      import('./pages/turnos/registrar-turno/registrar-turno.component')
+        .then(m => m.RegistrarTurnoComponent)
+  },
+  {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full'
+  }
 ];

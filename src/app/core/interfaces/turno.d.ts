@@ -1,5 +1,5 @@
-export type EstadoTurno = 'pendiente' | 'acreditado' | 'atendido' | 'cancelado';
-export type TipoTurno = 'normal' | 'sobreturno' | 'seguimiento';
+export type EstadoTurno = 'confirmado' | 'presente en sala' | 'atendido' | 'cancelado' | 'ausente';
+export type TipoTurno = 'normal' | 'sobreturno';
 
 export interface Turno {
   id: string;

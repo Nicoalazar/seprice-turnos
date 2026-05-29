@@ -48,3 +48,4 @@ src/environments/env.ts
 # Claude AI
 .claude/
 claude.md
+DOCUMENTACION.md

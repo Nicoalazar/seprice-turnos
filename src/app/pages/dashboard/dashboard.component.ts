@@ -1,53 +1,66 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeaderComponent } from "../../components/header/header.component";
 import { RolUsuario } from '../../core/interfaces/usuario';
+import { Router } from '@angular/router';
+import { RolService } from '../../core/services/rol.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, HeaderComponent],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
 
-  // Rol activo: determina qué vista se muestra lo recibe de HeaderComponent
+  private router = inject(Router);
+  private rolService = inject(RolService);
+
   @Input() rolActivo: RolUsuario = 'RECEPCIONISTA';
+
+  constructor() {
+    this.rolService.rolActivo$.subscribe(rol => {
+      this.rolActivo = rol;
+    });
+  }
 
   // Datos mockeados para el dashboard del administrativo
   turnosAdmin = [
-    { hora: '09:00', paciente: 'García, Luis',   medico: 'Dr. Méndez',  estado: 'acreditado' },
-    { hora: '09:15', paciente: 'Romero, Ana',    medico: 'Dr. Méndez',  estado: 'pendiente'  },
-    { hora: '09:30', paciente: 'López, Marta',   medico: 'Dra. Torres', estado: 'acreditado' },
-    { hora: '09:45', paciente: 'Pérez, Juan',    medico: 'Dra. Torres', estado: 'cancelado'  },
-    { hora: '10:00', paciente: 'Soria, Elena',   medico: 'Dr. Méndez',  estado: 'pendiente'  },
+    { hora: '09:00', paciente: 'García, Luis', medico: 'Dr. Méndez', estado: 'presente en sala' },
+    { hora: '09:15', paciente: 'Romero, Ana', medico: 'Dr. Méndez', estado: 'confirmado' },
+    { hora: '09:30', paciente: 'López, Marta', medico: 'Dra. Torres', estado: 'presente en sala' },
+    { hora: '09:45', paciente: 'Pérez, Juan', medico: 'Dra. Torres', estado: 'cancelado' },
+    { hora: '10:00', paciente: 'Soria, Elena', medico: 'Dr. Méndez', estado: 'confirmado' },
   ];
 
   // Datos mockeados para el dashboard del médico
   turnosMedico = [
-    { hora: '09:00', paciente: 'García, Luis',  motivo: 'Control',     estado: 'atendido'  },
-    { hora: '09:15', paciente: 'Romero, Ana',   motivo: 'Consulta',    estado: 'atendido'  },
-    { hora: '09:30', paciente: 'López, Marta',  motivo: 'Seguimiento', estado: 'pendiente' },
-    { hora: '09:45', paciente: 'Soria, Elena',  motivo: 'Primera vez', estado: 'pendiente' },
+    { hora: '09:00', paciente: 'García, Luis', motivo: 'Control', estado: 'atendido' },
+    { hora: '09:15', paciente: 'Romero, Ana', motivo: 'Consulta', estado: 'atendido' },
+    { hora: '09:30', paciente: 'López, Marta', motivo: 'Seguimiento', estado: 'presente en sala' },
+    { hora: '09:45', paciente: 'Soria, Elena', motivo: 'Primera vez', estado: 'presente en sala' },
   ];
 
-  // Devuelve la clase CSS según el estado del turno
   getClasePill(estado: string): string {
-    return 'pill-' + estado;
+    return 'pill-' + estado.replace(/ /g, '-');
   }
 
-  // Funciones para manejar las acciones rápidas (solo muestran alertas por ahora)
+  // Funciones para manejar las acciones rápidas y navegar a las páginas correspondientes
   nuevoTurno() {
-    alert('Función para registrar nuevo turno');
+    this.router.navigate(['/turnos/registrar']);
   }
 
   sobreturno() {
-    alert('Función para agregar sobreturno');
+    this.router.navigate(['/sobreturnos']);
   }
 
   acreditarPaciente() {
-    alert('Función para acreditar paciente');
+    this.router.navigate(['/acreditacion']);
+  }
+
+  verificarAutorizacion() {
+    this.router.navigate(['/verificar-autorizacion']);
   }
 
   liquidarHonorarios() {
@@ -55,7 +68,7 @@ export class DashboardComponent {
   }
 
   verAgenda() {
-    alert('Función para ver agenda completa');
+    this.router.navigate(['agenda']);
   }
 
   registrarAtencion() {
@@ -65,5 +78,4 @@ export class DashboardComponent {
   turnoSeguimiento() {
     alert('Función para recitar turno de seguimiento');
   }
-
 }
