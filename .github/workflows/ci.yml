@@ -21,6 +21,10 @@ jobs:
 
       # - name: Lint
       #   run: npx ng lint
+      - name: Create env file
+        run: |
+          mkdir -p src/environments
+          echo "export const environment = { production: true, supabaseUrl: '', supabaseKey: '' };" > src/environments/env.ts
 
       - name: Build
         run: npx ng build --configuration production
