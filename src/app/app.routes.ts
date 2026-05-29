@@ -16,6 +16,20 @@ export const routes: Routes = [
   },
 
   {
+    path: 'acreditacion',
+    loadComponent: () =>
+      import('./pages/acreditacion/acreditacion.component')
+        .then(m => m.AcreditacionComponent)
+  },
+
+  {
+    path: 'verificar-autorizacion',
+    loadComponent: () =>
+      import('./pages/verificar-autorizacion/verificar-autorizacion.component')
+        .then(m => m.VerificarAutorizacionComponent)
+  },
+
+  {
     path: 'sobreturnos',
     loadComponent: () =>
       import('./pages/turnos/sobreturno/sobreturno.component')

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'; // Sumamos FormsModule
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router'; // Sumamos FormsModule
 
 @Component({
   selector: 'app-cancelar-turno',
@@ -11,7 +12,10 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'; 
   styleUrl: './cancelar-turno.component.css'
 })
 export class CancelarTurnoComponent implements OnInit {
-  
+  private router = inject(Router);
+
+  volverAlDashboard(): void { this.router.navigate(['/dashboard']); }
+
   buscadorControl = new FormControl('');
   turnoEncontrado: boolean = false; 
   errorTurnoNoEncontrado: boolean = false;
