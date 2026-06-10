@@ -1,13 +1,30 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnInit, SimpleChanges, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TurnosService } from '../../../core/services/turnos.service';
+import { AtencionService } from '../../../core/services/atencion.service';
+import { MedicosService } from '../../../core/services/medicos.service';
+import { LoginService } from '../../../auth/login.service';
 import { TurnoConDetalles } from '../../../core/interfaces/turno.d';
 
 @Component({
   selector: 'app-agenda',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSnackBarModule
+  ],
   templateUrl: './agenda.component.html',
   styleUrls: ['./agenda.component.css']
 })
@@ -21,15 +38,39 @@ export class AgendaComponent implements OnChanges, OnInit {
   turnosDelDia: TurnoConDetalles[] = [];
   franjasHorarias: any[] = [];
   cargando = false;
+  formularioAtencion: FormGroup | null = null;
+  turnoActualAtencion = signal<TurnoConDetalles | null>(null);
+  mostrando = signal<'agenda' | 'formulario'>('agenda');
 
   private router = inject(Router);
+  private atencionService = inject(AtencionService);
+  private medicosService = inject(MedicosService);
+  private loginService = inject(LoginService);
+  private fb = inject(FormBuilder);
+  private snackBar = inject(MatSnackBar);
 
   constructor(private turnosService: TurnosService) { }
 
   volverAlDashboard(): void { this.router.navigate(['/dashboard']); }
 
   ngOnInit(): void {
-    this.cargarAgenda();
+    // Si no hay inputs, intentar auto-cargar para el médico actual
+    if (!this.medicoSeleccionado || !this.fechaSeleccionada) {
+      const usuarioActual = this.loginService.getUsuarioActual();
+      if (usuarioActual) {
+        this.medicosService.getMedicoActual(usuarioActual.id).subscribe({
+          next: (medico) => {
+            if (medico) {
+              this.medicoSeleccionado = medico.id;
+              this.fechaSeleccionada = new Date().toISOString().split('T')[0];
+              this.cargarAgenda();
+            }
+          }
+        });
+      }
+    } else {
+      this.cargarAgenda();
+    }
   }
 
   ngOnChanges(_changes: SimpleChanges): void {
@@ -74,12 +115,78 @@ export class AgendaComponent implements OnChanges, OnInit {
     }
   }
 
-  registrarAtencion(turno: TurnoConDetalles): void {
-    turno.estado = 'ATENDIDO';
-    this.atencionRegistrada.emit(turno);
+  abrirFormularioAtencion(franja: any): void {
+    const turno = this.turnosDelDia.find(t => t.id === franja.turnoId);
+    if (!turno) return;
+
+    this.turnoActualAtencion.set(turno);
+    this.mostrando.set('formulario');
+    this.formularioAtencion = this.fb.group({
+      diagnostico: ['', Validators.required],
+      prescripciones: [''],
+      derivacion: ['']
+    });
+  }
+
+  guardarAtencion(): void {
+    if (!this.formularioAtencion || !this.turnoActualAtencion()) return;
+
+    const turno = this.turnoActualAtencion()!;
+    const { diagnostico, prescripciones, derivacion } = this.formularioAtencion.value;
+
+    this.cargando = true;
+
+    // Crear registro de atención
+    this.atencionService.crearAtencion({
+      turnoId: turno.id,
+      medicoId: turno.medicoId,
+      diagnostico,
+      prescripciones: prescripciones || undefined,
+      derivacion: derivacion || undefined
+    }).subscribe({
+      next: (atencion) => {
+        if (atencion) {
+          // Marcar turno como atendido
+          this.turnosService.marcarComoAtendido(turno.id).subscribe({
+            next: () => {
+              this.cargando = false;
+              this.snackBar.open('Atención registrada exitosamente', 'Cerrar', { duration: 3000 });
+              turno.estado = 'ATENDIDO';
+              this.atencionRegistrada.emit(turno);
+              this.mostrando.set('agenda');
+              this.cargarAgenda();
+            },
+            error: () => {
+              this.cargando = false;
+              this.snackBar.open('Error al actualizar turno', 'Cerrar', { duration: 3000 });
+            }
+          });
+        }
+      },
+      error: () => {
+        this.cargando = false;
+        this.snackBar.open('Error al registrar atención', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
+  cancelarFormulario(): void {
+    this.mostrando.set('agenda');
+    this.turnoActualAtencion.set(null);
+    this.formularioAtencion = null;
   }
 
   verDetalle(turno: TurnoConDetalles): void {
-    alert(`Detalle de la atención:\nPaciente: ${turno.paciente.apellido}, ${turno.paciente.nombre}\nEstado: ${turno.estado}`);
+    const detalle = `
+Paciente: ${turno.paciente?.apellido}, ${turno.paciente?.nombre}
+DNI: ${turno.paciente?.dni}
+Médico: Dr. ${turno.medico?.apellido}, ${turno.medico?.nombre}
+Especialidad: ${turno.medico?.especialidad}
+Fecha: ${turno.franja?.fecha}
+Hora: ${turno.franja?.hora}
+Estado: ${turno.estado}
+Modalidad: ${turno.modalidadPago}
+    `.trim();
+    alert(detalle);
   }
 }
