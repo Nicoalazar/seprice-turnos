@@ -269,4 +269,23 @@ export class TurnosService {
       })
     );
   }
+
+  getSalaDeEspera(medicoId: string, fecha: string): Observable<TurnoConDetalles[]> {
+    return from(
+      this.supabase
+        .from('Turno')
+        .select(`
+          *,
+          paciente:Paciente(nombre, apellido, dni, telefono, obraSocial),
+          medico:Medico(nombre, apellido, especialidad),
+          franja:Franja(fecha, hora)
+        `)
+        .eq('medicoId', medicoId)
+        .eq('franja.fecha', fecha)
+        .eq('estado', 'PRESENTE_EN_SALA')
+        .order('franja(hora)', { ascending: true })
+    ).pipe(
+      map(({ data }) => (data ?? []) as TurnoConDetalles[])
+    );
+  }
 }

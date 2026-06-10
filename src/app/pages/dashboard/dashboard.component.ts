@@ -136,6 +136,10 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['agenda']);
   }
 
+  verSalaEspera() {
+    this.router.navigate(['/sala-espera']);
+  }
+
   registrarAtencion() {
     alert('Función para registrar atención');
   }

@@ -64,6 +64,12 @@ export const routes: Routes = [
         .then(m => m.ConfigurarAgendaComponent)
   },
   {
+    path: 'sala-espera',
+    loadComponent: () =>
+      import('./pages/turnos/sala-espera/sala-espera.component')
+        .then(m => m.SalaEsperaComponent)
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'
