@@ -253,4 +253,20 @@ export class TurnosService {
       })
     );
   }
+
+  actualizarModalidadPago(turnoId: string, modalidadPago: ModalidadPago): Observable<{ ok: boolean; error?: string }> {
+    return from(
+      this.supabase
+        .from('Turno')
+        .update({ modalidadPago })
+        .eq('id', turnoId)
+    ).pipe(
+      map(({ error }) => {
+        if (error) {
+          return { ok: false, error: error.message };
+        }
+        return { ok: true };
+      })
+    );
+  }
 }
