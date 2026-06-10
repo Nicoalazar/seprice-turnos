@@ -70,6 +70,18 @@ export const routes: Routes = [
         .then(m => m.SalaEsperaComponent)
   },
   {
+    path: 'liquidacion',
+    loadComponent: () =>
+      import('./pages/liquidacion/generar-liquidacion/generar-liquidacion.component')
+        .then(m => m.GenerarLiquidacionComponent)
+  },
+  {
+    path: 'mi-liquidacion',
+    loadComponent: () =>
+      import('./pages/liquidacion/consultar-liquidacion/consultar-liquidacion.component')
+        .then(m => m.ConsultarLiquidacionComponent)
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'

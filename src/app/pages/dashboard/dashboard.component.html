@@ -65,6 +65,11 @@
           <p class="accion-titulo">Configurar agenda</p>
           <p class="accion-desc">Definir horarios y franjas de médicos</p>
         </div>
+        <div class="accion-card" (click)="liquidarHonorarios()">
+          <mat-icon class="accion-icon">receipt</mat-icon>
+          <p class="accion-titulo">Generar liquidación</p>
+          <p class="accion-desc">Crear liquidación de honorarios para médicos</p>
+        </div>
       </div>
 
       <p class="seccion-label">Próximos turnos</p>
@@ -147,6 +152,11 @@
           <mat-icon class="accion-icon">history</mat-icon>
           <p class="accion-titulo">Turno de seguimiento</p>
           <p class="accion-desc">Recitar desde consultorio</p>
+        </div>
+        <div class="accion-card" (click)="miLiquidacion()">
+          <mat-icon class="accion-icon">receipt</mat-icon>
+          <p class="accion-titulo">Mis liquidaciones</p>
+          <p class="accion-desc">Ver estado de tus honorarios</p>
         </div>
       </div>
 

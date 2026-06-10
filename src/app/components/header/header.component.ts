@@ -22,7 +22,7 @@ export class HeaderComponent {
   
   @Output() rolActivoChange = new EventEmitter<RolUsuario>();
 
-  rolActivo: RolUsuario = 'RECEPCIONISTA';
+  rolActivo: RolUsuario = 'ADMIN';
 
   cambiarRol(rolActivo: RolUsuario): void {
     this.rolActivo = rolActivo;

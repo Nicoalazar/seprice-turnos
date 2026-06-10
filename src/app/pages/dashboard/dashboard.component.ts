@@ -129,7 +129,11 @@ export class DashboardComponent implements OnInit {
   }
 
   liquidarHonorarios() {
-    alert('Función para liquidar honorarios');
+    this.router.navigate(['/liquidacion']);
+  }
+
+  miLiquidacion() {
+    this.router.navigate(['/mi-liquidacion']);
   }
 
   verAgenda() {

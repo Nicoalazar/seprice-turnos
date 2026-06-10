@@ -8,7 +8,7 @@
 
       <!-- Badge que muestra el rol actual -->
       <span class="badge-rol">
-        {{ rolActivo === 'RECEPCIONISTA' ? 'Personal administrativo' : 'Médico' }}
+        {{ rolActivo === 'ADMIN' ? 'Personal administrativo' : 'Médico' }}
       </span>
     </div>
 
@@ -17,8 +17,8 @@
       <div class="toggle-rol">
         <button
           class="btn-rol"
-          [class.activo]="rolActivo === 'RECEPCIONISTA'"
-          (click)="cambiarRol('RECEPCIONISTA')"
+          [class.activo]="rolActivo === 'ADMIN'"
+          (click)="cambiarRol('ADMIN')"
         >
           Administrativo
         </button>
@@ -33,11 +33,11 @@
 
       <!-- Usuario nombre  -->
       <span class="usuario-nombre">
-        {{ rolActivo === 'RECEPCIONISTA' ? 'M. Albornoz' : 'Dr. Méndez' }}
+        {{ rolActivo === 'ADMIN' ? 'M. Albornoz' : 'Dr. Méndez' }}
       </span>
       <!-- Usuario Menu Button en Avatar -->
       <button mat-icon-button [matMenuTriggerFor]="userMenu" class="avatar">
-        {{ rolActivo === 'RECEPCIONISTA' ? 'MA' : 'DM' }}
+        {{ rolActivo === 'ADMIN' ? 'MA' : 'DM' }}
       </button>
 
       <!-- User Menu -->

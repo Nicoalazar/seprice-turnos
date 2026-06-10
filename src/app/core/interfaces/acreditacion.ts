@@ -1,6 +1,7 @@
 import { EstadoTurno } from './turno';
 
 export interface TurnoHoy {
+  id: string;
   fecha: string;
   hora: string;
   medico: string;
