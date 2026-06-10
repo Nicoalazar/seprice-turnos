@@ -1,14 +1,18 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TurnosService, FranjaHoraria, RespuestaRegistro } from '../../../core/services/turnos.service';
+import { TurnosService } from '../../../core/services/turnos.service';
+import { MedicosService } from '../../../core/services/medicos.service';
+import { PacientesService } from '../../../core/services/pacientes.service';
+import { AgendaService } from '../../../core/services/agenda.service';
 import { Paciente } from '../../../core/interfaces/paciente.d';
 import { Medico } from '../../../core/interfaces/medico.d';
+import { Franja } from '../../../core/interfaces/franja.d';
 import { Turno, TipoTurno } from '../../../core/interfaces/turno.d';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { MatIconModule } from '@angular/material/icon';
- 
+
 @Component({
   selector: 'app-registrar-turno',
   standalone: true,
@@ -17,34 +21,35 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./registrar-turno.component.css'],
 })
 export class RegistrarTurnoComponent implements OnInit {
- 
-  // ── Paciente ──────────────────────────────────────────────────────────────
+
+  // Paciente
   pacienteSeleccionado = signal<Paciente | null>(null);
   pacienteNoRegistrado = signal(false);
-  resultadosBusqueda   = signal<Paciente[]>([]);
- 
-  // ── Turno ─────────────────────────────────────────────────────────────────
+  resultadosBusqueda = signal<Paciente[]>([]);
+
+  // Turno
   especialidades: string[] = [];
-  medicos            = signal<Medico[]>([]);
+  medicos = signal<Medico[]>([]);
   medicoSeleccionado = signal<Medico | null>(null);
-  franjas            = signal<FranjaHoraria[]>([]);
-  franjaSeleccionada = signal<FranjaHoraria | null>(null);
- 
-  // ── Resultado ─────────────────────────────────────────────────────────────
-  turnoConfirmado = signal<Turno | null>(null);
-  errorMsg        = signal<string | null>(null);
-  confirmado      = signal(false);
- 
+  franjas = signal<any[]>([]);
+  franjaSeleccionada = signal<any | null>(null);
+
+  // Resultado
+  turnoConfirmado = signal<any>(null);
+  errorMsg = signal<string | null>(null);
+  confirmado = signal(false);
+  cargando = signal(false);
+
   formPaciente!: FormGroup;
   formTurno!: FormGroup;
- 
+
   readonly hoy = new Date().toISOString().split('T')[0];
   readonly fechaMax = (() => {
     const d = new Date();
     d.setDate(d.getDate() + 30);
     return d.toISOString().split('T')[0];
   })();
- 
+
   readonly fechaDisplay = computed(() => {
     const v = this.formTurno?.get('fecha')?.value as string | null;
     if (!v) return '';
@@ -52,15 +57,21 @@ export class RegistrarTurnoComponent implements OnInit {
       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
     });
   });
- 
+
   get franjasDisponiblesCount(): number {
-    return this.franjas().filter(f => f.disponible).length;
+    return this.franjas().length;
   }
- 
+
   get formularioValido(): boolean {
-    return this.pacienteValido && this.formTurno.valid && !!this.franjaSeleccionada();
+    return this.pacienteValido && this.formTurno.valid && !!this.franjaSeleccionada() && this.franjasDisponiblesCount > 0;
   }
- 
+
+  get sinFranjasDisponibles(): boolean {
+    const medicoId = this.formTurno.get('medicoId')?.value as string;
+    const fecha = this.formTurno.get('fecha')?.value as string;
+    return medicoId && fecha && this.franjas().length === 0;
+  }
+
   get pacienteValido(): boolean {
     return this.pacienteNoRegistrado()
       ? this.formPaciente.get('nombreManual')!.valid
@@ -68,49 +79,60 @@ export class RegistrarTurnoComponent implements OnInit {
   }
 
   get controlBusqueda(): FormControl<string | null> {
-  return this.formPaciente.get('busqueda') as FormControl<string | null>;
-}
+    return this.formPaciente.get('busqueda') as FormControl<string | null>;
+  }
 
-get controlNombreManual(): FormControl<string | null> {
-  return this.formPaciente.get('nombreManual') as FormControl<string | null>;
-}
- 
+  get controlNombreManual(): FormControl<string | null> {
+    return this.formPaciente.get('nombreManual') as FormControl<string | null>;
+  }
+
   constructor(
     private fb: FormBuilder,
     private turnosService: TurnosService,
+    private medicosService: MedicosService,
+    private pacientesService: PacientesService,
+    private agendaService: AgendaService,
     private router: Router,
   ) {}
- 
+
   ngOnInit(): void {
-    this.especialidades = this.turnosService.getEspecialidades();
- 
+    this.cargando.set(true);
+    this.medicosService.getEspecialidades().subscribe({
+      next: (esp) => {
+        this.especialidades = esp;
+        this.cargando.set(false);
+      },
+      error: () => this.cargando.set(false),
+    });
+
     this.formPaciente = this.fb.group({
-      busqueda:      [''],
-      nombreManual:  [''],
-      obraSocial:    [''],
+      busqueda: [''],
+      nombreManual: [''],
+      obraSocial: [''],
       modalidadPago: ['obra social'],
     });
- 
+
     this.formTurno = this.fb.group({
-      especialidad:  ['', Validators.required],
-      medicoId:      ['', Validators.required],
-      fecha:         [this.hoy, Validators.required],
-      tipo:          ['normal' as TipoTurno, Validators.required],
+      especialidad: ['', Validators.required],
+      medicoId: ['', Validators.required],
+      fecha: [this.hoy, Validators.required],
+      tipo: ['normal', Validators.required],
       observaciones: [''],
     });
- 
-    // Especialidad → cargar médicos y preseleccionar primero
+
+    // Especialidad → cargar médicos
     this.formTurno.get('especialidad')!.valueChanges.subscribe((esp: string) => {
-      const lista = this.turnosService.getMedicosPorEspecialidad(esp);
-      this.medicos.set(lista);
-      const primero = lista[0] ?? null;
-      this.medicoSeleccionado.set(primero);
-      this.formTurno.patchValue({ medicoId: primero?.id ?? '' }, { emitEvent: false });
-      this.franjaSeleccionada.set(null);
-      if (primero) this.cargarFranjas(primero.id);
-      else this.franjas.set([]);
+      this.medicosService.getMedicosPorEspecialidad(esp).subscribe((lista: any[]) => {
+        this.medicos.set(lista);
+        const primero = lista[0] ?? null;
+        this.medicoSeleccionado.set(primero);
+        this.formTurno.patchValue({ medicoId: primero?.id ?? '' }, { emitEvent: false });
+        this.franjaSeleccionada.set(null);
+        if (primero) this.cargarFranjas(primero.id);
+        else this.franjas.set([]);
+      });
     });
- 
+
     // Médico → actualizar franjas
     this.formTurno.get('medicoId')!.valueChanges.subscribe((id: string) => {
       const m = this.medicos().find(x => x.id === id) ?? null;
@@ -119,7 +141,7 @@ get controlNombreManual(): FormControl<string | null> {
       if (id) this.cargarFranjas(id);
       else this.franjas.set([]);
     });
- 
+
     // Fecha → actualizar franjas
     this.formTurno.get('fecha')!.valueChanges.subscribe(() => {
       const id = this.formTurno.get('medicoId')!.value as string;
@@ -127,26 +149,37 @@ get controlNombreManual(): FormControl<string | null> {
       if (id) this.cargarFranjas(id);
     });
   }
- 
+
   private cargarFranjas(medicoId: string): void {
     const fecha = this.formTurno.get('fecha')!.value as string;
     if (!fecha) return;
-    this.franjas.set(this.turnosService.getFranjasDisponibles(medicoId, fecha));
+    this.agendaService.getFranjasDisponibles(medicoId, fecha).subscribe((franjas) => {
+      const mapeadas = franjas.map(f => ({
+        ...f,
+        esSobreturno: f.sobreturno
+      })) as any[];
+      this.franjas.set(mapeadas);
+    });
   }
- 
-  // ── Paciente ──────────────────────────────────────────────────────────────
- 
+
   buscar(): void {
     const q = this.formPaciente.get('busqueda')!.value as string;
-    this.resultadosBusqueda.set(this.turnosService.buscarPaciente(q));
+    this.pacientesService.buscarPaciente(q).subscribe({
+      next: (resultados) => {
+        this.resultadosBusqueda.set(resultados);
+      },
+      error: () => {
+        this.resultadosBusqueda.set([]);
+      }
+    });
   }
- 
+
   elegirPaciente(p: Paciente): void {
     this.pacienteSeleccionado.set(p);
     this.resultadosBusqueda.set([]);
     this.formPaciente.patchValue({ busqueda: `${p.apellido}, ${p.nombre}`, obraSocial: p.obraSocial });
   }
- 
+
   toggleFA2(): void {
     this.pacienteNoRegistrado.update(v => !v);
     this.pacienteSeleccionado.set(null);
@@ -160,56 +193,98 @@ get controlNombreManual(): FormControl<string | null> {
     }
     ctrl.updateValueAndValidity();
   }
- 
-  // ── Turno ─────────────────────────────────────────────────────────────────
- 
-  elegirFranja(f: FranjaHoraria): void {
-    if (!f.disponible) return;
+
+  elegirFranja(f: Franja): void {
     this.franjaSeleccionada.set(f);
   }
- 
-  setTipo(tipo: TipoTurno): void {
+
+  setTipo(tipo: string): void {
     this.formTurno.patchValue({ tipo });
   }
- 
-  // ── Confirmar ─────────────────────────────────────────────────────────────
- 
+
   confirmar(): void {
     if (!this.formularioValido) return;
     this.errorMsg.set(null);
- 
-    const medicoId  = this.formTurno.get('medicoId')!.value as string;
-    const fecha     = this.formTurno.get('fecha')!.value as string;
-    const tipo      = this.formTurno.get('tipo')!.value as TipoTurno;
-    const pacienteId = this.pacienteNoRegistrado() ? '' : this.pacienteSeleccionado()!.id;
- 
-    const result: RespuestaRegistro = this.turnosService.registrarTurno({
-      pacienteId, medicoId, fecha,
-      hora: this.franjaSeleccionada()!.hora,
-      tipo,
-    });
- 
-    if (result.ok && result.turno) {
-      this.turnoConfirmado.set(result.turno);
-      this.confirmado.set(true);
+    this.cargando.set(true);
+
+    const medicoId = this.formTurno.get('medicoId')!.value as string;
+    const tipoStr = this.formTurno.get('tipo')!.value as string;
+    const tipo: TipoTurno = tipoStr.toUpperCase() as TipoTurno;
+    const franjaId = this.franjaSeleccionada()!.id;
+
+    if (this.pacienteNoRegistrado()) {
+      const nombreCompleto = this.formPaciente.get('nombreManual')!.value as string;
+      const [apellido, nombre] = nombreCompleto.includes(',')
+        ? nombreCompleto.split(',').map(s => s.trim())
+        : ['', nombreCompleto];
+
+      this.pacientesService.crearPaciente({
+        dni: '',
+        nombre: nombre || nombreCompleto,
+        apellido: apellido || '',
+        fechaNac: new Date().toISOString(),
+        telefono: '',
+        obraSocial: this.formPaciente.get('obraSocial')?.value || null,
+      }).subscribe({
+        next: (pacienteCreado) => {
+          this.registrarTurnoConPaciente(medicoId, pacienteCreado.id, franjaId, tipo);
+        },
+        error: () => {
+          this.cargando.set(false);
+          this.errorMsg.set('Error al registrar el paciente.');
+        }
+      });
     } else {
-      this.errorMsg.set(result.error ?? 'Error al registrar el turno.');
+      const pacienteId = this.pacienteSeleccionado()!.id;
+      this.registrarTurnoConPaciente(medicoId, pacienteId, franjaId, tipo);
     }
   }
- 
+
+  private registrarTurnoConPaciente(medicoId: string, pacienteId: string, franjaId: string, tipo: TipoTurno): void {
+    this.turnosService.registrarTurno({
+      pacienteId,
+      medicoId,
+      franjaId,
+      tipo,
+      modalidadPago: 'OBRA_SOCIAL',
+    }).subscribe({
+      next: (result) => {
+        this.cargando.set(false);
+        if (result.ok && result.turno) {
+          const franja = this.franjaSeleccionada()!;
+          const medico = this.medicoSeleccionado()!;
+          const turnoConDetalles = {
+            ...result.turno,
+            consultorio: medico ? `Consultorio ${medico.especialidad}` : 'Sin asignar',
+            fecha: new Date(franja.fecha + 'T00:00:00'),
+            hora: franja.hora,
+          };
+          this.turnoConfirmado.set(turnoConDetalles);
+          this.confirmado.set(true);
+        } else {
+          this.errorMsg.set(result.error ?? 'Error al registrar el turno.');
+        }
+      },
+      error: (err) => {
+        this.cargando.set(false);
+        this.errorMsg.set('Error al registrar el turno.');
+        console.error(err);
+      }
+    });
+  }
+
   cancelar(): void {
     this.router.navigate(['/dashboard']);
   }
- 
+
   getNombreMedico(): string {
     const m = this.medicoSeleccionado();
     return m ? `${m.apellido}, ${m.nombre}` : '';
   }
- 
+
   formatFecha(fecha: Date): string {
     return new Date(fecha).toLocaleDateString('es-AR', {
       day: '2-digit', month: '2-digit', year: 'numeric'
     });
   }
 }
- 
