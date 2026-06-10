@@ -1,16 +1,18 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TurnosService } from '../../../core/services/turnos.service';
 import { MedicosService } from '../../../core/services/medicos.service';
 import { AgendaService } from '../../../core/services/agenda.service';
+import { PacientesService } from '../../../core/services/pacientes.service';
 import { Franja } from '../../../core/interfaces/franja.d';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-sobreturno',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, MatIconModule],
   templateUrl: './sobreturno.component.html',
   styleUrl: './sobreturno.component.css'
 })
@@ -19,15 +21,17 @@ export class SobreturnoComponent implements OnInit {
   private turnosService = inject(TurnosService);
   private medicosService = inject(MedicosService);
   private agendaService = inject(AgendaService);
+  private pacientesService = inject(PacientesService);
 
   sobreturnoForm!: FormGroup;
   medicos = signal<any[]>([]);
   franjas = signal<Franja[]>([]);
   cargando = signal(false);
+  franjasSeleccionada = signal<Franja | null>(null);
 
-  limiteSobreturnoAlcanzado = false;
-  sobreturnosAsignados = 0;
-  sobreturnosDelDia: any[] = [];
+  limiteSobreturnoAlcanzado = signal(false);
+  sobreturnosAsignados = signal(0);
+  pacienteEncontrado = signal<any | null>(null);
 
   volverAlDashboard(): void { this.router.navigate(['/dashboard']); }
 
@@ -63,10 +67,12 @@ export class SobreturnoComponent implements OnInit {
       motivo: ['', Validators.required]
     });
 
-    // Cuando cambia médico o fecha, recargar franjas
+    // Cuando cambia médico o fecha, recargar franjas y resetear límite
     this.sobreturnoForm.get('medicoId')!.valueChanges.subscribe((medicoId: string) => {
       if (medicoId) {
         this.cargarFranjas(medicoId);
+        this.limiteSobreturnoAlcanzado.set(false);
+        this.sobreturnosAsignados.set(0);
       }
     });
 
@@ -74,6 +80,51 @@ export class SobreturnoComponent implements OnInit {
       const medicoId = this.sobreturnoForm.get('medicoId')!.value;
       if (medicoId) {
         this.cargarFranjas(medicoId);
+        this.limiteSobreturnoAlcanzado.set(false);
+        this.sobreturnosAsignados.set(0);
+      }
+    });
+
+    // Cuando se selecciona franja, verificar el límite de sobreturno
+    this.sobreturnoForm.get('franjaId')!.valueChanges.subscribe((franjaId: string) => {
+      if (franjaId) {
+        this.verificarLimiteSobreturno();
+      }
+    });
+  }
+
+  buscarPaciente(): void {
+    const dni = this.sobreturnoForm.get('pacienteDni')?.value as string;
+    if (!dni || dni.length < 2) return;
+
+    this.pacientesService.buscarPaciente(dni).subscribe({
+      next: (resultados) => {
+        if (resultados.length > 0) {
+          this.pacienteEncontrado.set(resultados[0]);
+        } else {
+          this.pacienteEncontrado.set(null);
+        }
+      },
+      error: () => {
+        this.pacienteEncontrado.set(null);
+      }
+    });
+  }
+
+  private verificarLimiteSobreturno(): void {
+    const franjaId = this.sobreturnoForm.get('franjaId')?.value as string;
+    const medicoId = this.sobreturnoForm.get('medicoId')?.value as string;
+    const fecha = this.sobreturnoForm.get('fecha')?.value as string;
+
+    if (!franjaId || !medicoId || !fecha) return;
+
+    const franjaSelec = this.franjas().find(f => f.id === franjaId);
+    if (!franjaSelec) return;
+
+    this.turnosService.contarSobreturnosPorHora(medicoId, fecha, franjaSelec.hora).subscribe({
+      next: (cantidad) => {
+        this.sobreturnosAsignados.set(cantidad);
+        this.limiteSobreturnoAlcanzado.set(cantidad >= 1);
       }
     });
   }
@@ -93,14 +144,18 @@ export class SobreturnoComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.sobreturnoForm.invalid) return;
+    if (this.sobreturnoForm.invalid || !this.pacienteEncontrado() || this.limiteSobreturnoAlcanzado()) {
+      alert('Por favor, completá todos los campos y asegurate que el paciente existe.');
+      return;
+    }
 
     this.cargando.set(true);
     const formValues = this.sobreturnoForm.value;
+    const paciente = this.pacienteEncontrado()!;
 
     const modalidad = formValues.modalidadPago === 'obraSocial' ? 'OBRA_SOCIAL' : 'PARTICULAR';
     this.turnosService.registrarTurno({
-      pacienteId: formValues.pacienteDni,
+      pacienteId: paciente.id,
       medicoId: formValues.medicoId,
       franjaId: formValues.franjaId,
       tipo: 'SOBRETURNO',
@@ -115,6 +170,9 @@ export class SobreturnoComponent implements OnInit {
             fecha: new Date().toISOString().split('T')[0]
           });
           this.franjas.set([]);
+          this.pacienteEncontrado.set(null);
+          this.limiteSobreturnoAlcanzado.set(false);
+          this.sobreturnosAsignados.set(0);
         } else {
           alert('Error: ' + response.error);
         }
