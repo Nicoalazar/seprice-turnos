@@ -13,7 +13,7 @@ import { RolService } from './core/services/rol.service';
   template: `
     <app-header *ngIf="!isLoginRoute()" (rolActivoChange)="cambiarRol($event)"></app-header>
     <app-back-button *ngIf="shouldShowFloatingButton()"></app-back-button>
-    <main class="app-main"><router-outlet /></main>
+    <main [class.app-main]="!isLoginRoute()" [class.app-main-fullscreen]="isLoginRoute()"><router-outlet /></main>
   `,
   styleUrl: './app.component.css'
 })

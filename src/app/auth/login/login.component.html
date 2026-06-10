@@ -58,21 +58,36 @@
         </div>
 
         <!-- Campo contraseña -->
-        <div class="field">
+        <div class="field password-field">
           <label>Contraseña</label>
-          <input
-            type="password"
-            placeholder="••••••••••"
-            [(ngModel)]="password"
-            name="password"
-          />
+          <div class="password-input-wrapper">
+            <input
+              [type]="mostrarPassword ? 'text' : 'password'"
+              placeholder="••••••••••"
+              [(ngModel)]="password"
+              name="password"
+            />
+            <button
+              type="button"
+              class="toggle-password-btn"
+              (click)="toggleMostrarPassword()"
+              tabindex="-1"
+            >
+              <mat-icon>{{ mostrarPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+          </div>
         </div>
 
-        <button type="submit" class="btn-submit">
-          Ingresar al sistema
+        <button type="submit" class="btn-submit" [disabled]="cargando">
+          {{ cargando ? 'Ingresando...' : 'Ingresar al sistema' }}
         </button>
 
       </form>
+
+      <!-- Mensaje de error debajo del botón -->
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
     </div>
   </div>
 
