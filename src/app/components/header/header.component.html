@@ -13,8 +13,8 @@
     </div>
 
     <div class="topbar-derecha">
-      <!-- Toggle para cambiar la vista -->
-      <div class="toggle-rol">
+      <!-- Toggle para cambiar la vista - Solo visible para SUPER usuarios -->
+      <div class="toggle-rol" *ngIf="esSuperUsuario()">
         <button
           class="btn-rol"
           [class.activo]="rolActivo === 'ADMIN'"
@@ -31,13 +31,13 @@
         </button>
       </div>
 
-      <!-- Usuario nombre  -->
+      <!-- Usuario nombre - Dinámico -->
       <span class="usuario-nombre">
-        {{ rolActivo === 'ADMIN' ? 'M. Albornoz' : 'Dr. Méndez' }}
+        {{ nombreUsuario }}
       </span>
       <!-- Usuario Menu Button en Avatar -->
       <button mat-icon-button [matMenuTriggerFor]="userMenu" class="avatar">
-        {{ rolActivo === 'ADMIN' ? 'MA' : 'DM' }}
+        {{ iniciales }}
       </button>
 
       <!-- User Menu -->

@@ -30,11 +30,33 @@ export class DashboardComponent implements OnInit {
   turnosAdmin: any[] = [];
   turnosMedico: any[] = [];
   cargando = false;
+  rolRealUsuario: string = 'RECEPCIONISTA';
 
   constructor() {
+    this.cargarRolRealUsuario();
     this.rolService.rolActivo$.subscribe(rol => {
-      this.rolActivo = rol;
+      // Solo permitir cambio de rol si es SUPER usuario
+      if (this.rolRealUsuario === 'SUPER') {
+        this.rolActivo = rol;
+      }
     });
+  }
+
+  cargarRolRealUsuario(): void {
+    const usuarioJson = localStorage.getItem('usuarioLogueado');
+    if (usuarioJson) {
+      const usuario = JSON.parse(usuarioJson);
+      this.rolRealUsuario = usuario.rol || 'RECEPCIONISTA';
+
+      // Establecer el rol inicial basado en el rol real del usuario
+      if (this.rolRealUsuario === 'SUPER') {
+        this.rolActivo = 'ADMIN'; // SUPER por defecto ve ADMIN
+      } else if (this.rolRealUsuario === 'MEDICO') {
+        this.rolActivo = 'MEDICO';
+      } else {
+        this.rolActivo = 'ADMIN'; // RECEPCIONISTA ve ADMIN
+      }
+    }
   }
 
   ngOnInit(): void {

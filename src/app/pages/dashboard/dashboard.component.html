@@ -55,7 +55,7 @@
           <p class="accion-titulo">Verificar autorización</p>
           <p class="accion-desc">Comprobar cobertura de obra social</p>
         </div>
-        <div class="accion-card" (click)="crearUsuario()">
+        <div class="accion-card" (click)="crearUsuario()" *ngIf="rolRealUsuario === 'SUPER'">
           <mat-icon class="accion-icon">person_add</mat-icon>
           <p class="accion-titulo">Crear usuario</p>
           <p class="accion-desc">Nuevo acceso para médico o administrativo</p>
