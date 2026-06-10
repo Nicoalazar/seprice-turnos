@@ -1,104 +1,128 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TurnosService } from '../../../core/services/turnos.service';
-import { SobreturnoItem } from '../../../core/interfaces/franja-agenda';
+import { MedicosService } from '../../../core/services/medicos.service';
+import { AgendaService } from '../../../core/services/agenda.service';
+import { Franja } from '../../../core/interfaces/franja.d';
 
 @Component({
   selector: 'app-sobreturno',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule], // CommonModule nos permite usar *ngIf y *ngFor
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './sobreturno.component.html',
   styleUrl: './sobreturno.component.css'
 })
 export class SobreturnoComponent implements OnInit {
   private router = inject(Router);
+  private turnosService = inject(TurnosService);
+  private medicosService = inject(MedicosService);
+  private agendaService = inject(AgendaService);
+
   sobreturnoForm!: FormGroup;
+  medicos = signal<any[]>([]);
+  franjas = signal<Franja[]>([]);
+  cargando = signal(false);
+
+  limiteSobreturnoAlcanzado = false;
+  sobreturnosAsignados = 0;
+  sobreturnosDelDia: any[] = [];
 
   volverAlDashboard(): void { this.router.navigate(['/dashboard']); }
-  limiteSobreturnoAlcanzado: boolean = false; 
-  sobreturnosAsignados: number = 0;
-  sobreturnosDelDia: SobreturnoItem[] = [];
 
-  // Inyectamos el TurnosService mockeado
-  constructor(
-    private fb: FormBuilder,
-    private turnosService: TurnosService
-  ) {
+  constructor(private fb: FormBuilder) {
     this.initForm();
   }
 
   ngOnInit(): void {
-    // Verificación inicial apenas arranca la pantalla
-    this.verificarLimiteSobreturno();
+    this.cargando.set(true);
+    this.medicosService.getTodosMedicos().subscribe({
+      next: (medicos: any[]) => {
+        this.medicos.set(medicos);
+        if (medicos.length > 0) {
+          this.sobreturnoForm.patchValue({ medicoId: medicos[0].id });
+          this.cargarFranjas(medicos[0].id);
+        }
+        this.cargando.set(false);
+      },
+      error: () => this.cargando.set(false),
+    });
   }
 
   private initForm(): void {
+    const hoy = new Date().toISOString().split('T')[0];
     this.sobreturnoForm = this.fb.group({
       pacienteDni: ['', Validators.required],
-      obraSocial: ['Swiss Medical'],
-      modalidadPago: ['Obra social'],
-      especialidad: ['Clínica Médica'],
-      medicoId: ['Dr. Méndez, Carlos', Validators.required],
-      fecha: ['2026-05-05', Validators.required], 
-      hora: ['09:30', Validators.required],
+      obraSocial: [''],
+      modalidadPago: ['obraSocial'],
+      especialidad: [''],
+      medicoId: ['', Validators.required],
+      fecha: [hoy, Validators.required],
+      franjaId: ['', Validators.required],
       motivo: ['', Validators.required]
     });
 
-    // Escucha cambios en tiempo real en los inputs para validar el límite (FA1)
-    this.sobreturnoForm.valueChanges.subscribe(() => {
-      this.verificarLimiteSobreturno();
+    // Cuando cambia médico o fecha, recargar franjas
+    this.sobreturnoForm.get('medicoId')!.valueChanges.subscribe((medicoId: string) => {
+      if (medicoId) {
+        this.cargarFranjas(medicoId);
+      }
+    });
+
+    this.sobreturnoForm.get('fecha')!.valueChanges.subscribe(() => {
+      const medicoId = this.sobreturnoForm.get('medicoId')!.value;
+      if (medicoId) {
+        this.cargarFranjas(medicoId);
+      }
     });
   }
 
-  // LÓGICA DE NEGOCIO (FA1): Consulta al servicio mockeado
-  verificarLimiteSobreturno(): void {
-    const formValues = this.sobreturnoForm.value;
-    if (!formValues.medicoId || !formValues.fecha || !formValues.hora) return;
+  private cargarFranjas(medicoId: string): void {
+    const fecha = this.sobreturnoForm.get('fecha')!.value;
+    if (!fecha) return;
 
-    // acá solo quiero avisar que se llama GET SOBURNOS DEL DIA
-    this.turnosService.getSoburnosDelDia(formValues.medicoId, formValues.fecha, formValues.hora)
-      .subscribe(data => {
-        this.sobreturnosDelDia = data;
-        this.sobreturnosAsignados = data.length;
-
-        // Regla: Si el médico ya tiene 1 sobreturno en esa hora, salta la alerta
-        if (this.sobreturnosAsignados >= 1) {
-          this.limiteSobreturnoAlcanzado = true;
-        } else {
-          this.limiteSobreturnoAlcanzado = false;
-        }
-      });
+    this.agendaService.getFranjasParaSobreturno(medicoId, fecha).subscribe({
+      next: (franjas) => {
+        this.franjas.set(franjas);
+      },
+      error: () => {
+        this.franjas.set([]);
+      }
+    });
   }
 
-  // ENVIAR DATOS AL MOCK
   onSubmit(): void {
-    if (this.sobreturnoForm.invalid || this.limiteSobreturnoAlcanzado) return;
+    if (this.sobreturnoForm.invalid) return;
 
+    this.cargando.set(true);
     const formValues = this.sobreturnoForm.value;
 
-    const nuevoSobreturno = {
-      fecha: formValues.fecha,
-      hora: formValues.hora,
+    const modalidad = formValues.modalidadPago === 'obraSocial' ? 'OBRA_SOCIAL' : 'PARTICULAR';
+    this.turnosService.registrarTurno({
       pacienteId: formValues.pacienteDni,
       medicoId: formValues.medicoId,
-      consultorio: 'Consultorio 1',
-      estado: 'pendiente',
-      tipo: 'sobreturno',
-      motivo: formValues.motivo
-    };
-
-    this.turnosService.guardarSobreturno(nuevoSobreturno).subscribe(response => {
-      if (response.success) {
-        alert('¡Sobreturno registrado con éxito!');
-        this.sobreturnoForm.get('pacienteDni')?.reset();
-        this.sobreturnoForm.get('motivo')?.reset();
-        
-        // Refrescamos la interfaz para ver el nuevo turno reflejado
-        this.verificarLimiteSobreturno();
+      franjaId: formValues.franjaId,
+      tipo: 'SOBRETURNO',
+      modalidadPago: modalidad,
+    }).subscribe({
+      next: (response) => {
+        this.cargando.set(false);
+        if (response.ok) {
+          alert('¡Sobreturno registrado con éxito!');
+          this.sobreturnoForm.reset({
+            modalidadPago: 'obraSocial',
+            fecha: new Date().toISOString().split('T')[0]
+          });
+          this.franjas.set([]);
+        } else {
+          alert('Error: ' + response.error);
+        }
+      },
+      error: () => {
+        this.cargando.set(false);
+        alert('Error al registrar el sobreturno');
       }
     });
   }
 }
-

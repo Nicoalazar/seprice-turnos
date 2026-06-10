@@ -69,7 +69,7 @@ export class RegistrarTurnoComponent implements OnInit {
   get sinFranjasDisponibles(): boolean {
     const medicoId = this.formTurno.get('medicoId')?.value as string;
     const fecha = this.formTurno.get('fecha')?.value as string;
-    return medicoId && fecha && this.franjas().length === 0;
+    return !!(medicoId && fecha && this.franjas().length === 0);
   }
 
   get pacienteValido(): boolean {
@@ -227,7 +227,12 @@ export class RegistrarTurnoComponent implements OnInit {
         obraSocial: this.formPaciente.get('obraSocial')?.value || null,
       }).subscribe({
         next: (pacienteCreado) => {
-          this.registrarTurnoConPaciente(medicoId, pacienteCreado.id, franjaId, tipo);
+          if (pacienteCreado) {
+            this.registrarTurnoConPaciente(medicoId, pacienteCreado.id, franjaId, tipo);
+          } else {
+            this.cargando.set(false);
+            this.errorMsg.set('Error al registrar el paciente.');
+          }
         },
         error: () => {
           this.cargando.set(false);

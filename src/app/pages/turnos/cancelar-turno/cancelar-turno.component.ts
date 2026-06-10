@@ -134,7 +134,7 @@ export class CancelarTurnoComponent implements OnInit {
     this.cargando = true;
     const nuevaFranjaId = this.franjaSeleccionada()!.id;
 
-    this.turnosService.reasignarTurno(this.turnoActual.id, nuevaFranjaId, this.nuevoMedicoId).subscribe({
+    this.turnosService.reasignarTurno(this.turnoActual.id, nuevaFranjaId).subscribe({
       next: (result) => {
         this.cargando = false;
         if (result.ok) {
