@@ -52,6 +52,12 @@ export const routes: Routes = [
         .then(m => m.RegistrarTurnoComponent)
   },
   {
+    path: 'crear-usuario',
+    loadComponent: () =>
+      import('./pages/usuarios/crear-usuario/crear-usuario.component')
+        .then(m => m.CrearUsuarioComponent)
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'

@@ -1,9 +1,14 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RolUsuario } from '../../core/interfaces/usuario';
 import { Router } from '@angular/router';
 import { RolService } from '../../core/services/rol.service';
+import { TurnosService } from '../../core/services/turnos.service';
+import { MedicosService } from '../../core/services/medicos.service';
+import { LoginService } from '../../auth/login.service';
 import { MatIconModule } from '@angular/material/icon';
+import { TurnoConDetalles } from '../../core/interfaces/turno.d';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,12 +17,19 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
 
   private router = inject(Router);
   private rolService = inject(RolService);
+  private turnosService = inject(TurnosService);
+  private medicosService = inject(MedicosService);
+  private loginService = inject(LoginService);
 
-  @Input() rolActivo: RolUsuario = 'RECEPCIONISTA';
+  @Input() rolActivo: RolUsuario = 'ADMIN';
+
+  turnosAdmin: any[] = [];
+  turnosMedico: any[] = [];
+  cargando = false;
 
   constructor() {
     this.rolService.rolActivo$.subscribe(rol => {
@@ -25,22 +37,67 @@ export class DashboardComponent {
     });
   }
 
-  // Datos mockeados para el dashboard del administrativo
-  turnosAdmin = [
-    { hora: '09:00', paciente: 'García, Luis', medico: 'Dr. Méndez', estado: 'presente en sala' },
-    { hora: '09:15', paciente: 'Romero, Ana', medico: 'Dr. Méndez', estado: 'confirmado' },
-    { hora: '09:30', paciente: 'López, Marta', medico: 'Dra. Torres', estado: 'presente en sala' },
-    { hora: '09:45', paciente: 'Pérez, Juan', medico: 'Dra. Torres', estado: 'cancelado' },
-    { hora: '10:00', paciente: 'Soria, Elena', medico: 'Dr. Méndez', estado: 'confirmado' },
-  ];
+  ngOnInit(): void {
+    this.cargarTurnos();
+  }
 
-  // Datos mockeados para el dashboard del médico
-  turnosMedico = [
-    { hora: '09:00', paciente: 'García, Luis', motivo: 'Control', estado: 'atendido' },
-    { hora: '09:15', paciente: 'Romero, Ana', motivo: 'Consulta', estado: 'atendido' },
-    { hora: '09:30', paciente: 'López, Marta', motivo: 'Seguimiento', estado: 'presente en sala' },
-    { hora: '09:45', paciente: 'Soria, Elena', motivo: 'Primera vez', estado: 'presente en sala' },
-  ];
+  private cargarTurnos(): void {
+    this.cargando = true;
+
+    // Para admin: todos los turnos de hoy
+    this.turnosService.getTurnosDeHoy().subscribe({
+      next: (turnos) => {
+        this.turnosAdmin = turnos.map(t => ({
+          hora: t.franja?.hora || '',
+          paciente: `${t.paciente?.apellido}, ${t.paciente?.nombre}`,
+          medico: `Dr/a. ${t.medico?.apellido}`,
+          especialidad: t.medico?.especialidad,
+          estado: t.estado,
+          tipo: t.tipo,
+        }));
+
+        // Para médico: solo turnos del médico actual
+        const usuarioActual = this.loginService.getUsuarioActual();
+        if (usuarioActual) {
+          this.medicosService.getMedicoActual(usuarioActual.id).subscribe({
+            next: (medico) => {
+              if (medico) {
+                const hoy = new Date().toISOString().split('T')[0];
+                this.turnosService.getTurnosDeMedico(medico.id, hoy).subscribe({
+                  next: (turnosMedico) => {
+                    this.turnosMedico = turnosMedico.map(t => ({
+                      hora: t.franja?.hora || '',
+                      paciente: `${t.paciente?.apellido}, ${t.paciente?.nombre}`,
+                      motivo: t.tipo,
+                      estado: t.estado,
+                    }));
+                    this.cargando = false;
+                  },
+                  error: () => {
+                    this.turnosMedico = [];
+                    this.cargando = false;
+                  }
+                });
+              } else {
+                this.cargando = false;
+              }
+            },
+            error: () => {
+              this.cargando = false;
+            }
+          });
+        } else {
+          this.cargando = false;
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar turnos:', err);
+        this.turnosAdmin = [];
+        this.turnosMedico = [];
+        this.cargando = false;
+      }
+    });
+  }
 
   getClasePill(estado: string): string {
     return 'pill-' + estado.replace(/ /g, '-');
@@ -61,6 +118,10 @@ export class DashboardComponent {
 
   verificarAutorizacion() {
     this.router.navigate(['/verificar-autorizacion']);
+  }
+
+  crearUsuario() {
+    this.router.navigate(['/crear-usuario']);
   }
 
   liquidarHonorarios() {
