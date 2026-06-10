@@ -1,0 +1,193 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.back-button {
+  margin: 0;
+}
+
+.section-card {
+  margin-bottom: 20px;
+}
+
+mat-card-header {
+  margin-bottom: 16px;
+}
+
+mat-card-title {
+  font-size: 18px;
+  color: var(--texto-primario);
+}
+
+mat-card-subtitle {
+  font-size: 13px;
+  color: var(--texto-secundario);
+  margin-top: 4px;
+}
+
+/* Selector de Médicos */
+.medicos-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.medico-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 2px solid var(--border-secundario);
+  border-radius: 8px;
+  background-color: var(--bg-surface);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.medico-btn:hover {
+  border-color: var(--color-naranja);
+  background-color: var(--bg-overlay);
+}
+
+.medico-btn.selected {
+  border-color: var(--color-naranja);
+  background: linear-gradient(135deg, var(--color-naranja), var(--color-magenta));
+  color: white;
+}
+
+.medico-btn mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.medico-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.medico-info strong {
+  font-size: 14px;
+}
+
+.medico-info span {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* Tabla de Agenda */
+.agenda-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.agenda-table th {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 2px solid var(--border-secundario);
+  font-weight: 600;
+  color: var(--texto-primario);
+  font-size: 13px;
+}
+
+.agenda-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border-secundario);
+  font-size: 13px;
+  color: var(--texto-primario);
+}
+
+/* Formulario */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+mat-form-field {
+  display: block;
+}
+
+mat-hint {
+  font-size: 12px;
+  color: var(--texto-secundario);
+}
+
+.form-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background-color: rgba(var(--color-naranja-rgb), 0.1);
+  border-radius: 6px;
+  border-left: 4px solid var(--color-naranja);
+  font-size: 12px;
+  color: var(--texto-primario);
+}
+
+.form-hint mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+button {
+  min-width: 120px;
+}
+
+/* Empty State */
+.empty {
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: var(--border-secundario);
+  margin: 0 auto 12px;
+}
+
+.empty p {
+  color: var(--texto-secundario);
+  margin: 0;
+}

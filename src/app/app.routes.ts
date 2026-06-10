@@ -58,6 +58,12 @@ export const routes: Routes = [
         .then(m => m.CrearUsuarioComponent)
   },
   {
+    path: 'configurar-agenda',
+    loadComponent: () =>
+      import('./pages/turnos/configurar-agenda/configurar-agenda.component')
+        .then(m => m.ConfigurarAgendaComponent)
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'

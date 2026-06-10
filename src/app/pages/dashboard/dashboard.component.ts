@@ -124,6 +124,10 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/crear-usuario']);
   }
 
+  configurarAgenda() {
+    this.router.navigate(['/configurar-agenda']);
+  }
+
   liquidarHonorarios() {
     alert('Función para liquidar honorarios');
   }
