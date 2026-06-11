@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,6 +12,8 @@ import { Franja } from '../../../core/interfaces/franja.d';
 import { Turno, TipoTurno } from '../../../core/interfaces/turno.d';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { MatIconModule } from '@angular/material/icon';
+import { Subject, Subscription, of } from 'rxjs';
+import { switchMap, debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-registrar-turno',
@@ -20,7 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './registrar-turno.component.html',
   styleUrls: ['./registrar-turno.component.css'],
 })
-export class RegistrarTurnoComponent implements OnInit {
+export class RegistrarTurnoComponent implements OnInit, OnDestroy {
 
   // Paciente
   pacienteSeleccionado = signal<Paciente | null>(null);
@@ -40,15 +42,23 @@ export class RegistrarTurnoComponent implements OnInit {
   confirmado = signal(false);
   cargando = signal(false);
 
+  // Gestión de subscripciones
+  private destroy$ = new Subject<void>();
+  private cargarFranjas$ = new Subject<string>();
+  private subscriptions: Subscription[] = [];
+
   formPaciente!: FormGroup;
   formTurno!: FormGroup;
 
-  readonly hoy = new Date().toISOString().split('T')[0];
-  readonly fechaMax = (() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 30);
-    return d.toISOString().split('T')[0];
-  })();
+  readonly hoy = this.obtenerFechaLocal(new Date());
+  readonly fechaMax = this.obtenerFechaLocal(new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000));
+
+  private obtenerFechaLocal(fecha: Date): string {
+    const año = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const día = String(fecha.getDate()).padStart(2, '0');
+    return `${año}-${mes}-${día}`;
+  }
 
   readonly fechaDisplay = computed(() => {
     const v = this.formTurno?.get('fecha')?.value as string | null;
@@ -97,13 +107,14 @@ export class RegistrarTurnoComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargando.set(true);
-    this.medicosService.getEspecialidades().subscribe({
+    const espSub = this.medicosService.getEspecialidades().subscribe({
       next: (esp) => {
         this.especialidades = esp;
         this.cargando.set(false);
       },
       error: () => this.cargando.set(false),
     });
+    this.subscriptions.push(espSub);
 
     this.formPaciente = this.fb.group({
       busqueda: [''],
@@ -120,47 +131,62 @@ export class RegistrarTurnoComponent implements OnInit {
       observaciones: [''],
     });
 
-    // Especialidad → cargar médicos
-    this.formTurno.get('especialidad')!.valueChanges.subscribe((esp: string) => {
-      this.medicosService.getMedicosPorEspecialidad(esp).subscribe((lista: any[]) => {
-        this.medicos.set(lista);
-        const primero = lista[0] ?? null;
-        this.medicoSeleccionado.set(primero);
-        this.formTurno.patchValue({ medicoId: primero?.id ?? '' }, { emitEvent: false });
-        this.franjaSeleccionada.set(null);
-        if (primero) this.cargarFranjas(primero.id);
-        else this.franjas.set([]);
-      });
-    });
-
-    // Médico → actualizar franjas
-    this.formTurno.get('medicoId')!.valueChanges.subscribe((id: string) => {
-      const m = this.medicos().find(x => x.id === id) ?? null;
-      this.medicoSeleccionado.set(m);
-      this.franjaSeleccionada.set(null);
-      if (id) this.cargarFranjas(id);
-      else this.franjas.set([]);
-    });
-
-    // Fecha → actualizar franjas
-    this.formTurno.get('fecha')!.valueChanges.subscribe(() => {
-      const id = this.formTurno.get('medicoId')!.value as string;
-      this.franjaSeleccionada.set(null);
-      if (id) this.cargarFranjas(id);
-    });
-  }
-
-  private cargarFranjas(medicoId: string): void {
-    const fecha = this.formTurno.get('fecha')!.value as string;
-    if (!fecha) return;
-    this.agendaService.getFranjasDisponibles(medicoId, fecha).subscribe((franjas) => {
+    // Cargar franjas con switchMap y debounceTime para evitar múltiples subscripciones
+    const franjasSub = this.cargarFranjas$.pipe(
+      debounceTime(300),
+      switchMap((medicoId) => {
+        const fecha = this.formTurno.get('fecha')!.value as string;
+        if (!fecha || !medicoId) return of([]);
+        return this.agendaService.getFranjasDisponibles(medicoId, fecha);
+      })
+    ).subscribe((franjas) => {
       const mapeadas = franjas.map(f => ({
         ...f,
         esSobreturno: f.sobreturno
       })) as any[];
       this.franjas.set(mapeadas);
     });
+    this.subscriptions.push(franjasSub);
+
+    // Especialidad → cargar médicos
+    const espChangeSub = this.formTurno.get('especialidad')!.valueChanges.pipe(
+      switchMap((esp: string) => this.medicosService.getMedicosPorEspecialidad(esp))
+    ).subscribe((lista: any[]) => {
+      this.medicos.set(lista);
+      const primero = lista[0] ?? null;
+      this.medicoSeleccionado.set(primero);
+      this.formTurno.patchValue({ medicoId: primero?.id ?? '' }, { emitEvent: false });
+      this.franjaSeleccionada.set(null);
+      if (primero) this.cargarFranjas$.next(primero.id);
+      else this.franjas.set([]);
+    });
+    this.subscriptions.push(espChangeSub);
+
+    // Médico → actualizar franjas
+    const medicoChangeSub = this.formTurno.get('medicoId')!.valueChanges.subscribe((id: string) => {
+      const m = this.medicos().find(x => x.id === id) ?? null;
+      this.medicoSeleccionado.set(m);
+      this.franjaSeleccionada.set(null);
+      if (id) this.cargarFranjas$.next(id);
+      else this.franjas.set([]);
+    });
+    this.subscriptions.push(medicoChangeSub);
+
+    // Fecha → actualizar franjas
+    const fechaChangeSub = this.formTurno.get('fecha')!.valueChanges.subscribe(() => {
+      const id = this.formTurno.get('medicoId')!.value as string;
+      this.franjaSeleccionada.set(null);
+      if (id) this.cargarFranjas$.next(id);
+    });
+    this.subscriptions.push(fechaChangeSub);
   }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
 
   buscar(): void {
     const q = this.formPaciente.get('busqueda')!.value as string;

@@ -78,36 +78,43 @@ export class DashboardComponent implements OnInit {
           tipo: t.tipo,
         }));
 
-        // Para médico: solo turnos del médico actual
-        const usuarioActual = this.loginService.getUsuarioActual();
-        if (usuarioActual) {
-          this.medicosService.getMedicoActual(usuarioActual.id).subscribe({
-            next: (medico) => {
-              if (medico) {
-                const hoy = new Date().toISOString().split('T')[0];
-                this.turnosService.getTurnosDeMedico(medico.id, hoy).subscribe({
-                  next: (turnosMedico) => {
-                    this.turnosMedico = turnosMedico.map(t => ({
-                      hora: t.franja?.hora || '',
-                      paciente: `${t.paciente?.apellido}, ${t.paciente?.nombre}`,
-                      motivo: t.tipo,
-                      estado: t.estado,
-                    }));
-                    this.cargando = false;
-                  },
-                  error: () => {
-                    this.turnosMedico = [];
-                    this.cargando = false;
-                  }
-                });
-              } else {
+        // Para médico: solo turnos del médico actual (solo si el usuario es médico)
+        if (this.rolRealUsuario === 'MEDICO') {
+          const usuarioActual = this.loginService.getUsuarioActual();
+          if (usuarioActual && usuarioActual.id) {
+            this.medicosService.getMedicoActual(usuarioActual.id).subscribe({
+              next: (medico) => {
+                if (medico && medico.id) {
+                  const año = new Date().getFullYear();
+                  const mes = String(new Date().getMonth() + 1).padStart(2, '0');
+                  const día = String(new Date().getDate()).padStart(2, '0');
+                  const hoy = `${año}-${mes}-${día}`;
+                  this.turnosService.getTurnosDeMedico(medico.id, hoy).subscribe({
+                    next: (turnosMedico) => {
+                      this.turnosMedico = turnosMedico.map(t => ({
+                        hora: t.franja?.hora || '',
+                        paciente: `${t.paciente?.apellido}, ${t.paciente?.nombre}`,
+                        motivo: t.tipo,
+                        estado: t.estado,
+                      }));
+                      this.cargando = false;
+                    },
+                    error: () => {
+                      this.turnosMedico = [];
+                      this.cargando = false;
+                    }
+                  });
+                } else {
+                  this.cargando = false;
+                }
+              },
+              error: () => {
                 this.cargando = false;
               }
-            },
-            error: () => {
-              this.cargando = false;
-            }
-          });
+            });
+          } else {
+            this.cargando = false;
+          }
         } else {
           this.cargando = false;
         }

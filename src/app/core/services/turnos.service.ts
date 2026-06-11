@@ -18,6 +18,10 @@ export class TurnosService {
   private supabase = inject(SupabaseService).getClient();
   private agendaService = inject(AgendaService);
 
+  private generarId(prefijo: string): string {
+    return `${prefijo}-${Math.random().toString(36).substr(2, 9)}-${Date.now()}`;
+  }
+
   registrarTurno(datos: {
     pacienteId: string;
     medicoId: string;
@@ -25,15 +29,19 @@ export class TurnosService {
     tipo: TipoTurno;
     modalidadPago?: ModalidadPago;
   }): Observable<RespuestaRegistroTurno> {
+    const ahora = new Date().toISOString();
     return from(
       this.supabase.from('Turno').insert({
+        id: this.generarId('turno'),
         pacienteId: datos.pacienteId,
         medicoId: datos.medicoId,
         franjaId: datos.franjaId,
         tipo: datos.tipo,
         modalidadPago: datos.modalidadPago,
         estado: 'CONFIRMADO',
-      }) as any
+        creadoEn: ahora,
+        actualizadoEn: ahora,
+      }).select() as any
     ).pipe(
       switchMap(({ data, error }: any) => {
         if (error || !data || !data[0]) {
@@ -55,7 +63,11 @@ export class TurnosService {
   }
 
   getTurnosDeHoy(): Observable<TurnoConDetalles[]> {
-    const hoy = new Date().toISOString().split('T')[0];
+    const año = new Date().getFullYear();
+    const mes = String(new Date().getMonth() + 1).padStart(2, '0');
+    const día = String(new Date().getDate()).padStart(2, '0');
+    const hoy = `${año}-${mes}-${día}`;
+
     return from(
       this.supabase
         .from('Turno')
@@ -65,11 +77,14 @@ export class TurnosService {
           medico:Medico(nombre, apellido, especialidad),
           franja:Franja(fecha, hora)
         `)
-        .eq('franja.fecha', hoy)
         .neq('estado', 'CANCELADO')
-        .order('franja.hora', { ascending: true })
     ).pipe(
-      map(({ data }) => (data ?? []) as TurnoConDetalles[])
+      map(({ data }) => {
+        if (!data) return [];
+        return (data as any[])
+          .filter(t => t.franja?.fecha === hoy)
+          .sort((a, b) => (a.franja?.hora || '').localeCompare(b.franja?.hora || '')) as TurnoConDetalles[];
+      })
     );
   }
 
@@ -84,11 +99,14 @@ export class TurnosService {
           franja:Franja(fecha, hora)
         `)
         .eq('medicoId', medicoId)
-        .eq('franja.fecha', fecha)
         .neq('estado', 'CANCELADO')
-        .order('franja.hora', { ascending: true })
     ).pipe(
-      map(({ data }) => (data ?? []) as TurnoConDetalles[])
+      map(({ data }) => {
+        if (!data) return [];
+        return (data as any[])
+          .filter(t => t.franja?.fecha === fecha)
+          .sort((a, b) => (a.franja?.hora || '').localeCompare(b.franja?.hora || '')) as TurnoConDetalles[];
+      })
     );
   }
 
@@ -281,11 +299,14 @@ export class TurnosService {
           franja:Franja(fecha, hora)
         `)
         .eq('medicoId', medicoId)
-        .eq('franja.fecha', fecha)
         .eq('estado', 'PRESENTE_EN_SALA')
-        .order('franja(hora)', { ascending: true })
     ).pipe(
-      map(({ data }) => (data ?? []) as TurnoConDetalles[])
+      map(({ data }) => {
+        if (!data) return [];
+        return (data as any[])
+          .filter(t => t.franja?.fecha === fecha)
+          .sort((a, b) => (a.franja?.hora || '').localeCompare(b.franja?.hora || '')) as TurnoConDetalles[];
+      })
     );
   }
 }
