@@ -95,6 +95,9 @@
           <mat-error *ngIf="formulario.get('duracionMin')?.hasError('required')">
             Campo requerido
           </mat-error>
+          <mat-error *ngIf="formulario.get('duracionMin')?.hasError('min')">
+            La duración mínima para {{ medicoSeleccionado!.especialidad }} es {{ obtenerDuracionMinima() }} minutos
+          </mat-error>
           <mat-hint>
             Mínimo para {{ medicoSeleccionado.especialidad }}: {{ obtenerDuracionMinima() }} min
           </mat-hint>

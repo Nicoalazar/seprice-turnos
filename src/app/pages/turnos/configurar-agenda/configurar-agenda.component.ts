@@ -89,6 +89,13 @@ export class ConfigurarAgendaComponent implements OnInit {
 
   seleccionarMedico(medico: Medico): void {
     this.medicoSeleccionado = medico;
+    const minDuracion = this.duracionesMinimas[medico.especialidad] || 15;
+    this.formulario.get('duracionMin')?.setValidators([
+      Validators.required,
+      Validators.min(minDuracion)
+    ]);
+    this.formulario.get('duracionMin')?.setValue(String(minDuracion));
+    this.formulario.get('duracionMin')?.updateValueAndValidity();
     this.cargarAgendaMedico();
   }
 
