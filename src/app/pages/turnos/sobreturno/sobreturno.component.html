@@ -1,7 +1,7 @@
 <div class="sobreturno-container">
 
     <header class="page-header">
-        <button (click)="volverAlDashboard()" style="background:none; border:none; cursor:pointer;">
+        <button (click)="volverAlDashboard()" class="btn-volver">
             <mat-icon>arrow_back</mat-icon>
         </button>
         <div>
@@ -82,7 +82,7 @@
             <!-- FA1: Límite alcanzado -->
             <div class="limit-alert" *ngIf="limiteSobreturnoAlcanzado()">
                 <mat-icon>block</mat-icon>
-                <span>FA1 — Límite alcanzado: ya existe 1 sobreturno a esta hora. Seleccioná otra.</span>
+                <span>Límite alcanzado: ya existe 1 sobreturno a esta hora. Seleccioná otra.</span>
             </div>
 
             <!-- Franjas disponibles -->
@@ -103,6 +103,14 @@
                 <mat-icon>calendar_today</mat-icon>
                 <p>No hay franjas de sobreturno disponibles para esta fecha</p>
             </div>
+        </div>
+
+        <!-- Banner de resultado -->
+        <div *ngIf="mensajeEstado()" class="mensaje-estado"
+             [class.mensaje-exito]="mensajeEstado()!.tipo === 'exito'"
+             [class.mensaje-error]="mensajeEstado()!.tipo === 'error'">
+            <mat-icon>{{ mensajeEstado()!.tipo === 'exito' ? 'check_circle' : 'error' }}</mat-icon>
+            <span>{{ mensajeEstado()!.texto }}</span>
         </div>
 
         <!-- Botones de acción -->

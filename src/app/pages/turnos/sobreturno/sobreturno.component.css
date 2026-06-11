@@ -241,3 +241,35 @@ button {
     background-color: var(--color-bg-dark);
     min-height: 100vh;
 }
+
+.btn-volver {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+}
+
+.mensaje-estado {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.mensaje-exito {
+    background: var(--estado-ok-fondo);
+    color: var(--estado-ok-texto);
+    border: 1px solid var(--estado-ok-borde);
+}
+
+.mensaje-error {
+    background: var(--estado-cancelado-fondo);
+    color: var(--estado-cancelado-texto);
+    border: 1px solid var(--estado-cancelado-borde);
+}
