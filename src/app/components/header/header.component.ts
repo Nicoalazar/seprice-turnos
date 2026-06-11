@@ -19,10 +19,50 @@ import Swal from 'sweetalert2';
 export class HeaderComponent {
 
   private loginService = inject(LoginService);
-  
+
   @Output() rolActivoChange = new EventEmitter<RolUsuario>();
 
-  rolActivo: RolUsuario = 'RECEPCIONISTA';
+  rolActivo: RolUsuario = 'ADMIN';
+  usuarioActual: any = null;
+  rolRealUsuario: string = 'RECEPCIONISTA';
+  nombreUsuario: string = '';
+  iniciales: string = '';
+
+  constructor() {
+    this.cargarDatosUsuario();
+  }
+
+  cargarDatosUsuario(): void {
+    const usuarioJson = localStorage.getItem('usuarioLogueado');
+    if (usuarioJson) {
+      this.usuarioActual = JSON.parse(usuarioJson);
+      this.rolRealUsuario = this.usuarioActual.rol || 'RECEPCIONISTA';
+
+      // Obtener email del usuario
+      if (this.usuarioActual.email) {
+        this.nombreUsuario = this.usuarioActual.email;
+        // Calcular iniciales basadas en email
+        this.iniciales = this.usuarioActual.email.substring(0, 2).toUpperCase();
+      }
+
+      // Si el rol es SUPER, iniciar con ADMIN, si no con el rol correspondiente
+      if (this.rolRealUsuario === 'SUPER') {
+        this.rolActivo = 'ADMIN';
+      } else if (this.rolRealUsuario === 'MEDICO') {
+        this.rolActivo = 'MEDICO';
+      } else {
+        this.rolActivo = 'ADMIN';
+      }
+    }
+  }
+
+  esSuperUsuario(): boolean {
+    return this.rolRealUsuario === 'SUPER';
+  }
+
+  esMedico(): boolean {
+    return this.rolRealUsuario === 'MEDICO';
+  }
 
   cambiarRol(rolActivo: RolUsuario): void {
     this.rolActivo = rolActivo;

@@ -1,9 +1,10 @@
 export interface Paciente {
   id: string;
+  dni: string;
   nombre: string;
   apellido: string;
-  dni: string;
+  fechaNac: string;
   telefono: string;
-  obraSocial: string;
-  autorizacion?: 'autorizado' | 'rechazado' | 'pendiente';
+  obraSocial: string | null;
+  creadoEn: string;
 }

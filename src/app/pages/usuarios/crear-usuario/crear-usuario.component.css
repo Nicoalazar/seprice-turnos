@@ -1,0 +1,129 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.back-button {
+  margin: 0;
+}
+
+.step-card {
+  margin-bottom: 20px;
+}
+
+mat-card-header {
+  margin-bottom: 16px;
+}
+
+mat-card-title {
+  font-size: 18px;
+  color: var(--texto-primario);
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.results-section {
+  margin-top: 24px;
+}
+
+mat-list {
+  padding: 0;
+}
+
+mat-list-item {
+  cursor: pointer;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: background-color 0.2s;
+}
+
+mat-list-item:hover {
+  background-color: var(--bg-surface);
+}
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 16px;
+  color: var(--texto-secundario);
+  text-align: center;
+}
+
+.no-results mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: var(--border-secundario);
+}
+
+.persona-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background-color: var(--bg-surface);
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.large-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: var(--color-naranja);
+}
+
+.persona-info h3 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.persona-info p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--texto-secundario);
+}
+
+.error-icon {
+  color: #d32f2f;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+button {
+  min-width: 120px;
+}
+
+.inline-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+mat-form-field {
+  display: block;
+}

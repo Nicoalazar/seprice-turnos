@@ -5,6 +5,13 @@
   scrollbar-color: var(--color-scrollbar) var(--color-divider);
 }
 
+.app-main-fullscreen {
+  height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scrollbar) var(--color-divider);
+}
+
 .app-main::-webkit-scrollbar {
   width: 8px;
 }
@@ -19,5 +26,22 @@
 }
 
 .app-main::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scrollbar-hover);
+}
+
+.app-main-fullscreen::-webkit-scrollbar {
+  width: 8px;
+}
+
+.app-main-fullscreen::-webkit-scrollbar-track {
+  background: var(--color-divider);
+}
+
+.app-main-fullscreen::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar);
+  border-radius: 4px;
+}
+
+.app-main-fullscreen::-webkit-scrollbar-thumb:hover {
   background: var(--color-scrollbar-hover);
 }

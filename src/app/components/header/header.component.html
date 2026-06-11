@@ -8,17 +8,17 @@
 
       <!-- Badge que muestra el rol actual -->
       <span class="badge-rol">
-        {{ rolActivo === 'RECEPCIONISTA' ? 'Personal administrativo' : 'Médico' }}
+        {{ rolActivo === 'ADMIN' ? 'Personal administrativo' : 'Médico' }}
       </span>
     </div>
 
     <div class="topbar-derecha">
-      <!-- Toggle para cambiar la vista -->
-      <div class="toggle-rol">
+      <!-- Toggle para cambiar la vista - Solo visible para SUPER usuarios -->
+      <div class="toggle-rol" *ngIf="esSuperUsuario()">
         <button
           class="btn-rol"
-          [class.activo]="rolActivo === 'RECEPCIONISTA'"
-          (click)="cambiarRol('RECEPCIONISTA')"
+          [class.activo]="rolActivo === 'ADMIN'"
+          (click)="cambiarRol('ADMIN')"
         >
           Administrativo
         </button>
@@ -31,13 +31,13 @@
         </button>
       </div>
 
-      <!-- Usuario nombre  -->
+      <!-- Usuario nombre - Dinámico -->
       <span class="usuario-nombre">
-        {{ rolActivo === 'RECEPCIONISTA' ? 'M. Albornoz' : 'Dr. Méndez' }}
+        {{ nombreUsuario }}
       </span>
       <!-- Usuario Menu Button en Avatar -->
       <button mat-icon-button [matMenuTriggerFor]="userMenu" class="avatar">
-        {{ rolActivo === 'RECEPCIONISTA' ? 'MA' : 'DM' }}
+        {{ iniciales }}
       </button>
 
       <!-- User Menu -->

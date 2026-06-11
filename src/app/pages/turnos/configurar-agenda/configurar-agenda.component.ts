@@ -1,0 +1,176 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { MedicosService } from '../../../core/services/medicos.service';
+import { AgendaService } from '../../../core/services/agenda.service';
+import { Medico } from '../../../core/interfaces/medico.d';
+import { Agenda } from '../../../core/interfaces/agenda.d';
+
+@Component({
+  selector: 'app-configurar-agenda',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatIconModule,
+    MatCardModule,
+    MatSnackBarModule
+  ],
+  templateUrl: './configurar-agenda.component.html',
+  styleUrls: ['./configurar-agenda.component.css']
+})
+export class ConfigurarAgendaComponent implements OnInit {
+  medicos: Medico[] = [];
+  medicoSeleccionado: Medico | null = null;
+  agendaActual: Agenda[] = [];
+  formulario!: FormGroup;
+  cargando = false;
+  guardando = false;
+
+  diasSemana = [
+    { valor: 0, label: 'Lunes' },
+    { valor: 1, label: 'Martes' },
+    { valor: 2, label: 'Miércoles' },
+    { valor: 3, label: 'Jueves' },
+    { valor: 4, label: 'Viernes' },
+    { valor: 5, label: 'Sábado' },
+    { valor: 6, label: 'Domingo' }
+  ];
+
+  duracionesMinimas: { [key: string]: number } = {
+    'Clínica Médica': 15,
+    'Pediatría': 15,
+    'Cardiología': 25,
+    'Fisio-kinesiología': 25,
+    'Salud Mental': 30,
+    'Dermatología': 20
+  };
+
+  constructor(
+    private fb: FormBuilder,
+    private medicosService: MedicosService,
+    private agendaService: AgendaService,
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.cargando = true;
+    this.medicosService.getTodosMedicos().subscribe({
+      next: (medicos) => {
+        this.medicos = medicos;
+        this.cargando = false;
+      },
+      error: () => {
+        this.snackBar.open('Error al cargar médicos', 'Cerrar', { duration: 3000 });
+        this.cargando = false;
+      }
+    });
+
+    this.formulario = this.fb.group({
+      diaSemana: ['0', Validators.required],
+      horaInicio: ['09:00', Validators.required],
+      horaFin: ['18:00', Validators.required],
+      duracionMin: ['15', Validators.required]
+    });
+  }
+
+  seleccionarMedico(medico: Medico): void {
+    this.medicoSeleccionado = medico;
+    this.cargarAgendaMedico();
+  }
+
+  private cargarAgendaMedico(): void {
+    if (!this.medicoSeleccionado) return;
+
+    this.agendaService.getAgendaPorMedico(this.medicoSeleccionado.id).subscribe({
+      next: (agendas) => {
+        this.agendaActual = agendas;
+      },
+      error: () => {
+        this.agendaActual = [];
+      }
+    });
+  }
+
+  guardar(): void {
+    if (!this.formulario.valid || !this.medicoSeleccionado) return;
+
+    this.guardando = true;
+    const { diaSemana, horaInicio, horaFin, duracionMin } = this.formulario.value;
+
+    this.agendaService
+      .crearOActualizarAgenda(
+        this.medicoSeleccionado.id,
+        parseInt(diaSemana),
+        horaInicio,
+        horaFin,
+        parseInt(duracionMin),
+        this.medicoSeleccionado.especialidad
+      )
+      .subscribe({
+        next: (resultado) => {
+          if (resultado.ok) {
+            this.snackBar.open('Agenda guardada exitosamente', 'Cerrar', { duration: 3000 });
+            this.generarFranjasParaProximosMeses(resultado.agendaId!, horaInicio, horaFin, parseInt(duracionMin), parseInt(diaSemana));
+            this.cargarAgendaMedico();
+          } else {
+            this.snackBar.open(`Error: ${resultado.error}`, 'Cerrar', { duration: 3000 });
+            this.guardando = false;
+          }
+        },
+        error: () => {
+          this.snackBar.open('Error al guardar la agenda', 'Cerrar', { duration: 3000 });
+          this.guardando = false;
+        }
+      });
+  }
+
+  private generarFranjasParaProximosMeses(
+    agendaId: string,
+    horaInicio: string,
+    horaFin: string,
+    duracionMin: number,
+    diaSemana: number
+  ): void {
+    const hoy = new Date();
+    const diasAGenerar = 60;
+
+    for (let i = 0; i < diasAGenerar; i++) {
+      const fecha = new Date(hoy);
+      fecha.setDate(fecha.getDate() + i);
+
+      if (fecha.getDay() === diaSemana) {
+        const fechaStr = fecha.toISOString().split('T')[0];
+
+        this.agendaService.generarFranjasParaAgenda(agendaId, fechaStr, horaInicio, horaFin, duracionMin).subscribe();
+      }
+    }
+
+    this.guardando = false;
+  }
+
+  obtenerDiaLabel(diaSemana: number): string {
+    return this.diasSemana.find(d => d.valor === diaSemana)?.label || '';
+  }
+
+  obtenerDuracionMinima(): number {
+    return this.medicoSeleccionado ? (this.duracionesMinimas[this.medicoSeleccionado.especialidad] || 15) : 15;
+  }
+
+  volver(): void {
+    this.router.navigate(['/dashboard']);
+  }
+}
