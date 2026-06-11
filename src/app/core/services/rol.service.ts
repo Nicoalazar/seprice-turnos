@@ -6,7 +6,7 @@ import { RolUsuario } from '../interfaces/usuario';
   providedIn: 'root'
 })
 export class RolService {
-  private rolActivoSubject = new BehaviorSubject<RolUsuario>('RECEPCIONISTA');
+  private rolActivoSubject = new BehaviorSubject<RolUsuario>('ADMIN');
   rolActivo$: Observable<RolUsuario> = this.rolActivoSubject.asObservable();
 
   setRolActivo(rol: RolUsuario): void {

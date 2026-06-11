@@ -287,3 +287,60 @@
     color: var(--color-orange-warning-accent);
     line-height: 1.4;
 }
+
+/* FRANJAS DISPONIBLES PARA REASIGNACIÓN */
+.franjas-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.franja-btn {
+    padding: 10px 12px;
+    background-color: var(--color-input-bg-dark);
+    border: 1px solid var(--color-border-light);
+    border-radius: 6px;
+    color: var(--color-text-primary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.franja-btn:hover {
+    background-color: var(--color-overlay-subtle);
+    border-color: var(--color-orange-accent);
+}
+
+.franja-btn.selected {
+    background: linear-gradient(90deg, var(--color-orange-accent), var(--color-purple-accent));
+    border-color: var(--color-orange-accent);
+    color: white;
+    font-weight: 600;
+}
+
+.btn-cargar-franjas {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--color-input-bg-dark);
+    border: 1px solid var(--color-border-light);
+    border-radius: 6px;
+    color: var(--color-text-primary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cargar-franjas:hover:not(:disabled) {
+    background-color: var(--color-overlay-subtle);
+    border-color: var(--color-orange-accent);
+}
+
+.btn-cargar-franjas:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.search-icon {
+    color: var(--color-text-secondary);
+}

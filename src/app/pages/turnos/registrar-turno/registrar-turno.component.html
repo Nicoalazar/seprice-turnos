@@ -180,7 +180,12 @@
           <span class="leyenda-dot sobreturno"></span><span>Sobreturno</span>
         </div>
  
-        <div class="franjas-grid">
+        <div class="fa1-alert" *ngIf="sinFranjasDisponibles">
+          <mat-icon class="fa1-icon">block</mat-icon>
+          FA1 — No hay franjas disponibles para esta fecha y médico. Seleccioná otra fecha.
+        </div>
+
+        <div class="franjas-grid" *ngIf="!sinFranjasDisponibles">
           <button
             *ngFor="let f of franjas()"
             type="button"

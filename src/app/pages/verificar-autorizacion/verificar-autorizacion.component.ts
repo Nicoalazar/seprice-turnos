@@ -16,7 +16,7 @@ import { ResultadoVerificacion, PacienteVerificacion } from '../../core/interfac
 export class VerificarAutorizacionComponent {
   private router = inject(Router);
 
-  rolActivo: RolUsuario = 'RECEPCIONISTA';
+  rolActivo: RolUsuario = 'ADMIN';
 
   busqueda = '';
   paciente: PacienteVerificacion | null = null;

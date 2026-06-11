@@ -1,141 +1,119 @@
 <div class="sobreturno-container">
 
     <header class="page-header">
-        <h1>Registrar sobreturno</h1>
-        <p class="subtitle">Agregá un paciente fuera de la agenda regular</p>
+        <button (click)="volverAlDashboard()" style="background:none; border:none; cursor:pointer;">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+            <h1>Registrar Sobreturno</h1>
+            <p class="subtitle">Agregá un paciente fuera de la agenda regular</p>
+        </div>
     </header>
 
     <div class="alert-info-box">
-        <span class="icon">⚠️</span>
-        <p>Regla: máximo 1 sobreturno por hora por médico. El sistema validará disponibilidad antes de confirmar.</p>
+        <mat-icon>info</mat-icon>
+        <p>Regla: máximo 1 sobreturno por hora por médico. El sistema validará antes de confirmar.</p>
     </div>
 
-    <div class="main-content-layout">
+    <form [formGroup]="sobreturnoForm" (ngSubmit)="onSubmit()" class="form-card">
 
-        <section class="form-card">
-            <form [formGroup]="sobreturnoForm" (ngSubmit)="onSubmit()">
+        <!-- 1. PACIENTE -->
+        <div class="form-section">
+            <h3 class="section-title">1. BUSCAR PACIENTE</h3>
 
-                <div class="form-section">
-                    <h3 class="section-title">1. DATOS DEL PACIENTE</h3>
-
-                    <div class="input-group full-width">
-                        <label for="pacienteDni">DNI / Nombre del paciente</label>
-                        <input id="pacienteDni" type="text" formControlName="pacienteDni"
-                            placeholder="Buscar por DNI o nombre...">
-                    </div>
-
-                    <div class="input-row">
-                        <div class="input-group">
-                            <label for="obraSocial">Obra social</label>
-                            <select id="obraSocial" formControlName="obraSocial">
-                                <option value="Swiss Medical">Swiss Medical</option>
-                                <option value="OSDE">OSDE</option>
-                                <option value="Galeno">Galeno</option>
-                                <option value="Particular">Particular</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="modalidadPago">Modalidad de pago</label>
-                            <select id="modalidadPago" formControlName="modalidadPago">
-                                <option value="Obra social">Obra social</option>
-                                <option value="Efectivo">Efectivo</option>
-                                <option value="Transferencia">Transferencia</option>
-                                <option value="Débito">Débito</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="section-divider">
-
-                <div class="form-section">
-                    <h3 class="section-title">2. MÉDICO Y FRANJA HORARIA</h3>
-
-                    <div class="input-group full-width">
-                        <label for="especialidad">Especialidad</label>
-                        <select id="especialidad" formControlName="especialidad">
-                            <option value="Clínica Médica">Clínica Médica</option>
-                            <option value="Pediatría">Pediatría</option>
-                            <option value="Traumatología">Traumatología</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group full-width">
-                        <label for="medicoId">Médico</label>
-                        <select id="medicoId" formControlName="medicoId">
-                            <option value="Dr. Méndez, Carlos">Dr. Méndez, Carlos</option>
-                            <option value="Dra. Rodríguez, Ana">Dra. Rodríguez, Ana</option>
-                        </select>
-                    </div>
-
-                    <div class="input-row">
-                        <div class="input-group">
-                            <label for="fecha">Fecha</label>
-                            <input id="fecha" type="date" formControlName="fecha">
-                        </div>
-
-                        <div class="input-group">
-                            <label for="hora">Hora</label>
-                            <input id="hora" type="time" formControlName="hora">
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="section-divider">
-
-                <div class="form-section">
-                    <h3 class="section-title">3. MOTIVO</h3>
-                    <div class="input-group full-width">
-                        <label for="motivo">Motivo de la consulta</label>
-                        <textarea id="motivo" formControlName="motivo" rows="3"
-                            placeholder="Escriba brevemente el motivo del sobreturno..."></textarea>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary">Cancelar</button>
-                    <button type="submit" class="btn-primary"
-                        [disabled]="sobreturnoForm.invalid || limiteSobreturnoAlcanzado">
-                        Confirmar sobreturno
+            <div class="input-group full-width">
+                <label for="pacienteDni">DNI o Nombre</label>
+                <div class="input-with-button">
+                    <input id="pacienteDni" type="text" formControlName="pacienteDni"
+                        placeholder="Buscar por DNI o nombre..." (keyup.enter)="buscarPaciente()">
+                    <button type="button" (click)="buscarPaciente()" [disabled]="cargando()">
+                        <mat-icon>search</mat-icon>
                     </button>
                 </div>
-
-            </form>
-        </section>
-
-        <aside class="agenda-card">
-            <h2>Sobreturnos del día — Dr. Méndez</h2>
-            <p class="date-sub">Lunes 5 de mayo, 2026</p>
-
-            <div class="counter-box">
-                <span class="counter-label">Sobreturnos asignados en esta franja:</span>
-                <span class="counter-value">{{ sobreturnosAsignados }} / 1</span>
             </div>
 
-            <div class="appointments-list">
-                <p class="empty-list" *ngIf="sobreturnosDelDia.length === 0">
-                    No hay sobreturnos registrados para esta hora todavía.
-                </p>
-
-                <div *ngFor="let turno of sobreturnosDelDia"
-                    style="padding: 14px; background: var(--color-bg-input); border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--color-border-default);">
-                    <div style="font-weight: 600; margin-bottom: 4px; font-size: 14px;">Pac. DNI: {{ turno.pacienteId }}
-                    </div>
-                    <div style="color: var(--color-text-secondary); font-size: 12px; margin-bottom: 6px;">Motivo: {{
-                        turno.motivo }}</div>
-                    <span
-                        style="background: #3D2260; color: #e2bfff; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500;">{{
-                        turno.estado | uppercase }}</span>
+            <!-- Paciente encontrado -->
+            <div *ngIf="pacienteEncontrado() as paciente" class="paciente-encontrado">
+                <mat-icon>check_circle</mat-icon>
+                <div>
+                    <strong>{{ paciente.apellido }}, {{ paciente.nombre }}</strong>
+                    <span>DNI: {{ paciente.dni }} · OS: {{ paciente.obraSocial || 'Sin cobertura' }}</span>
                 </div>
             </div>
 
-            <div class="alert-danger-box" *ngIf="limiteSobreturnoAlcanzado">
-                <span>⚠️ FA1 — Límite de sobreturno alcanzado para este médico en esta franja horaria.</span>
+            <!-- Seleccionar modalidad -->
+            <div class="input-row" *ngIf="pacienteEncontrado()">
+                <div class="input-group">
+                    <label for="modalidadPago">Modalidad de pago</label>
+                    <select id="modalidadPago" formControlName="modalidadPago">
+                        <option value="obraSocial">Obra social</option>
+                        <option value="particular">Particular</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="motivo">Motivo</label>
+                    <input id="motivo" type="text" formControlName="motivo" placeholder="Ej: Urgencia...">
+                </div>
             </div>
-        </aside>
+        </div>
 
-    </div>
+        <hr class="section-divider">
+
+        <!-- 2. MÉDICO Y FRANJA -->
+        <div class="form-section" *ngIf="pacienteEncontrado()">
+            <h3 class="section-title">2. MÉDICO Y FRANJA HORARIA</h3>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="medicoId">Médico</label>
+                    <select id="medicoId" formControlName="medicoId">
+                        <option value="">Seleccioná médico...</option>
+                        <option *ngFor="let medico of medicos()" [value]="medico.id">
+                            Dr. {{ medico.apellido }}, {{ medico.nombre }} ({{ medico.especialidad }})
+                        </option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="fecha">Fecha</label>
+                    <input id="fecha" type="date" formControlName="fecha">
+                </div>
+            </div>
+
+            <!-- FA1: Límite alcanzado -->
+            <div class="limit-alert" *ngIf="limiteSobreturnoAlcanzado()">
+                <mat-icon>block</mat-icon>
+                <span>FA1 — Límite alcanzado: ya existe 1 sobreturno a esta hora. Seleccioná otra.</span>
+            </div>
+
+            <!-- Franjas disponibles -->
+            <div *ngIf="franjas().length > 0 && !limiteSobreturnoAlcanzado()" class="franjas-section">
+                <label>Franjas disponibles ({{ franjas().length }})</label>
+                <div class="franjas-grid">
+                    <button *ngFor="let franja of franjas()" type="button"
+                            class="franja-btn"
+                            [class.selected]="sobreturnoForm.get('franjaId')?.value === franja.id"
+                            (click)="sobreturnoForm.patchValue({franjaId: franja.id})">
+                        {{ franja.hora }}
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="franjas().length === 0 && sobreturnoForm.get('medicoId')?.value && sobreturnoForm.get('fecha')?.value"
+                 class="empty-franjas">
+                <mat-icon>calendar_today</mat-icon>
+                <p>No hay franjas de sobreturno disponibles para esta fecha</p>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="form-actions">
+            <button type="button" (click)="volverAlDashboard()" class="btn-cancelar">
+                Cancelar
+            </button>
+            <button type="submit" class="btn-confirmar"
+                    [disabled]="!pacienteEncontrado() || limiteSobreturnoAlcanzado() || sobreturnoForm.invalid || cargando()">
+                {{ cargando() ? 'Registrando...' : 'Registrar Sobreturno' }}
+            </button>
+        </div>
+    </form>
 </div>
-
-

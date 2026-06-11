@@ -157,15 +157,15 @@
           <p class="paso-label">PASO 3 — VERIFICAR COBERTURA OBRA SOCIAL</p>
 
           <!-- Autorizado -->
-          <div *ngIf="paciente.cobertura.estado === 'autorizado'" class="cobertura-card cobertura-autorizado">
-            <p class="cobertura-titulo"><mat-icon>check_circle</mat-icon> Autorizado — {{ paciente.cobertura.obraSocial }}</p>
-            <p class="cobertura-sub">{{ paciente.cobertura.prestacion }} · Código: {{ paciente.cobertura.codigo }}</p>
+          <div *ngIf="paciente.cobertura?.estado === 'autorizado'" class="cobertura-card cobertura-autorizado">
+            <p class="cobertura-titulo"><mat-icon>check_circle</mat-icon> Autorizado — {{ paciente.cobertura?.obraSocial }}</p>
+            <p class="cobertura-sub">{{ paciente.cobertura?.prestacion }} · Código: {{ paciente.cobertura?.codigo }}</p>
           </div>
 
-          <!-- Rechazado (FA3) -->
-          <div *ngIf="paciente.cobertura.estado === 'rechazado'" class="cobertura-card cobertura-rechazado">
-            <p class="cobertura-titulo"><mat-icon>cancel</mat-icon> Sin cobertura — {{ paciente.cobertura.obraSocial }}</p>
-            <p class="cobertura-sub">{{ paciente.cobertura.prestacion }}</p>
+          <!-- Sin cobertura (FA3) -->
+          <div *ngIf="paciente.cobertura?.estado === 'sin-cobertura'" class="cobertura-card cobertura-rechazado">
+            <p class="cobertura-titulo"><mat-icon>cancel</mat-icon> Sin cobertura válida</p>
+            <p class="cobertura-sub">El paciente no tiene obra social registrada o está vencida</p>
           </div>
         </div>
 

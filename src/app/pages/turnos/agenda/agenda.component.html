@@ -67,7 +67,7 @@
                             </button>
 
                             <button *ngIf="franja.estado !== 'Libre' && franja.estado !== 'Atendido'"
-                                (click)="registrarAtencion(franja)" class="btn-accion btn-ver">
+                                (click)="abrirFormularioAtencion(franja)" class="btn-accion btn-ver">
                                 Registrar atención
                             </button>
 
@@ -79,6 +79,46 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Formulario de Atención -->
+    <div *ngIf="mostrando() === 'formulario' && turnoActualAtencion() && formularioAtencion" class="modal-overlay">
+        <div class="modal-formulario">
+            <h2>Registrar Atención</h2>
+            <p class="paciente-info">
+                {{ turnoActualAtencion()!.paciente?.apellido }}, {{ turnoActualAtencion()!.paciente?.nombre }}
+                — {{ turnoActualAtencion()!.franja?.hora }}
+            </p>
+
+            <form [formGroup]="formularioAtencion" (ngSubmit)="guardarAtencion()">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Diagnóstico</mat-label>
+                    <textarea matInput formControlName="diagnostico" placeholder="Diagnóstico de la consulta..."></textarea>
+                    <mat-error *ngIf="formularioAtencion.get('diagnostico')?.hasError('required')">
+                        Diagnóstico requerido
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Prescripciones (opcional)</mat-label>
+                    <textarea matInput formControlName="prescripciones" placeholder="Medicinas, inyecciones, etc..."></textarea>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Derivación a otro especialista (opcional)</mat-label>
+                    <textarea matInput formControlName="derivacion" placeholder="Si corresponde, indicar derivación..."></textarea>
+                </mat-form-field>
+
+                <div class="form-actions">
+                    <button type="button" mat-button (click)="cancelarFormulario()" [disabled]="cargando">
+                        Cancelar
+                    </button>
+                    <button type="submit" mat-raised-button color="primary" [disabled]="formularioAtencion.invalid || cargando">
+                        {{ cargando ? 'Guardando...' : 'Guardar Atención' }}
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 

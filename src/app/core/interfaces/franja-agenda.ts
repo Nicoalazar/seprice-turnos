@@ -11,7 +11,7 @@ export interface FranjaAgenda {
 }
 
 export interface SobreturnoItem {
-  id: number;
+  id: string;
   fecha: string;
   hora: string;
   pacienteId: string;
