@@ -68,7 +68,7 @@
         <ng-container *ngIf="pacienteNoRegistrado()">
           <div class="fa2-alert">
             <mat-icon class="fa2-icon">info</mat-icon>
-            FA2 — Paciente sin registro en el sistema.
+            Paciente sin registro en el sistema.
           </div>
           <label class="field-label">Nombre completo <span class="req">*</span></label>
           <input class="field-input" type="text" placeholder="Apellido, Nombre"
@@ -182,7 +182,7 @@
  
         <div class="fa1-alert" *ngIf="sinFranjasDisponibles">
           <mat-icon class="fa1-icon">block</mat-icon>
-          FA1 — No hay franjas disponibles para esta fecha y médico. Seleccioná otra fecha.
+          No hay franjas disponibles para esta fecha y médico. Seleccioná otra fecha.
         </div>
 
         <div class="franjas-grid" *ngIf="!sinFranjasDisponibles">

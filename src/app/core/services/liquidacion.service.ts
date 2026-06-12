@@ -28,14 +28,15 @@ export class LiquidacionService {
     );
   }
 
-  getLiquidacionExistente(medicoId: string, periodo: string): Observable<Liquidacion | null> {
+  getLiquidacionExistente(medicoId: string, desde: string, hasta: string): Observable<Liquidacion | null> {
     return from(
       this.supabase
         .from('Liquidacion')
         .select('*')
         .eq('medicoId', medicoId)
-        .eq('periodo', periodo)
-        .single()
+        .eq('periodoDesde', desde)
+        .eq('periodoHasta', hasta)
+        .maybeSingle()
     ).pipe(
       map(({ data, error }) => (error || !data) ? null : (data as Liquidacion))
     );
@@ -43,8 +44,10 @@ export class LiquidacionService {
 
   generarLiquidacion(
     medicoId: string,
-    periodo: string,
-    prestaciones: number,
+    desde: string,
+    hasta: string,
+    cantTurnos: number,
+    montoUnitario: number,
     montoTotal: number
   ): Observable<{ ok: boolean; error?: string; liquidacionId?: string }> {
     return from(
@@ -52,9 +55,12 @@ export class LiquidacionService {
         .from('Liquidacion')
         .insert([
           {
+            id: crypto.randomUUID(),
             medicoId,
-            periodo,
-            prestaciones,
+            periodoDesde: desde,
+            periodoHasta: hasta,
+            cantTurnos,
+            montoUnitario,
             montoTotal,
             generadaEn: new Date().toISOString()
           }
@@ -77,7 +83,7 @@ export class LiquidacionService {
         .from('Liquidacion')
         .select('*')
         .eq('medicoId', medicoId)
-        .order('periodo', { ascending: false })
+        .order('periodoDesde', { ascending: false })
     ).pipe(
       map(({ data }) => (data ?? []) as Liquidacion[])
     );

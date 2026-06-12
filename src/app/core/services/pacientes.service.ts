@@ -52,10 +52,16 @@ export class PacientesService {
   }
 
   crearPaciente(paciente: Omit<Paciente, 'id' | 'creadoEn'>): Observable<Paciente | null> {
+    const nuevo = {
+      id: crypto.randomUUID(),
+      ...paciente,
+      creadoEn: new Date().toISOString()
+    };
     return from(
       this.supabase
         .from('Paciente')
-        .insert([paciente]) as any
+        .insert([nuevo])
+        .select() as any
     ).pipe(
       map(({ data, error }: any) => (error || !data || !data[0]) ? null : (data[0] as Paciente))
     );

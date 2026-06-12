@@ -111,6 +111,7 @@ export class UsuariosService {
         .from('Usuario')
         .insert([
           {
+            id: crypto.randomUUID(),
             email,
             password,
             rol,

@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { LiquidacionService } from '../../../core/services/liquidacion.service';
+import { MedicosService } from '../../../core/services/medicos.service';
 import { Liquidacion } from '../../../core/interfaces/liquidacion.d';
 
 @Component({
@@ -29,6 +30,7 @@ export class ConsultarLiquidacionComponent implements OnInit {
 
   constructor(
     private liquidacionService: LiquidacionService,
+    private medicosService: MedicosService,
     private snackBar: MatSnackBar,
     private router: Router
   ) {}
@@ -46,19 +48,37 @@ export class ConsultarLiquidacionComponent implements OnInit {
   }
 
   cargarLiquidaciones(): void {
-    if (!this.usuarioLogueado?.medicoId) {
+    if (!this.usuarioLogueado?.id) {
       this.snackBar.open('Error: usuario no es médico', 'Cerrar', { duration: 3000 });
       return;
     }
 
     this.cargando = true;
-    this.liquidacionService.getLiquidacionesPorMedico(this.usuarioLogueado.medicoId).subscribe({
+    // Buscar el registro de médico asociado al usuario logueado
+    this.medicosService.getMedicoActual(this.usuarioLogueado.id).subscribe({
+      next: (medico) => {
+        if (!medico) {
+          this.cargando = false;
+          this.snackBar.open('Error: usuario no es médico', 'Cerrar', { duration: 3000 });
+          return;
+        }
+        this.cargarLiquidacionesDeMedico(medico.id);
+      },
+      error: () => {
+        this.cargando = false;
+        this.snackBar.open('Error al cargar datos del médico', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
+  private cargarLiquidacionesDeMedico(medicoId: string): void {
+    this.liquidacionService.getLiquidacionesPorMedico(medicoId).subscribe({
       next: (liquidaciones) => {
         this.liquidaciones = liquidaciones;
         this.cargando = false;
 
         if (liquidaciones.length === 0) {
-          this.snackBar.open('FA1 — Aún no se generó ninguna liquidación', 'Cerrar', { duration: 3000 });
+          this.snackBar.open('Aún no se generó ninguna liquidación', 'Cerrar', { duration: 3000 });
         }
       },
       error: () => {
