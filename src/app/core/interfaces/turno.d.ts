@@ -1,4 +1,4 @@
-export type EstadoTurno = 'CONFIRMADO' | 'PRESENTE_EN_SALA' | 'ATENDIDO' | 'CANCELADO' | 'AUSENTE';
+export type EstadoTurno = 'CONFIRMADO' | 'PRESENTE EN SALA' | 'ATENDIDO' | 'CANCELADO' | 'AUSENTE';
 export type TipoTurno = 'NORMAL' | 'SOBRETURNO' | 'SEGUIMIENTO';
 export type ModalidadPago = 'OBRA_SOCIAL' | 'PARTICULAR';
 

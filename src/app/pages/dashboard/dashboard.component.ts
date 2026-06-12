@@ -89,7 +89,7 @@ export class DashboardComponent implements OnInit {
         this.metricaPendientesAcreditacion = activos.filter(t => t.estado === 'CONFIRMADO').length;
         this.metricaSobreturnos = activos.filter(t => t.tipo === 'SOBRETURNO').length;
         this.metricaCancelaciones = turnos.filter(t => t.estado === 'CANCELADO').length;
-        this.metricaAcreditados = activos.filter(t => t.estado === 'PRESENTE_EN_SALA' || t.estado === 'ATENDIDO').length;
+        this.metricaAcreditados = activos.filter(t => t.estado === 'PRESENTE EN SALA' || t.estado === 'ATENDIDO').length;
 
         this.turnosAdmin = activos.map(t => ({
           hora: t.franja?.hora || '',
@@ -115,7 +115,7 @@ export class DashboardComponent implements OnInit {
                     next: (turnosMedico) => {
                       this.metricaAsignados = turnosMedico.length;
                       this.metricaAtendidos = turnosMedico.filter(t => t.estado === 'ATENDIDO').length;
-                      this.metricaEnEspera = turnosMedico.filter(t => t.estado === 'PRESENTE_EN_SALA').length;
+                      this.metricaEnEspera = turnosMedico.filter(t => t.estado === 'PRESENTE EN SALA').length;
 
                       this.turnosMedico = turnosMedico.map(t => ({
                         hora: t.franja?.hora || '',

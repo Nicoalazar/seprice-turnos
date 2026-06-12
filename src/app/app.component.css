@@ -3,6 +3,7 @@
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--color-scrollbar) var(--color-divider);
+  background-color: var(--bg-app)
 }
 
 .app-main-fullscreen {

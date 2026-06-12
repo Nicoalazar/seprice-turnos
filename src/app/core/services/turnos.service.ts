@@ -242,7 +242,7 @@ export class TurnosService {
   }
 
   acreditarTurno(turnoId: string): Observable<{ ok: boolean; error?: string }> {
-    return this.cambiarEstadoTurno(turnoId, 'PRESENTE_EN_SALA');
+    return this.cambiarEstadoTurno(turnoId, 'PRESENTE EN SALA');
   }
 
   marcarComoAtendido(turnoId: string): Observable<{ ok: boolean; error?: string }> {
@@ -273,7 +273,7 @@ export class TurnosService {
         .select('id, franja:Franja(fecha, hora)')
         .eq('medicoId', medicoId)
         .eq('tipo', 'SOBRETURNO')
-        .in('estado', ['CONFIRMADO', 'PRESENTE_EN_SALA', 'ATENDIDO', 'AUSENTE'])
+        .in('estado', ['CONFIRMADO', 'PRESENTE EN SALA', 'ATENDIDO', 'AUSENTE'])
     ).pipe(
       switchMap(({ data, error }: any) => {
         if (error || !data) return of(0);
@@ -315,7 +315,7 @@ export class TurnosService {
           franja:Franja(fecha, hora)
         `)
         .eq('medicoId', medicoId)
-        .eq('estado', 'PRESENTE_EN_SALA')
+        .eq('estado', 'PRESENTE EN SALA')
     ).pipe(
       map(({ data }) => {
         if (!data) return [];

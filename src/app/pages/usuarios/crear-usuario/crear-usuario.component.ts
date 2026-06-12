@@ -46,11 +46,14 @@ interface Persona {
 export class CrearUsuarioComponent implements OnInit {
   searchForm!: FormGroup;
   usuarioForm!: FormGroup;
+  personaForm!: FormGroup;
   personas: Persona[] = [];
   personaSeleccionada: Persona | null = null;
   cargando = false;
   guardando = false;
+  guardandoPersona = false;
   busquedaRealizada = false;
+  creandoPersona = false;
 
   roles: RolUsuario[] = ['ADMIN', 'MEDICO'];
 
@@ -71,6 +74,41 @@ export class CrearUsuarioComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       rol: ['MEDICO', Validators.required]
     });
+
+    this.personaForm = this.fb.group({
+      tipo: ['ADMINISTRATIVO', Validators.required],
+      nombre: ['', Validators.required],
+      apellido: ['', Validators.required],
+      especialidad: [''],
+      matricula: [''],
+      tarifa: [''],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      rol: ['ADMIN', Validators.required]
+    });
+
+    this.personaForm.get('tipo')?.valueChanges.subscribe((tipo) => {
+      const especialidad = this.personaForm.get('especialidad');
+      const matricula = this.personaForm.get('matricula');
+      const tarifa = this.personaForm.get('tarifa');
+      const rol = this.personaForm.get('rol');
+
+      if (tipo === 'MEDICO') {
+        especialidad?.setValidators([Validators.required]);
+        matricula?.setValidators([Validators.required]);
+        tarifa?.setValidators([Validators.required, Validators.min(0)]);
+        rol?.setValue('MEDICO');
+      } else {
+        especialidad?.clearValidators();
+        matricula?.clearValidators();
+        tarifa?.clearValidators();
+        rol?.setValue('ADMIN');
+      }
+
+      especialidad?.updateValueAndValidity();
+      matricula?.updateValueAndValidity();
+      tarifa?.updateValueAndValidity();
+    });
   }
 
   async buscar(): Promise<void> {
@@ -82,9 +120,6 @@ export class CrearUsuarioComponent implements OnInit {
 
     try {
       this.personas = await this.usuariosService.buscarPersonas(criterio);
-      if (this.personas.length === 0) {
-        this.snackBar.open('No se encontraron personas', 'Cerrar', { duration: 3000 });
-      }
     } catch (error) {
       this.snackBar.open('Error al buscar personas', 'Cerrar', { duration: 3000 });
     } finally {
@@ -98,6 +133,49 @@ export class CrearUsuarioComponent implements OnInit {
       return;
     }
     this.personaSeleccionada = persona;
+    const rol = persona.tipo === 'MEDICO' ? 'MEDICO' : 'ADMIN';
+    this.usuarioForm.patchValue({ rol });
+  }
+
+  mostrarCrearPersona(): void {
+    this.creandoPersona = true;
+  }
+
+  cancelarCrearPersona(): void {
+    this.creandoPersona = false;
+    this.personaForm.reset({
+      tipo: 'ADMINISTRATIVO',
+      nombre: '',
+      apellido: '',
+      especialidad: '',
+      matricula: '',
+      tarifa: '',
+      email: '',
+      password: '',
+      rol: 'ADMIN'
+    });
+  }
+
+  async crearPersona(): Promise<void> {
+    if (this.personaForm.invalid) return;
+
+    this.guardandoPersona = true;
+
+    try {
+      const resultado = await this.usuariosService.crearPersonaConUsuario(this.personaForm.value);
+
+      if (resultado.exito && resultado.persona) {
+        this.snackBar.open('Persona y usuario creados correctamente', 'Cerrar', { duration: 3000 });
+        this.personaSeleccionada = resultado.persona;
+        this.creandoPersona = false;
+      } else {
+        this.snackBar.open(`Error: ${resultado.error}`, 'Cerrar', { duration: 3000 });
+      }
+    } catch (error) {
+      this.snackBar.open('Error al crear la persona', 'Cerrar', { duration: 3000 });
+    } finally {
+      this.guardandoPersona = false;
+    }
   }
 
   async guardar(): Promise<void> {
@@ -117,7 +195,6 @@ export class CrearUsuarioComponent implements OnInit {
 
       if (resultado.exito) {
         this.snackBar.open('Usuario creado correctamente', 'Cerrar', { duration: 3000 });
-        setTimeout(() => this.router.navigate(['/dashboard']), 1000);
       } else {
         this.snackBar.open(`Error: ${resultado.error}`, 'Cerrar', { duration: 3000 });
       }

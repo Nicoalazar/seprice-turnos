@@ -34,3 +34,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-mdc-divider {
   background-color: #2E1A50 !important;
 }
+
+.mdc-floating-label--required:not(.mdc-floating-label--hide-required-marker)::after{
+    content: '*';
+    color: var(--color-status-warning) !important;
+}

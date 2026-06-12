@@ -262,24 +262,28 @@
 }
 
 .modal-formulario {
-    background: white;
+    background: var(--color-bg-card-alt);
+    border: 1px solid var(--color-border-default);
     border-radius: 12px;
-    padding: 24px;
+    padding: 28px;
     width: 90%;
     max-width: 500px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 .modal-formulario h2 {
     margin: 0 0 8px 0;
     font-size: 20px;
-    font-weight: 600;
+    font-weight: 700;
+    color: var(--color-text-primary);
 }
 
 .paciente-info {
     font-size: 13px;
-    color: var(--texto-secundario);
-    margin: 0 0 16px 0;
+    color: var(--color-text-secondary);
+    margin: 0 0 24px 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-border-default);
 }
 
 .modal-formulario form {
@@ -292,15 +296,87 @@
     width: 100%;
 }
 
+.modal-formulario mat-form-field {
+    width: 100%;
+}
+
+.modal-formulario mat-form-field .mat-mdc-form-field {
+    width: 100%;
+}
+
 mat-form-field textarea {
     min-height: 80px;
+    color: var(--color-text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.modal-formulario mat-form-field {
+    --mdc-theme-primary: var(--color-violeta);
+}
+
+.modal-formulario mat-label {
+    color: var(--color-text-secondary) !important;
+}
+
+.modal-formulario textarea {
+    color: var(--color-text-primary) !important;
+}
+
+.modal-formulario textarea::placeholder {
+    color: var(--color-text-tertiary) !important;
 }
 
 .form-actions {
     display: flex;
     gap: 12px;
     justify-content: flex-end;
-    margin-top: 16px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border-default);
+}
+
+.form-actions button {
+    font-weight: 600;
+}
+
+.form-actions button[type="button"] {
+    color: var(--color-text-secondary);
+    background-color: transparent;
+    border: 1px solid var(--color-border-default);
+    border-radius: 6px;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: all var(--transicion);
+}
+
+.form-actions button[type="button"]:hover:not(:disabled) {
+    background-color: var(--color-bg-card);
+    border-color: var(--color-border-light);
+}
+
+.form-actions button[type="button"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.form-actions button[type="submit"] {
+    background: linear-gradient(90deg, var(--color-naranja) 0%, var(--color-violeta) 100%);
+    color: var(--color-text-primary);
+    padding: 10px 32px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all var(--transicion);
+}
+
+.form-actions button[type="submit"]:hover:not(:disabled) {
+    box-shadow: 0 4px 16px rgba(232, 25, 90, 0.4);
+    transform: translateY(-2px);
+}
+
+.form-actions button[type="submit"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .btn-ver-detalle {
