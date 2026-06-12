@@ -1,15 +1,22 @@
 .container {
-  max-width: 800px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%; /* quita los bloques blancos de los costados */
+  margin: 0;
   padding: 20px;
-  background-color: var(--bg-app);
+  background-color: var(--bg-noche); /* Tu lila/violeta oscuro institucional */
   min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra el bloque de contenido en el medio de la pantalla */
 }
 
 .header {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  justify-content: center; /* Centra el título horizontalmente */
+  text-align: center;
+  width: 100%;
+  max-width: 800px; /* Mantiene el ancho original de tu pantalla de consulta */
   margin-bottom: 32px;
 }
 
