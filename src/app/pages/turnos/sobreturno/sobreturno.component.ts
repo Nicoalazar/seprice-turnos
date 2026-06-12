@@ -38,6 +38,11 @@ export class SobreturnoComponent implements OnInit {
 
   volverAlDashboard(): void { this.router.navigate(['/dashboard']); }
 
+  getHoraSeleccionada(): string {
+    const id = this.sobreturnoForm?.get('franjaId')?.value as string;
+    return this.franjas().find(f => f.id === id)?.hora ?? '';
+  }
+
   constructor(private fb: FormBuilder) {
     this.initForm();
   }

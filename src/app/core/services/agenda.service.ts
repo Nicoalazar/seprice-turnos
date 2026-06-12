@@ -73,32 +73,25 @@ export class AgendaService {
   }
 
   getFranjasParaSobreturno(medicoId: string, fecha: string): Observable<Franja[]> {
-    // Calcular el día de la semana (1=lunes, 7=domingo)
-    const fechaObj = new Date(fecha + 'T00:00:00');
-    const diaSemana = fechaObj.getDay(); // 0=domingo, 1=lunes, ..., 6=sábado
-    const diaSemanaSQL = diaSemana === 0 ? 7 : diaSemana; // Convertir: 0->7, 1->1, ..., 6->6
+    const diaSemana = new Date(fecha + 'T00:00:00').getDay();
 
-    // Obtener la agenda específica del médico para ese día de la semana
     return from(
       this.supabase
         .from('Agenda')
         .select('id')
         .eq('medicoId', medicoId)
-        .eq('diaSemana', diaSemanaSQL)
+        .eq('diaSemana', diaSemana)
     ).pipe(
       switchMap(({ data: agendas }) => {
         if (!agendas || agendas.length === 0) return of([]);
         const agendaId = (agendas[0] as any).id;
 
-        // Obtener las franjas de sobreturno de esa agenda específica
         return from(
           this.supabase
             .from('Franja')
             .select('*')
             .eq('agendaId', agendaId)
             .eq('fecha', fecha)
-            .eq('disponible', true)
-            .eq('sobreturno', true)
             .order('hora', { ascending: true })
         ).pipe(
           map(({ data }) => (data as Franja[]) || [])
