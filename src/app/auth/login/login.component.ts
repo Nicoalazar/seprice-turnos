@@ -2,13 +2,14 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 import { LoginService } from '../login.service';
 
 // Componente que muestra el formulario de login
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -23,9 +24,17 @@ export class LoginComponent {
   // Variable para guardar el mensaje de error (si hay)
   error: string = '';
 
+  // Variable para mostrar/ocultar contraseña
+  mostrarPassword: boolean = false;
+
   // Inyectamos el servicio de login y router usando inject() (forma moderna de Angular 17)
   private loginService = inject(LoginService);
   private router = inject(Router);
+
+  // Método para alternar la visibilidad de la contraseña
+  toggleMostrarPassword(): void {
+    this.mostrarPassword = !this.mostrarPassword;
+  }
 
   // Método que se ejecuta cuando el usuario hace click en "Iniciar Sesión"
   async iniciarSesion(): Promise<void> {

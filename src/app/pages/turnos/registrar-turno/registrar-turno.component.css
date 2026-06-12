@@ -164,6 +164,15 @@
   font-size: 12px; color: var(--color-gradient-orange); margin-bottom: 12px;
 }
 
+.fa1-alert {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(var(--color-gradient-pink-rgb), 0.1);
+  border: 1px solid rgba(var(--color-gradient-pink-rgb), 0.3);
+  border-radius: 8px; padding: 12px 14px;
+  font-size: 12px; color: var(--color-gradient-pink); margin-bottom: 12px;
+}
+.fa1-icon { font-size: 16px; }
+
 /* ── Búsqueda ── */
 .search-row { margin-bottom: 8px; }
 .search-results {

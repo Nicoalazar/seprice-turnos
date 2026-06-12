@@ -1,0 +1,58 @@
+<div class="container">
+  <div class="header">
+    <!--<button mat-icon-button (click)="volver()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>  -->
+    <h1>Mis Liquidaciones</h1>
+  </div> 
+
+  <!-- Lista de liquidaciones -->
+  <div *ngIf="!seleccionada" class="lista-container">
+    <div *ngIf="cargando" class="message">Cargando liquidaciones...</div>
+
+    <div *ngIf="!cargando && liquidaciones.length === 0" class="message">
+      <mat-icon>info</mat-icon>
+      <p>Aún no se generó ninguna liquidación</p>
+    </div>
+
+    <div class="liquidaciones-grid" *ngIf="!cargando && liquidaciones.length > 0">
+      <mat-card *ngFor="let liq of liquidaciones" class="liquidacion-card" (click)="verDetalle(liq)">
+        <mat-card-content>
+          <div class="periodo">{{ liq.periodoDesde }} al {{ liq.periodoHasta }}</div>
+          <div class="monto">${{ liq.montoTotal | number }}</div>
+          <div class="prestaciones">{{ liq.cantTurnos }} prestación{{ liq.cantTurnos !== 1 ? 'es' : '' }}</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Detalle de liquidación -->
+  <mat-card *ngIf="seleccionada" class="detalle-card">
+    <mat-card-header>
+      <button mat-icon-button (click)="cerrarDetalle()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-card-title>Detalle de Liquidación</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="detalle-grid">
+        <div class="detalle-item">
+          <label>Período</label>
+          <span class="valor">{{ seleccionada.periodoDesde }} al {{ seleccionada.periodoHasta }}</span>
+        </div>
+        <div class="detalle-item">
+          <label>Prestaciones</label>
+          <span class="valor">{{ seleccionada.cantTurnos }}</span>
+        </div>
+        <div class="detalle-item">
+          <label>Monto por Prestación</label>
+          <span class="valor">${{ seleccionada.montoUnitario | number }}</span>
+        </div>
+        <div class="detalle-item total">
+          <label>Total</label>
+          <span class="valor">${{ seleccionada.montoTotal | number }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

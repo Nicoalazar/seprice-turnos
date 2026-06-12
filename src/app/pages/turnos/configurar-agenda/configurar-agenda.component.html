@@ -1,0 +1,135 @@
+<div class="container">
+  <div class="header">
+    <h1>Configurar Agenda Médica</h1>
+  </div>
+
+  <!-- Paso 1: Selector de Médico -->
+  <div class="section-card">
+    <p class="paso-label">PASO 1 — SELECCIONAR MÉDICO</p>
+    <div class="medicos-list">
+      <button
+        *ngFor="let medico of medicos"
+        class="medico-btn"
+        [class.selected]="medicoSeleccionado?.id === medico.id"
+        (click)="seleccionarMedico(medico)"
+        [disabled]="cargando"
+      >
+        <mat-icon>medical_services</mat-icon>
+        <div class="medico-info">
+          <strong>Dr. {{ medico.apellido }}, {{ medico.nombre }}</strong>
+          <span>{{ medico.especialidad }}</span>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Agenda Actual (si existe) -->
+  <div class="section-card" *ngIf="medicoSeleccionado && agendaActual.length > 0">
+    <p class="paso-label">AGENDA CONFIGURADA</p>
+    <table class="agenda-table">
+      <thead>
+        <tr>
+          <th>Día</th>
+          <th>Inicio</th>
+          <th>Fin</th>
+          <th>Duración (min)</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let agenda of agendaActual" [class.fila-editando]="agendaEditandoId === agenda.id">
+          <td>{{ obtenerDiaLabel(agenda.diaSemana) }}</td>
+          <td>{{ agenda.horaInicio }}</td>
+          <td>{{ agenda.horaFin }}</td>
+          <td>{{ agenda.duracionMin }}</td>
+          <td>
+            <div class="acciones-fila">
+              <button class="btn-accion btn-editar" [class.activo]="agendaEditandoId === agenda.id" (click)="editarFila(agenda)" title="Editar">
+                <mat-icon>edit_note</mat-icon>
+              </button>
+              <ng-container *ngIf="agendaConfirmandoId !== agenda.id; else confirmarEliminar">
+                <button class="btn-accion btn-eliminar" (click)="iniciarEliminacion(agenda.id)" title="Eliminar">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </ng-container>
+              <ng-template #confirmarEliminar>
+                <span class="confirmar-label">¿Eliminar?</span>
+                <button class="btn-accion btn-si" (click)="confirmarEliminacion(agenda)" title="Confirmar">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button class="btn-accion btn-no" (click)="agendaConfirmandoId = null" title="Cancelar">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </ng-template>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paso 2: Formulario -->
+  <div class="section-card" *ngIf="medicoSeleccionado">
+    <p class="paso-label">PASO 2 — CONFIGURAR HORARIOS</p>
+    <p class="paso-desc">
+      {{ medicoSeleccionado.especialidad }} · Duración mínima: {{ obtenerDuracionMinima() }} min
+    </p>
+
+    <form [formGroup]="formulario" class="formulario">
+
+      <div class="input-group">
+        <label for="diaSemana">Día de la semana</label>
+        <select id="diaSemana" formControlName="diaSemana">
+          <option *ngFor="let dia of diasSemana" [value]="dia.valor">{{ dia.label }}</option>
+        </select>
+      </div>
+
+      <div class="input-row">
+        <div class="input-group">
+          <label for="horaInicio">Hora inicio</label>
+          <input id="horaInicio" type="time" formControlName="horaInicio">
+        </div>
+        <div class="input-group">
+          <label for="horaFin">Hora fin</label>
+          <input id="horaFin" type="time" formControlName="horaFin">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="duracionMin">Duración mínima por turno (minutos)</label>
+        <input id="duracionMin" type="number" formControlName="duracionMin" [min]="obtenerDuracionMinima()">
+        <span class="input-hint">Mínimo para {{ medicoSeleccionado.especialidad }}: {{ obtenerDuracionMinima() }} min</span>
+        <span class="input-error" *ngIf="formulario.get('duracionMin')?.hasError('min') && formulario.get('duracionMin')?.touched">
+          <mat-icon>error_outline</mat-icon>
+          La duración mínima para {{ medicoSeleccionado.especialidad }} es {{ obtenerDuracionMinima() }} minutos
+        </span>
+      </div>
+
+      <div class="form-hint">
+        <mat-icon>info</mat-icon>
+        Al guardar, se generarán automáticamente las franjas para los próximos 60 días en este día de semana.
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-cancelar" (click)="volver()" [disabled]="guardando">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn-guardar"
+          (click)="guardar()"
+          [disabled]="formulario.invalid || guardando || !medicoSeleccionado"
+        >
+          <mat-icon>check</mat-icon>
+          {{ guardando ? 'Guardando...' : 'Guardar y Generar Franjas' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Estado vacío -->
+  <div class="section-card empty" *ngIf="!medicoSeleccionado">
+    <mat-icon class="empty-icon">calendar_month</mat-icon>
+    <p>Seleccioná un médico para configurar su agenda</p>
+  </div>
+</div>

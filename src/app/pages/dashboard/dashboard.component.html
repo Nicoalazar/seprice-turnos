@@ -3,7 +3,7 @@
   <main class="main">
 
     <!-- ════════ VISTA ADMINISTRATIVO ════════ -->
-    <div *ngIf="rolActivo === 'RECEPCIONISTA'">
+    <div *ngIf="rolActivo === 'ADMIN'">
 
       <p class="seccion-label">Resumen del día</p>
 
@@ -11,23 +11,23 @@
       <div class="metricas">
         <div class="metrica-card">
           <p class="metrica-label">Turnos hoy</p>
-          <p class="metrica-valor">24</p>
-          <p class="metrica-sub">3 pendientes de acreditación</p>
+          <p class="metrica-valor">{{ metricaTurnosHoy }}</p>
+          <p class="metrica-sub">{{ metricaPendientesAcreditacion }} pendientes de acreditación</p>
         </div>
         <div class="metrica-card">
           <p class="metrica-label">Sobreturnos</p>
-          <p class="metrica-valor">2</p>
+          <p class="metrica-valor">{{ metricaSobreturnos }}</p>
           <p class="metrica-sub">del día</p>
         </div>
         <div class="metrica-card">
           <p class="metrica-label">Cancelaciones</p>
-          <p class="metrica-valor">1</p>
-          <p class="metrica-sub">slot liberado</p>
+          <p class="metrica-valor">{{ metricaCancelaciones }}</p>
+          <p class="metrica-sub">del día</p>
         </div>
         <div class="metrica-card">
-          <p class="metrica-label">Autorizaciones</p>
-          <p class="metrica-valor">21</p>
-          <p class="metrica-sub">obras sociales</p>
+          <p class="metrica-label">Acreditados</p>
+          <p class="metrica-valor">{{ metricaAcreditados }}</p>
+          <p class="metrica-sub">presentes o atendidos</p>
         </div>
       </div>
 
@@ -54,6 +54,21 @@
           <mat-icon class="accion-icon">verified_user</mat-icon>
           <p class="accion-titulo">Verificar autorización</p>
           <p class="accion-desc">Comprobar cobertura de obra social</p>
+        </div>
+        <div class="accion-card" (click)="crearUsuario()" *ngIf="rolRealUsuario === 'SUPER'">
+          <mat-icon class="accion-icon">person_add</mat-icon>
+          <p class="accion-titulo">Crear usuario</p>
+          <p class="accion-desc">Nuevo acceso para médico o administrativo</p>
+        </div>
+        <div class="accion-card" (click)="configurarAgenda()">
+          <mat-icon class="accion-icon">schedule</mat-icon>
+          <p class="accion-titulo">Configurar agenda</p>
+          <p class="accion-desc">Definir horarios y franjas de médicos</p>
+        </div>
+        <div class="accion-card" (click)="liquidarHonorarios()">
+          <mat-icon class="accion-icon">receipt</mat-icon>
+          <p class="accion-titulo">Generar liquidación</p>
+          <p class="accion-desc">Crear liquidación de honorarios para médicos</p>
         </div>
       </div>
 
@@ -100,17 +115,17 @@
       <div class="metricas">
         <div class="metrica-card">
           <p class="metrica-label">Pacientes asignados</p>
-          <p class="metrica-valor">8</p>
+          <p class="metrica-valor">{{ metricaAsignados }}</p>
           <p class="metrica-sub">para hoy</p>
         </div>
         <div class="metrica-card">
           <p class="metrica-label">Atendidos</p>
-          <p class="metrica-valor">3</p>
+          <p class="metrica-valor">{{ metricaAtendidos }}</p>
           <p class="metrica-sub">registrados</p>
         </div>
         <div class="metrica-card">
           <p class="metrica-label">En espera</p>
-          <p class="metrica-valor">2</p>
+          <p class="metrica-valor">{{ metricaEnEspera }}</p>
           <p class="metrica-sub">en sala</p>
         </div>
       </div>
@@ -123,6 +138,11 @@
           <p class="accion-titulo">Ver agenda</p>
           <p class="accion-desc">Lista completa del día</p>
         </div>
+        <div class="accion-card" (click)="verSalaEspera()">
+          <mat-icon class="accion-icon">people</mat-icon>
+          <p class="accion-titulo">Sala de espera</p>
+          <p class="accion-desc">Pacientes esperando</p>
+        </div>
         <div class="accion-card" (click)="registrarAtencion()">
           <mat-icon class="accion-icon">medical_information</mat-icon>
           <p class="accion-titulo">Registrar atención</p>
@@ -132,6 +152,11 @@
           <mat-icon class="accion-icon">history</mat-icon>
           <p class="accion-titulo">Turno de seguimiento</p>
           <p class="accion-desc">Recitar desde consultorio</p>
+        </div>
+        <div class="accion-card" (click)="miLiquidacion()">
+          <mat-icon class="accion-icon">receipt</mat-icon>
+          <p class="accion-titulo">Mis liquidaciones</p>
+          <p class="accion-desc">Ver estado de tus honorarios</p>
         </div>
       </div>
 

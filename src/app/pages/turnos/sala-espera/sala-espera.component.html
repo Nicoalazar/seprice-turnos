@@ -1,0 +1,74 @@
+<div class="container">
+  <div class="header">
+    <div class="header-content">
+      <h1>Sala de Espera</h1>
+      <p class="subtitle" *ngIf="medicoActual">
+        {{ medicoActual.nombre }} {{ medicoActual.apellido }} — {{ medicoActual.especialidad }}
+      </p>
+    </div>
+    <button class="btn-actualizar" (click)="actualizarAhora()" [disabled]="cargando">
+  ↻ {{ cargando ? 'Actualizando...' : 'Actualizar' }}
+</button>
+  </div>
+
+  <!-- Sin pacientes (FA1) -->
+  <div *ngIf="pacientesEnEspera.length === 0 && !cargando" class="empty-state">
+    <mat-icon>event_busy</mat-icon>
+    <h2>No hay pacientes en espera</h2>
+    <p>Todos los pacientes han sido atendidos o no hay turnos confirmados para hoy</p>
+  </div>
+
+  <!-- Tabla de pacientes -->
+  <mat-card *ngIf="pacientesEnEspera.length > 0" class="tabla-card">
+    <mat-card-header>
+      <mat-card-title>
+        Pacientes en sala — {{ pacientesEnEspera.length }} en espera
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table class="tabla-espera">
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Paciente</th>
+            <th>DNI</th>
+            <th>Modalidad</th>
+            <th>Tipo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let turno of pacientesEnEspera" class="turno-row">
+            <td class="hora">
+              <strong>{{ turno.franja?.hora }}</strong>
+            </td>
+            <td class="paciente">
+              {{ obtenerNombrePaciente(turno) }}
+            </td>
+            <td class="dni">
+              {{ turno.paciente?.dni }}
+            </td>
+            <td class="modalidad">
+              <span class="badge" [class.particular]="turno.modalidadPago === 'PARTICULAR'">
+                {{ obtenerModalidadPago(turno) }}
+              </span>
+            </td>
+            <td class="tipo">
+              <span class="badge-tipo" [class.sobreturno]="turno.tipo === 'SOBRETURNO'">
+                {{ obtenerTipoTurno(turno) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Info del sistema -->
+  <div class="info-box">
+    <mat-icon>info</mat-icon>
+    <p>
+      La sala de espera se actualiza automáticamente cada 30 segundos.
+      Presioná "Actualizar" para refrescar manualmente en cualquier momento.
+    </p>
+  </div>
+</div>

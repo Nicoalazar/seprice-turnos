@@ -1,89 +1,168 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router'; // Sumamos FormsModule
+import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { TurnosService } from '../../../core/services/turnos.service';
+import { AgendaService } from '../../../core/services/agenda.service';
+import { MedicosService } from '../../../core/services/medicos.service';
+import { TurnoConDetalles } from '../../../core/interfaces/turno.d';
+import { Franja } from '../../../core/interfaces/franja.d';
+import { Medico } from '../../../core/interfaces/medico.d';
 
 @Component({
   selector: 'app-cancelar-turno',
   standalone: true,
-  // Agregamos FormsModule en los imports para poder usar [(ngModel)] abajo
-  imports: [CommonModule, ReactiveFormsModule, FormsModule], 
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatIconModule, MatSnackBarModule],
   templateUrl: './cancelar-turno.component.html',
   styleUrl: './cancelar-turno.component.css'
 })
 export class CancelarTurnoComponent implements OnInit {
   private router = inject(Router);
+  private turnosService = inject(TurnosService);
+  private agendaService = inject(AgendaService);
+  private medicosService = inject(MedicosService);
+  private snackBar = inject(MatSnackBar);
 
   volverAlDashboard(): void { this.router.navigate(['/dashboard']); }
 
   buscadorControl = new FormControl('');
-  turnoEncontrado: boolean = false; 
+  turnoEncontrado: boolean = false;
   errorTurnoNoEncontrado: boolean = false;
+  turnoActual: TurnoConDetalles | null = null;
+  cargando = false;
 
-  // VARIABLES PARA CAPTURAR LOS DATOS DEL FORMULARIO DE ABAJO
-  // Columna Cancelar
+  // Variables para cancelación
   motivoCancelacion: string = '';
   notaCancelacion: string = '';
 
-  // Columna Reasignar
+  // Variables para reasignación
   nuevaFecha: string = '';
-  nuevaHora: string = '';
-  nuevoMedico: string = 'Dr. Méndez, Carlos'; // Dejamos el que viene por defecto
+  nuevoMedicoId: string = '';
+  franjasDisponibles = signal<Franja[]>([]);
+  franjaSeleccionada = signal<Franja | null>(null);
+  medicos = signal<Medico[]>([]);
+  cargandoReasignacion = false;
 
-  ngOnInit(): void {}
+  readonly hoy = new Date().toISOString().split('T')[0];
 
-  simularBuscar() {
+  ngOnInit(): void {
+    this.medicosService.getTodosMedicos().subscribe((medicos) => {
+      this.medicos.set(medicos);
+    });
+  }
+
+  buscar(): void {
     const valorBusqueda = this.buscadorControl.value?.trim();
     if (!valorBusqueda) {
       this.reseteoCompleto();
       return;
     }
 
-    if (valorBusqueda.includes('28') || valorBusqueda.toLowerCase().includes('garcia')) {
-      this.turnoEncontrado = true;
-      this.errorTurnoNoEncontrado = false;
-    } else {
-      this.turnoEncontrado = false;
-      this.errorTurnoNoEncontrado = true;
-    }
+    this.cargando = true;
+    this.turnosService.buscarTurnoPorPaciente(valorBusqueda).subscribe({
+      next: (turno) => {
+        this.cargando = false;
+        if (turno) {
+          this.turnoActual = turno;
+          this.turnoEncontrado = true;
+          this.errorTurnoNoEncontrado = false;
+        } else {
+          this.turnoEncontrado = false;
+          this.errorTurnoNoEncontrado = true;
+        }
+      },
+      error: () => {
+        this.cargando = false;
+        this.turnoEncontrado = false;
+        this.errorTurnoNoEncontrado = true;
+      }
+    });
   }
 
-  // FUNCIÓN 1: PROCESAR LA CANCELACIÓN
-  ejecutarCancelacion() {
-    if (!this.motivoCancelacion) {
-      alert('Por favor, seleccioná un motivo de cancelación.');
+  ejecutarCancelacion(): void {
+    if (!this.motivoCancelacion || !this.turnoActual) {
+      this.snackBar.open('Por favor, seleccioná un motivo de cancelación.', 'Cerrar', { duration: 3000 });
       return;
     }
 
-    // Simulamos el éxito de la operación
-    alert(`¡Turno Cancelado con Éxito!\nMotivo: ${this.motivoCancelacion}\nNota: ${this.notaCancelacion || 'Ninguna'}`);
-    
-    // Una vez cancelado, limpiamos la pantalla
-    this.reseteoCompleto();
+    this.cargando = true;
+    this.turnosService.cancelarTurno(this.turnoActual.id).subscribe({
+      next: (result) => {
+        this.cargando = false;
+        if (result.ok) {
+          this.snackBar.open(`Turno cancelado con éxito. Motivo: ${this.motivoCancelacion}`, 'Cerrar', { duration: 4000 });
+          this.reseteoCompleto();
+        } else {
+          this.snackBar.open('Error al cancelar el turno: ' + (result.error || 'Error desconocido'), 'Cerrar', { duration: 4000 });
+        }
+      },
+      error: () => {
+        this.cargando = false;
+        this.snackBar.open('Error al cancelar el turno', 'Cerrar', { duration: 3000 });
+      }
+    });
   }
 
-  // FUNCIÓN 2: PROCESAR LA REASIGNACIÓN
-  ejecutarReasignacion() {
-    if (!this.nuevaFecha || !this.nuevaHora) {
-      alert('Por favor, completá la nueva fecha y hora para la reasignación.');
+  cargarFranjasDisponibles(): void {
+    if (!this.nuevaFecha || !this.nuevoMedicoId || !this.turnoActual) {
+      this.snackBar.open('Completá la fecha y el médico para cargar las franjas disponibles.', 'Cerrar', { duration: 3000 });
       return;
     }
 
-    // Simulamos el éxito de la operación
-    alert(`¡Turno Reasignado con Éxito!\nNuevo Médico: ${this.nuevoMedico}\nFecha: ${this.nuevaFecha}\nHora: ${this.nuevaHora}`);
-    
-    // Una vez reasignado, limpiamos la pantalla
-    this.reseteoCompleto();
+    this.cargandoReasignacion = true;
+    this.agendaService.getFranjasDisponibles(this.nuevoMedicoId, this.nuevaFecha).subscribe({
+      next: (franjas) => {
+        this.franjasDisponibles.set(franjas);
+        this.cargandoReasignacion = false;
+        if (franjas.length === 0) {
+          this.snackBar.open('No hay franjas disponibles para esa fecha y médico.', 'Cerrar', { duration: 3000 });
+        }
+      },
+      error: () => {
+        this.cargandoReasignacion = false;
+        this.snackBar.open('Error al cargar franjas disponibles.', 'Cerrar', { duration: 3000 });
+      }
+    });
   }
 
-  // Función auxiliar para limpiar todo y volver al estado inicial
-  private reseteoCompleto() {
+  ejecutarReasignacion(): void {
+    if (!this.franjaSeleccionada() || !this.turnoActual) {
+      this.snackBar.open('Por favor, seleccioná una franja disponible para la reasignación.', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    this.cargando = true;
+    const nuevaFranjaId = this.franjaSeleccionada()!.id;
+
+    this.turnosService.reasignarTurno(this.turnoActual.id, nuevaFranjaId).subscribe({
+      next: (result) => {
+        this.cargando = false;
+        if (result.ok) {
+          this.snackBar.open('¡Turno reasignado con éxito!', 'Cerrar', { duration: 4000 });
+          this.reseteoCompleto();
+        } else {
+          this.snackBar.open('Error al reasignar el turno: ' + (result.error || 'Error desconocido'), 'Cerrar', { duration: 4000 });
+        }
+      },
+      error: () => {
+        this.cargando = false;
+        this.snackBar.open('Error al reasignar el turno', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
+  private reseteoCompleto(): void {
     this.turnoEncontrado = false;
     this.errorTurnoNoEncontrado = false;
+    this.turnoActual = null;
     this.buscadorControl.setValue('');
     this.motivoCancelacion = '';
     this.notaCancelacion = '';
     this.nuevaFecha = '';
-    this.nuevaHora = '';
+    this.nuevoMedicoId = '';
+    this.franjasDisponibles.set([]);
+    this.franjaSeleccionada.set(null);
   }
 }

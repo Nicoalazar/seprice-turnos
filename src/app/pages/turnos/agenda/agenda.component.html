@@ -3,29 +3,29 @@
     <header class="header-pagina">
         <div class="info-izquierda">
             <h1>Mi agenda del día</h1>
-            <p class="fecha-info">Lunes 5 de mayo, 2026 — Clínica Médica</p>
+            <p class="fecha-info">{{ fechaDisplay }}{{ especialidadMedico ? ' — ' + especialidadMedico : '' }}</p>
         </div>
     </header>
 
     <section class="stats-container">
         <div class="stat-card">
             <span class="stat-label">Pacientes asignados</span>
-            <div class="stat-valor color-violeta">8</div>
+            <div class="stat-valor color-violeta">{{ totalAsignados }}</div>
             <span class="stat-subtext">Para hoy</span>
         </div>
         <div class="stat-card">
             <span class="stat-label">Atendidos</span>
-            <div class="stat-valor color-verde">3</div>
+            <div class="stat-valor color-verde">{{ totalAtendidos }}</div>
             <span class="stat-subtext">registrados</span>
         </div>
         <div class="stat-card">
             <span class="stat-label">En espera</span>
-            <div class="stat-valor color-naranja">2</div>
+            <div class="stat-valor color-naranja">{{ totalEnEspera }}</div>
             <span class="stat-subtext">en sala</span>
         </div>
         <div class="stat-card">
             <span class="stat-label">Seguimiento</span>
-            <div class="stat-valor color-azul">1</div>
+            <div class="stat-valor color-azul">{{ totalSeguimiento }}</div>
             <span class="stat-subtext">solicitados</span>
         </div>
     </section>
@@ -67,12 +67,12 @@
                             </button>
 
                             <button *ngIf="franja.estado !== 'Libre' && franja.estado !== 'Atendido'"
-                                (click)="registrarAtencion(franja)" class="btn-accion btn-ver">
+                                (click)="abrirFormularioAtencion(franja)" class="btn-accion btn-ver">
                                 Registrar atención
                             </button>
 
-                            <button *ngIf="franja.estado === 'Atendido'" (click)="verDetalle(franja)" class="btn-accion"
-                                style="background-color: #2b244d; color: #a5a1b8;">
+                            <button *ngIf="franja.estado === 'Atendido'" (click)="verDetalle(franja)"
+                                class="btn-accion btn-ver-detalle">
                                 Ver detalle
                             </button>
                         </td>
@@ -82,10 +82,88 @@
         </div>
     </div>
 
-    <footer class="alert-banner">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        <p><strong>FAT —</strong> Si no hay pacientes asignados para el día, el sistema mostrará un mensaje informando
-            que la agenda está vacía.</p>
-    </footer>
+    <!-- Formulario de Atención -->
+    <div *ngIf="mostrando() === 'formulario' && turnoActualAtencion() && formularioAtencion" class="modal-overlay">
+        <div class="modal-formulario">
+            <h2>Registrar Atención</h2>
+            <p class="paciente-info">
+                {{ turnoActualAtencion()!.paciente?.apellido }}, {{ turnoActualAtencion()!.paciente?.nombre }}
+                — {{ turnoActualAtencion()!.franja?.hora }}
+            </p>
+
+            <form [formGroup]="formularioAtencion" (ngSubmit)="guardarAtencion()">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Diagnóstico</mat-label>
+                    <textarea matInput formControlName="diagnostico" placeholder="Diagnóstico de la consulta..."></textarea>
+                    <mat-error *ngIf="formularioAtencion.get('diagnostico')?.hasError('required')">
+                        Diagnóstico requerido
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Prescripciones (opcional)</mat-label>
+                    <textarea matInput formControlName="prescripciones" placeholder="Medicinas, inyecciones, etc..."></textarea>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Derivación a otro especialista (opcional)</mat-label>
+                    <textarea matInput formControlName="derivacion" placeholder="Si corresponde, indicar derivación..."></textarea>
+                </mat-form-field>
+
+                <div class="form-actions">
+                    <button type="button" mat-button (click)="cancelarFormulario()" [disabled]="cargando">
+                        Cancelar
+                    </button>
+                    <button type="submit" mat-raised-button color="primary" [disabled]="formularioAtencion.invalid || cargando">
+                        {{ cargando ? 'Guardando...' : 'Guardar Atención' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Estado vacío: sin turnos para el día (FA1 de CU-03) -->
+    <div *ngIf="franjasHorarias.length === 0 && !cargando" class="agenda-vacia">
+        <mat-icon>event_busy</mat-icon>
+        <p>No hay turnos asignados para el día de hoy.</p>
+    </div>
+
+    <!-- Panel de detalle de atención -->
+    <div *ngIf="turnoDetalle()" class="modal-overlay" (click)="cerrarDetalle()">
+        <div class="modal-detalle" (click)="$event.stopPropagation()">
+            <div class="modal-detalle-header">
+                <h3>Detalle de atención</h3>
+                <button class="btn-cerrar" (click)="cerrarDetalle()">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+            <div class="detalle-grid">
+                <div class="detalle-item">
+                    <span class="detalle-label">Paciente</span>
+                    <span class="detalle-valor">{{ turnoDetalle()!.paciente.apellido }}, {{ turnoDetalle()!.paciente.nombre }}</span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">DNI</span>
+                    <span class="detalle-valor">{{ turnoDetalle()!.paciente.dni }}</span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">Médico</span>
+                    <span class="detalle-valor">Dr. {{ turnoDetalle()!.medico.apellido }}, {{ turnoDetalle()!.medico.nombre }}</span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">Especialidad</span>
+                    <span class="detalle-valor">{{ turnoDetalle()!.medico.especialidad }}</span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">Hora</span>
+                    <span class="detalle-valor">{{ turnoDetalle()!.franja.hora }}</span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">Modalidad</span>
+                    <span class="detalle-valor">{{ turnoDetalle()!.modalidadPago }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>

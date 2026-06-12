@@ -1,0 +1,286 @@
+import { Injectable, inject } from '@angular/core';
+import { Observable, from, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { SupabaseService } from './supabase.service';
+import { Agenda } from '../interfaces/agenda.d';
+import { Franja } from '../interfaces/franja.d';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AgendaService {
+  private supabase = inject(SupabaseService).getClient();
+
+  getAgendaPorMedico(medicoId: string): Observable<Agenda[]> {
+    return from(
+      this.supabase
+        .from('Agenda')
+        .select('*')
+        .eq('medicoId', medicoId)
+        .order('diaSemana', { ascending: true })
+    ).pipe(
+      map(({ data }) => (data ?? []) as Agenda[])
+    );
+  }
+
+  getFranjasPorMedico(medicoId: string, fecha: string): Observable<Franja[]> {
+    // fecha en formato YYYY-MM-DD
+    return from(
+      this.supabase
+        .from('Franja')
+        .select('*, agenda:Agenda(medicoId, duracionMin)')
+        .eq('agenda.medicoId', medicoId)
+        .eq('fecha', fecha)
+        .order('hora', { ascending: true })
+    ).pipe(
+      map(({ data }) => (data ?? []) as Franja[])
+    );
+  }
+
+  getFranjasDisponibles(medicoId: string, fecha: string): Observable<Franja[]> {
+    // Calcular el día de la semana (1=lunes, 7=domingo)
+    const fechaObj = new Date(fecha + 'T00:00:00');
+    const diaSemana = fechaObj.getDay(); // 0=domingo, 1=lunes, ..., 6=sábado
+    const diaSemanaSQL = diaSemana === 0 ? 7 : diaSemana; // Convertir: 0->7, 1->1, ..., 6->6
+
+    // Obtener la agenda específica del médico para ese día de la semana
+    return from(
+      this.supabase
+        .from('Agenda')
+        .select('id')
+        .eq('medicoId', medicoId)
+        .eq('diaSemana', diaSemanaSQL)
+    ).pipe(
+      switchMap(({ data: agendas }) => {
+        if (!agendas || agendas.length === 0) return of([]);
+        const agendaId = (agendas[0] as any).id;
+
+        // Obtener las franjas de esa agenda específica
+        return from(
+          this.supabase
+            .from('Franja')
+            .select('*')
+            .eq('agendaId', agendaId)
+            .eq('fecha', fecha)
+            .eq('disponible', true)
+            .eq('sobreturno', false)
+            .order('hora', { ascending: true })
+        ).pipe(
+          map(({ data }) => (data as Franja[]) || [])
+        );
+      })
+    );
+  }
+
+  getFranjasParaSobreturno(medicoId: string, fecha: string): Observable<Franja[]> {
+    // Misma convención que getFranjasDisponibles: 1=Lunes ... 7=Domingo
+    const diaJS = new Date(fecha + 'T00:00:00').getDay();
+    const diaSemana = diaJS === 0 ? 7 : diaJS;
+
+    return from(
+      this.supabase
+        .from('Agenda')
+        .select('id')
+        .eq('medicoId', medicoId)
+        .eq('diaSemana', diaSemana)
+    ).pipe(
+      switchMap(({ data: agendas }) => {
+        if (!agendas || agendas.length === 0) return of([]);
+        const agendaId = (agendas[0] as any).id;
+
+        return from(
+          this.supabase
+            .from('Franja')
+            .select('*')
+            .eq('agendaId', agendaId)
+            .eq('fecha', fecha)
+            .order('hora', { ascending: true })
+        ).pipe(
+          map(({ data }) => (data as Franja[]) || [])
+        );
+      })
+    );
+  }
+
+  crearFranja(franja: Omit<Franja, 'id' | 'creadoEn'>): Observable<Franja | null> {
+    return from(
+      this.supabase.from('Franja').insert([{ id: crypto.randomUUID(), ...franja }]).select() as any
+    ).pipe(
+      map(({ data, error }: any) => (error || !data || !data[0]) ? null : (data[0] as Franja))
+    );
+  }
+
+  marcarFranjaOcupada(franjaId: string): Observable<{ ok: boolean }> {
+    return from(
+      this.supabase
+        .from('Franja')
+        .update({ disponible: false })
+        .eq('id', franjaId)
+    ).pipe(
+      map(({ error }) => ({ ok: !error }))
+    );
+  }
+
+  marcarFranjaDisponible(franjaId: string): Observable<{ ok: boolean }> {
+    return from(
+      this.supabase
+        .from('Franja')
+        .update({ disponible: true })
+        .eq('id', franjaId)
+    ).pipe(
+      map(({ error }) => ({ ok: !error }))
+    );
+  }
+
+  crearOActualizarAgenda(
+    medicoId: string,
+    diaSemana: number,
+    horaInicio: string,
+    horaFin: string,
+    duracionMin: number,
+    especialidad: string
+  ): Observable<{ ok: boolean; error?: string; agendaId?: string }> {
+    const duracionesMinimas: { [key: string]: number } = {
+      'Clínica Médica': 15,
+      'Pediatría': 15,
+      'Cardiología': 25,
+      'Fisio-kinesiología': 25,
+      'Salud Mental': 30,
+      'Dermatología': 20
+    };
+
+    const duracionMinima = duracionesMinimas[especialidad] || 15;
+
+    if (duracionMin < duracionMinima) {
+      return of({ ok: false, error: `Duración mínima para ${especialidad} es ${duracionMinima} minutos` });
+    }
+
+    return from(
+      this.supabase
+        .from('Agenda')
+        .select('id')
+        .eq('medicoId', medicoId)
+        .eq('diaSemana', diaSemana)
+        .maybeSingle()
+    ).pipe(
+      switchMap(({ data: existente }: any) => {
+        if (existente?.id) {
+          return from(
+            this.supabase
+              .from('Agenda')
+              .update({ horaInicio, horaFin, duracionMin })
+              .eq('id', existente.id)
+              .select('id')
+              .single()
+          );
+        } else {
+          return from(
+            this.supabase
+              .from('Agenda')
+              .insert([{ id: crypto.randomUUID(), medicoId, diaSemana, horaInicio, horaFin, duracionMin }])
+              .select('id')
+              .single()
+          );
+        }
+      }),
+      map(({ data, error }: any) => {
+        if (error || !data) {
+          console.error('[AgendaService] Error al guardar:', error);
+          return { ok: false, error: 'Error al guardar la agenda' };
+        }
+        return { ok: true, agendaId: data.id };
+      })
+    );
+  }
+
+  eliminarAgenda(agendaId: string): Observable<{ ok: boolean; error?: string }> {
+    const hoy = new Date().toISOString().split('T')[0];
+    return from(
+      this.supabase
+        .from('Franja')
+        .delete()
+        .eq('agendaId', agendaId)
+        .eq('disponible', true)
+        .gte('fecha', hoy)
+    ).pipe(
+      switchMap(({ error: errorFranjas }) => {
+        if (errorFranjas) return of({ ok: false as const, error: 'Error al eliminar franjas futuras' });
+        return from(
+          this.supabase.from('Agenda').delete().eq('id', agendaId)
+        ).pipe(
+          map(({ error }) =>
+            error
+              ? { ok: false as const, error: 'No se puede eliminar: hay turnos asignados en esta agenda' }
+              : { ok: true as const }
+          )
+        );
+      })
+    );
+  }
+
+  generarFranjasParaAgenda(
+    agendaId: string,
+    fecha: string,
+    horaInicio: string,
+    horaFin: string,
+    duracionMin: number
+  ): Observable<{ ok: boolean; error?: string; cantidad?: number }> {
+    const franjas = this.generarFranjasHorarias(horaInicio, horaFin, duracionMin);
+
+    // No duplicar franjas si ya fueron generadas para esa fecha
+    return from(
+      this.supabase
+        .from('Franja')
+        .select('hora')
+        .eq('agendaId', agendaId)
+        .eq('fecha', fecha)
+    ).pipe(
+      switchMap(({ data: existentes }: any) => {
+        const horasExistentes = new Set((existentes ?? []).map((f: any) => f.hora));
+        const franjaObjects = franjas
+          .filter(hora => !horasExistentes.has(hora))
+          .map(hora => ({
+            id: crypto.randomUUID(),
+            agendaId,
+            fecha,
+            hora,
+            disponible: true,
+            sobreturno: false
+          }));
+
+        if (franjaObjects.length === 0) {
+          return of({ ok: true, cantidad: 0 });
+        }
+
+        return from(
+          this.supabase.from('Franja').insert(franjaObjects) as any
+        ).pipe(
+          map(({ error }: any) => {
+            if (error) {
+              return { ok: false, error: 'Error al generar franjas' };
+            }
+            return { ok: true, cantidad: franjaObjects.length };
+          })
+        );
+      })
+    );
+  }
+
+  private generarFranjasHorarias(horaInicio: string, horaFin: string, duracionMin: number): string[] {
+    const franjas: string[] = [];
+    const [horaI, minI] = horaInicio.split(':').map(Number);
+    const [horaF, minF] = horaFin.split(':').map(Number);
+
+    let actual = horaI * 60 + minI;
+    const fin = horaF * 60 + minF;
+
+    while (actual < fin) {
+      const h = Math.floor(actual / 60).toString().padStart(2, '0');
+      const m = (actual % 60).toString().padStart(2, '0');
+      franjas.push(`${h}:${m}`);
+      actual += duracionMin;
+    }
+
+    return franjas;
+  }
+}

@@ -15,9 +15,7 @@ export class LoginService {
     private supabaseService: SupabaseService,
     private router: Router
   ) {
-    // Cuando se crea el servicio, verifica si hay un usuario guardado en el navegador
-    //this.cargarUsuarioGuardado();
-
+    this.cargarUsuarioGuardado();
   }
 
   // Método para hacer login - recibe email y password
@@ -33,27 +31,26 @@ export class LoginService {
         .eq('email', email)
         .single();
 
-      // Si hay error o no encuentra el usuario
+      // FA1/FA3 — mensaje genérico: no se revela si falló el usuario o la contraseña
       if (error || !data) {
-        return { exito: false, error: 'Usuario no encontrado' };
+        return { exito: false, error: 'Usuario o contraseña incorrectos' };
       }
 
       // Castear los datos como un usuario (convertir a tipo Usuario)
       const usuario = data as Usuario;
 
-      // Verificar que la contraseña sea correcta
       if (usuario.password !== password) {
-        return { exito: false, error: 'Contraseña incorrecta' };
+        return { exito: false, error: 'Usuario o contraseña incorrectos' };
       }
 
-      // Verificar que el usuario esté activo
+      // FA2 — cuenta inactiva
       if (!usuario.activo) {
-        return { exito: false, error: 'Este usuario está desactivado' };
+        return { exito: false, error: 'Su cuenta está deshabilitada. Contacte al administrador' };
       }
 
       // Si todo está bien, guardar el usuario en la sesión
       this.usuarioActual = usuario;
-      // this.guardarUsuario(usuario);
+      this.guardarUsuario(usuario);
 
       return { exito: true, usuario };
     } catch (error: any) {
@@ -65,35 +62,31 @@ export class LoginService {
   // Método para cerrar sesión
   logout(): void {
     this.usuarioActual = null;
+    localStorage.removeItem('usuarioLogueado');
     this.router.navigate(['/login']);
   }
 
-  // // Método que devuelve el usuario actual
-  // obtenerUsuarioActual(): Usuario | null {
-  //   return this.usuarioActual;
-  // }
+  getUsuarioActual(): Usuario | null {
+    return this.usuarioActual;
+  }
 
-  // // Método que verifica si hay un usuario logueado
-  // estaLogueado(): boolean {
-  //   return this.usuarioActual !== null;
-  // }
+  estaLogueado(): boolean {
+    return this.usuarioActual !== null;
+  }
 
-  // // Método privado que guarda el usuario en el almacenamiento local del navegador
-  // private guardarUsuario(usuario: Usuario): void {
-  //   localStorage.setItem('usuarioLogueado', JSON.stringify(usuario));
-  // }
+  private guardarUsuario(usuario: Usuario): void {
+    localStorage.setItem('usuarioLogueado', JSON.stringify(usuario));
+  }
 
-  // // Método privado que carga un usuario guardado en el navegador (si existe)
-  // private cargarUsuarioGuardado(): void {
-  //   const usuarioGuardado = localStorage.getItem('usuarioLogueado');
+  private cargarUsuarioGuardado(): void {
+    const usuarioGuardado = localStorage.getItem('usuarioLogueado');
 
-  //   if (usuarioGuardado) {
-  //     try {
-  //       this.usuarioActual = JSON.parse(usuarioGuardado) as Usuario;
-  //     } catch {
-  //       // Si hay error al parsear, eliminar el usuario guardado
-  //       localStorage.removeItem('usuarioLogueado');
-  //     }
-  //   }
-  // }
+    if (usuarioGuardado) {
+      try {
+        this.usuarioActual = JSON.parse(usuarioGuardado) as Usuario;
+      } catch {
+        localStorage.removeItem('usuarioLogueado');
+      }
+    }
+  }
 }

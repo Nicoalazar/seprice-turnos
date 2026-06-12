@@ -1,10 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { RolUsuario } from '../../core/interfaces/usuario';
-import { PacienteAcreditacion } from '../../core/interfaces/acreditacion';
+import { PacientesService } from '../../core/services/pacientes.service';
+import { TurnosService } from '../../core/services/turnos.service';
+import { Paciente } from '../../core/interfaces/paciente.d';
+import { TurnoConDetalles } from '../../core/interfaces/turno.d';
 
 @Component({
   selector: 'app-acreditacion',
@@ -13,144 +16,95 @@ import { PacienteAcreditacion } from '../../core/interfaces/acreditacion';
   templateUrl: './acreditacion.component.html',
   styleUrls: ['./acreditacion.component.css']
 })
-export class AcreditacionComponent {
+export class AcreditacionComponent implements OnInit {
   private router = inject(Router);
+  private pacientesService = inject(PacientesService);
+  private turnosService = inject(TurnosService);
 
-  rolActivo: RolUsuario = 'RECEPCIONISTA';
+  rolActivo: RolUsuario = 'ADMIN';
 
   busqueda = '';
-  paciente: PacienteAcreditacion | null = null;
+  paciente: any = null;
+  turnoHoy: TurnoConDetalles | null = null;
   pacienteNoEncontrado = false;
+  cargando = false;
 
   identidadVerificada = false;
   modalidadPago: 'obraSocial' | 'particular' = 'obraSocial';
   acreditacionConfirmada = false;
 
-  private pacientes: PacienteAcreditacion[] = [
-    {
-      id: 1,
-      iniciales: 'GL',
-      colorAvatar: 'linear-gradient(135deg, var(--color-magenta), var(--color-violeta))',
-      nombre: 'Luis Alberto',
-      apellido: 'García',
-      dni: '28456789',
-      dniDisplay: '28.456.789',
-      fechaNacimiento: '12/03/1985',
-      telefono: '11 4567-8901',
-      obraSocial: 'Swiss Medical',
-      nroAfiliado: 'SM-00234-X',
-      turnoHoy: {
-        fecha: '05/05/2026',
-        hora: '09:15',
-        medico: 'Dr. Méndez',
-        especialidad: 'Clínica Médica',
-        estado: 'confirmado'
-      },
-      cobertura: {
-        estado: 'autorizado',
-        obraSocial: 'Swiss Medical',
-        prestacion: 'Prestación cubierta',
-        codigo: 'SM-2026-00891'
-      }
-    },
-    {
-      id: 2,
-      iniciales: 'ML',
-      colorAvatar: 'linear-gradient(135deg, var(--color-violeta), var(--bg-purple-dark-1, #4A1580))',
-      nombre: 'Marta',
-      apellido: 'López',
-      dni: '45678901',
-      dniDisplay: '45.678.901',
-      fechaNacimiento: '22/08/1979',
-      telefono: '11 5432-1098',
-      obraSocial: 'OSDE',
-      nroAfiliado: 'OSD-00112-B',
-      turnoHoy: {
-        fecha: '05/05/2026',
-        hora: '09:30',
-        medico: 'Dra. Torres',
-        especialidad: 'Cardiología',
-        estado: 'confirmado'
-      },
-      cobertura: {
-        estado: 'rechazado',
-        obraSocial: 'OSDE',
-        prestacion: 'Sin cobertura activa para esta prestación'
-      }
-    },
-    {
-      id: 3,
-      iniciales: 'AR',
-      colorAvatar: 'linear-gradient(135deg, var(--color-naranja), var(--color-status-warning))',
-      nombre: 'Ana',
-      apellido: 'Romero',
-      dni: '34567890',
-      dniDisplay: '34.567.890',
-      fechaNacimiento: '05/11/1992',
-      telefono: '11 9876-5432',
-      obraSocial: null,
-      nroAfiliado: null,
-      turnoHoy: {
-        fecha: '05/05/2026',
-        hora: '10:00',
-        medico: 'Dr. Méndez',
-        especialidad: 'Clínica Médica',
-        estado: 'confirmado'
-      },
-      cobertura: { estado: 'sin-cobertura' }
-    },
-    {
-      id: 4,
-      iniciales: 'JP',
-      colorAvatar: 'linear-gradient(135deg, var(--color-status-info-dark), var(--color-bg-blue-bright))',
-      nombre: 'Juan',
-      apellido: 'Pérez',
-      dni: '12345678',
-      dniDisplay: '12.345.678',
-      fechaNacimiento: '14/06/1988',
-      telefono: '11 2345-6789',
-      obraSocial: 'Galeno',
-      nroAfiliado: 'GAL-00567-C',
-      turnoHoy: null,
-      cobertura: {
-        estado: 'autorizado',
-        obraSocial: 'Galeno',
-        prestacion: 'Prestación cubierta',
-        codigo: 'GAL-2026-00234'
-      }
-    }
-  ];
-
-  private normalizar(texto: string): string {
-    return texto
-      .normalize('NFD')
-      .replace(/\p{Mn}/gu, '')
-      .toLowerCase()
-      .replace(/\./g, '');
-  }
+  ngOnInit(): void {}
 
   buscarPaciente(): void {
     this.pacienteNoEncontrado = false;
     this.paciente = null;
+    this.turnoHoy = null;
     this.resetearPasos();
+    this.cargando = true;
 
-    const criterio = this.normalizar(this.busqueda.trim());
-    if (!criterio) return;
-
-    const encontrado = this.pacientes.find(p =>
-      p.dni === criterio ||
-      this.normalizar(p.nombre).includes(criterio) ||
-      this.normalizar(p.apellido).includes(criterio) ||
-      this.normalizar(`${p.apellido} ${p.nombre}`).includes(criterio) ||
-      this.normalizar(`${p.nombre} ${p.apellido}`).includes(criterio)
-    );
-
-    if (!encontrado) {
-      this.pacienteNoEncontrado = true;
-    } else {
-      this.paciente = encontrado;
-      this.modalidadPago = encontrado.obraSocial ? 'obraSocial' : 'particular';
+    const criterio = this.busqueda.trim();
+    if (!criterio) {
+      this.cargando = false;
+      return;
     }
+
+    // Buscar paciente primero
+    this.pacientesService.buscarPaciente(criterio).subscribe({
+      next: (pacientes) => {
+        if (!pacientes || pacientes.length === 0) {
+          this.cargando = false;
+          this.pacienteNoEncontrado = true;
+          return;
+        }
+
+        const p = pacientes[0];
+        const fechaNac = new Date(p.fechaNac).toLocaleDateString('es-AR');
+        this.paciente = {
+          ...p,
+          fechaNacimiento: fechaNac,
+          telefono: p.telefono,
+          colorAvatar: `linear-gradient(135deg, var(--color-${['magenta', 'violeta', 'naranja'][Math.floor(Math.random() * 3)]}), var(--color-violeta))`,
+          iniciales: `${p.nombre.charAt(0)}${p.apellido.charAt(0)}`.toUpperCase(),
+          dniDisplay: `${p.dni.slice(0, 2)}.${p.dni.slice(2, 5)}.${p.dni.slice(5)}`,
+          cobertura: {
+            estado: p.obraSocial ? 'autorizado' : 'sin-cobertura',
+            obraSocial: p.obraSocial || undefined,
+            prestacion: 'Prestación cubierta',
+            codigo: `${p.obraSocial?.toUpperCase()}-2026-00001` || undefined,
+          },
+        };
+        const hoy = new Date().toISOString().split('T')[0];
+
+        // Buscar turno de hoy para este paciente
+        this.turnosService.getTurnosDeHoy().subscribe({
+          next: (turnos) => {
+            const turnoDelPaciente = turnos.find(t => t.pacienteId === this.paciente!.id);
+            if (turnoDelPaciente) {
+              this.turnoHoy = turnoDelPaciente;
+              // Mapear TurnoConDetalles a formato esperado por template
+              (this.paciente! as any).turnoHoy = {
+                id: turnoDelPaciente.id,
+                fecha: new Date((turnoDelPaciente.franja?.fecha || '') + 'T00:00:00').toLocaleDateString('es-AR'),
+                hora: turnoDelPaciente.franja?.hora || '',
+                medico: `Dr/a. ${turnoDelPaciente.medico?.apellido}`,
+                especialidad: turnoDelPaciente.medico?.especialidad || '',
+                estado: turnoDelPaciente.estado,
+              };
+              this.modalidadPago = turnoDelPaciente.modalidadPago === 'PARTICULAR' ? 'particular' : 'obraSocial';
+            }
+            this.cargando = false;
+          },
+          error: () => {
+            this.cargando = false;
+            this.pacienteNoEncontrado = true;
+          }
+        });
+      },
+      error: () => {
+        this.cargando = false;
+        this.pacienteNoEncontrado = true;
+      }
+    });
   }
 
   onEnter(event: Event): void {
@@ -169,36 +123,61 @@ export class AcreditacionComponent {
   }
 
   get tieneTurnoHoy(): boolean {
-    return !!this.paciente?.turnoHoy;
+    return !!this.turnoHoy;
   }
 
   get esSinTurno(): boolean {
-    return !!this.paciente && !this.paciente.turnoHoy;
+    return !!this.paciente && !this.turnoHoy;
   }
 
   get mostrarCoberturaOS(): boolean {
-    return this.modalidadPago === 'obraSocial' && !!this.paciente?.obraSocial;
+    return this.modalidadPago === 'obraSocial' && !!this.paciente;
   }
 
   get mostrarAdvertenciaFA3(): boolean {
     return (
       this.modalidadPago === 'obraSocial' &&
-      this.paciente?.cobertura.estado === 'rechazado'
+      this.paciente?.cobertura?.estado === 'sin-cobertura'
     );
   }
 
   get puedeConfirmar(): boolean {
-    return !!this.paciente?.turnoHoy && this.identidadVerificada;
+    return !!this.turnoHoy && this.identidadVerificada;
   }
 
   confirmarAcreditacion(): void {
-    if (!this.paciente?.turnoHoy) return;
-    this.paciente.turnoHoy.estado = 'presente en sala';
-    this.acreditacionConfirmada = true;
+    if (!this.turnoHoy) return;
+    this.cargando = true;
+    this.turnosService.acreditarTurno(this.turnoHoy.id).subscribe({
+      next: (result) => {
+        this.cargando = false;
+        if (result.ok) {
+          this.turnoHoy!.estado = 'PRESENTE EN SALA';
+          this.acreditacionConfirmada = true;
+        }
+      },
+      error: () => {
+        this.cargando = false;
+      }
+    });
   }
 
   registrarComoParticular(): void {
-    this.modalidadPago = 'particular';
+    if (!this.turnoHoy) return;
+
+    this.cargando = true;
+    this.turnosService.actualizarModalidadPago(this.turnoHoy.id, 'PARTICULAR').subscribe({
+      next: (result) => {
+        this.cargando = false;
+        if (result.ok) {
+          this.modalidadPago = 'particular';
+          this.turnoHoy!.modalidadPago = 'PARTICULAR';
+        }
+      },
+      error: () => {
+        this.cargando = false;
+      }
+    });
   }
 
   irASobreturno(): void {

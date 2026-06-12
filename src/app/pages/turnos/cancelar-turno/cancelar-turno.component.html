@@ -9,52 +9,52 @@
 
         <form class="search-section">
             <div class="search-box">
-                <span class="search-icon">🔍</span>
+                <mat-icon class="search-icon">search</mat-icon>
                 <input type="text" placeholder="Buscar por DNI, nombre o número de turno..." class="search-input"
                     [formControl]="buscadorControl">
             </div>
-            <button type="button" class="btn-buscar" (click)="simularBuscar()">
-                Buscar turno
+            <button type="button" class="btn-buscar" (click)="buscar()" [disabled]="cargando">
+                {{ cargando ? 'Buscando...' : 'Buscar turno' }}
             </button>
         </form>
 
-        <section class="turno-card" *ngIf="turnoEncontrado">
+        <section class="turno-card" *ngIf="turnoEncontrado && turnoActual">
             <h3 class="card-title">Turno encontrado</h3>
 
             <div class="turno-grid">
                 <div class="info-group">
                     <label>Paciente</label>
-                    <p class="info-value">García, Luis</p>
+                    <p class="info-value">{{ turnoActual.paciente?.apellido }}, {{ turnoActual.paciente?.nombre }}</p>
                 </div>
 
                 <div class="info-group">
                     <label>DNI</label>
-                    <p class="info-value">28.456.789</p>
+                    <p class="info-value">{{ turnoActual.paciente?.dni }}</p>
                 </div>
 
                 <div class="info-group">
                     <label>Médico</label>
-                    <p class="info-value">Dr. Méndez</p>
+                    <p class="info-value">Dr. {{ turnoActual.medico?.apellido }}, {{ turnoActual.medico?.nombre }}</p>
                 </div>
 
                 <div class="info-group">
                     <label>Especialidad</label>
-                    <p class="info-value">Clínica Médica</p>
+                    <p class="info-value">{{ turnoActual.medico?.especialidad }}</p>
                 </div>
 
                 <div class="info-group">
                     <label>Fecha</label>
-                    <p class="info-value">05/05/2026</p>
+                    <p class="info-value">{{ turnoActual.franja?.fecha | date: 'dd/MM/yyyy' }}</p>
                 </div>
 
                 <div class="info-group">
                     <label>Hora</label>
-                    <p class="info-value">09:15 hs</p>
+                    <p class="info-value">{{ turnoActual.franja?.hora }} hs</p>
                 </div>
             </div>
 
             <div class="estado-container">
-                <span class="badge-confirmado">Confirmado</span>
+                <span class="badge-confirmado">{{ turnoActual.estado }}</span>
             </div>
         </section>
 
@@ -90,29 +90,37 @@
                 <p class="card-desc">El turno actual será cancelado y se asignará uno nuevo con los datos actualizados.
                 </p>
 
+                <div class="form-group-local">
+                    <label for="nuevo-medico">Médico</label>
+                    <select id="nuevo-medico" class="input-local" [(ngModel)]="nuevoMedicoId">
+                        <option value="">Seleccioná médico...</option>
+                        <option *ngFor="let m of medicos()" [value]="m.id">Dr. {{ m.apellido }}, {{ m.nombre }}</option>
+                    </select>
+                </div>
+
                 <div class="row-local">
                     <div class="form-group-local flex-1">
                         <label for="nueva-fecha">Nueva fecha</label>
-                        <input type="date" id="nueva-fecha" class="input-local" [(ngModel)]="nuevaFecha">
+                        <input type="date" id="nueva-fecha" class="input-local" [(ngModel)]="nuevaFecha" [min]="hoy">
                     </div>
 
                     <div class="form-group-local flex-1">
-                        <label for="nueva-hora">Nueva hora</label>
-                        <select id="nueva-hora" class="input-local" [(ngModel)]="nuevaHora">
-                            <option value="">Seleccioná hora...</option>
-                            <option value="09:15 hs">09:15 hs</option>
-                            <option value="10:00 hs">10:00 hs</option>
-                            <option value="10:30 hs">10:30 hs</option>
-                        </select>
+                        <button type="button" class="btn-cargar-franjas" (click)="cargarFranjasDisponibles()" [disabled]="!nuevaFecha || !nuevoMedicoId || cargandoReasignacion">
+                            {{ cargandoReasignacion ? 'Cargando...' : 'Cargar franjas' }}
+                        </button>
                     </div>
                 </div>
 
-                <div class="form-group-local">
-                    <label for="nuevo-medico">Médico</label>
-                    <select id="nuevo-medico" class="input-local" [(ngModel)]="nuevoMedico">
-                        <option value="Dr. Méndez, Carlos">Dr. Méndez, Carlos</option>
-                        <option value="Dra. Rodríguez, Ana">Dra. Rodríguez, Ana</option>
-                    </select>
+                <div class="form-group-local" *ngIf="franjasDisponibles().length > 0">
+                    <label>Horas disponibles</label>
+                    <div class="franjas-selection">
+                        <button *ngFor="let f of franjasDisponibles()" type="button"
+                                class="franja-btn"
+                                [class.selected]="franjaSeleccionada()?.id === f.id"
+                                (click)="franjaSeleccionada.set(f)">
+                            {{ f.hora }}
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-group-local">
@@ -120,7 +128,7 @@
                     <p class="motivo-cambio-texto">Se mantiene el motivo original de la consulta.</p>
                 </div>
 
-                <button type="button" class="btn-confirmar-reasignar" (click)="ejecutarReasignacion()">
+                <button type="button" class="btn-confirmar-reasignar" (click)="ejecutarReasignacion()" [disabled]="!franjaSeleccionada() || cargando">
                     Confirmar reasignación
                 </button>
             </section>
@@ -130,7 +138,7 @@
         <div class="alert-warning-banner" *ngIf="errorTurnoNoEncontrado">
             <span class="warning-icon">⚠️</span>
             <p class="warning-text">
-                <strong>FA2 — Turno no encontrado:</strong> si la búsqueda no arroja resultados, el sistema informará al
+                <strong>Turno no encontrado:</strong> si la búsqueda no arroja resultados, el sistema informará al
                 operador para verificar los datos ingresados.
             </p>
         </div>

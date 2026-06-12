@@ -1,4 +1,4 @@
-export type RolUsuario = 'SUPER' | 'RECEPCIONISTA' | 'MEDICO';
+export type RolUsuario = 'ADMIN' | 'MEDICO' | 'SUPER' | 'RECEPCIONISTA';
 
 export interface Usuario {
   id: string;
@@ -6,5 +6,5 @@ export interface Usuario {
   password: string;
   rol: RolUsuario;
   activo: boolean;
-  creadoEn: Date;
+  creadoEn: string;
 }

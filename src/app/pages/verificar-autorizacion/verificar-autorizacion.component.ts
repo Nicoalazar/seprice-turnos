@@ -1,10 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { RolUsuario } from '../../core/interfaces/usuario';
 import { ResultadoVerificacion, PacienteVerificacion } from '../../core/interfaces/verificacion';
+import { Paciente } from '../../core/interfaces/paciente';
+import { PacientesService } from '../../core/services/pacientes.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-verificar-autorizacion',
@@ -13,10 +16,11 @@ import { ResultadoVerificacion, PacienteVerificacion } from '../../core/interfac
   templateUrl: './verificar-autorizacion.component.html',
   styleUrls: ['./verificar-autorizacion.component.css']
 })
-export class VerificarAutorizacionComponent {
+export class VerificarAutorizacionComponent implements OnInit {
   private router = inject(Router);
+  private pacientesService = inject(PacientesService);
 
-  rolActivo: RolUsuario = 'RECEPCIONISTA';
+  rolActivo: RolUsuario = 'ADMIN';
 
   busqueda = '';
   paciente: PacienteVerificacion | null = null;
@@ -41,15 +45,40 @@ export class VerificarAutorizacionComponent {
     'Internación programada',
   ];
 
-  private readonly pacientes: PacienteVerificacion[] = [
-    {
-      id: 1,
-      iniciales: 'GL',
-      colorAvatar: 'linear-gradient(135deg, var(--color-magenta), var(--color-violeta))',
-      nombre: 'Luis Alberto',
-      apellido: 'García',
-      dni: '28456789',
-      dniDisplay: '28.456.789',
+  private pacientes: PacienteVerificacion[] = [];
+
+  ngOnInit(): void {
+    this.cargarPacientes();
+  }
+
+  private async cargarPacientes(): Promise<void> {
+    try {
+      const pacientesDB = await lastValueFrom(this.pacientesService.getall());
+      this.pacientes = pacientesDB.map((p: Paciente) => this.mapearPaciente(p));
+    } catch (error) {
+      console.error('Error al cargar pacientes:', error);
+      this.pacientes = [];
+    }
+  }
+
+  private mapearPaciente(paciente: Paciente): PacienteVerificacion {
+    const iniciales = `${paciente.nombre?.charAt(0) || ''}${paciente.apellido?.charAt(0) || ''}`.toUpperCase();
+    const colores = [
+      'linear-gradient(135deg, var(--color-magenta), var(--color-violeta))',
+      'linear-gradient(135deg, var(--color-violeta), var(--color-bg-purple-dark-1))',
+      'linear-gradient(135deg, var(--color-naranja), var(--color-status-warning))',
+      'linear-gradient(135deg, var(--color-status-info-dark), var(--color-bg-blue-bright))',
+    ];
+    //const colorIndex = (paciente.id || 0) % colores.length;
+
+    return {
+      id: paciente.id,
+      iniciales,
+      colorAvatar: colores[3], // Usamos un color fijo por ahora
+      nombre: paciente.nombre || '',
+      apellido: paciente.apellido || '',
+      dni: paciente.dni || '',
+      dniDisplay: this.formatearDni(paciente.dni || ''),
       obraSocial: 'Swiss Medical',
       planesDisponibles: ['Swiss Medical 210', 'Swiss Medical 310', 'Swiss Medical 410'],
       planPredeterminado: 'Swiss Medical 310',
@@ -66,81 +95,13 @@ export class VerificarAutorizacionComponent {
         topeAnual: 'Sin tope',
         requiereOrden: 'No',
       }
-    },
-    {
-      id: 2,
-      iniciales: 'ML',
-      colorAvatar: 'linear-gradient(135deg, var(--color-violeta), var(--color-bg-purple-dark-1))',
-      nombre: 'Marta',
-      apellido: 'López',
-      dni: '45678901',
-      dniDisplay: '45.678.901',
-      obraSocial: 'OSDE',
-      planesDisponibles: ['OSDE 210', 'OSDE 310', 'OSDE 410', 'OSDE 510'],
-      planPredeterminado: 'OSDE 210',
-      nroAfiliado: 'OSD-00112-B',
-      medico: 'Dra. Torres',
-      prestacionNombre: 'Consulta especialista',
-      codigoPrestacionDefault: '03.02.01',
-      cobertura: {
-        estado: 'no-autorizado',
-        descripcion: 'Prestación no cubierta por el plan actual del afiliado.',
-        coberturaPct: '0%',
-        copago: 'N/A',
-        topeAnual: 'N/A',
-        requiereOrden: 'Sí',
-      }
-    },
-    {
-      id: 3,
-      iniciales: 'AR',
-      colorAvatar: 'linear-gradient(135deg, var(--color-naranja), var(--color-status-warning))',
-      nombre: 'Ana',
-      apellido: 'Romero',
-      dni: '34567890',
-      dniDisplay: '34.567.890',
-      obraSocial: 'Galeno',
-      planesDisponibles: ['Galeno Básico', 'Galeno Plus', 'Galeno Full'],
-      planPredeterminado: 'Galeno Plus',
-      nroAfiliado: 'GAL-00789-C',
-      medico: 'Dr. Méndez',
-      prestacionNombre: 'Diagnóstico por imágenes',
-      codigoPrestacionDefault: '05.01.03',
-      cobertura: {
-        estado: 'pendiente',
-        descripcion: 'Verificación en curso con la obra social. Reintentá en unos minutos.',
-        coberturaPct: '—',
-        copago: '—',
-        topeAnual: '—',
-        requiereOrden: '—',
-      }
-    },
-    {
-      id: 4,
-      iniciales: 'SE',
-      colorAvatar: 'linear-gradient(135deg, var(--color-status-info-dark), var(--color-bg-blue-bright))',
-      nombre: 'Elena',
-      apellido: 'Soria',
-      dni: '56789012',
-      dniDisplay: '56.789.012',
-      obraSocial: 'Medifé',
-      planesDisponibles: ['Medifé A', 'Medifé B', 'Medifé C'],
-      planPredeterminado: 'Medifé B',
-      nroAfiliado: 'MDF-00456-A',
-      medico: 'Dr. Méndez',
-      prestacionNombre: 'Consulta clínica',
-      codigoPrestacionDefault: '03.01.01',
-      cobertura: {
-        estado: 'autorizado',
-        descripcion: 'La prestación está cubierta por Medifé plan B.',
-        codigoAutorizacion: 'MDF-2026-00334',
-        coberturaPct: '80%',
-        copago: '$ 1.200,00',
-        topeAnual: '12 consultas',
-        requiereOrden: 'No',
-      }
-    },
-  ];
+    };
+  }
+
+  private formatearDni(dni: string): string {
+    return dni.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
 
   private normalizar(texto: string): string {
     return texto
