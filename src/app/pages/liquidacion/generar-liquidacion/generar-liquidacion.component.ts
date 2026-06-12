@@ -77,7 +77,7 @@ export class GenerarLiquidacionComponent implements OnInit {
     this.liquidacionService.getTurnosAtendidos(medicoId, desde, hasta).subscribe({
       next: (turnos) => {
         if (turnos.length === 0) {
-          this.snackBar.open('FA1 — No hay turnos atendidos en este período', 'Cerrar', { duration: 3000 });
+          this.snackBar.open('No hay turnos atendidos en este período', 'Cerrar', { duration: 3000 });
           this.cargando = false;
           this.resumen = null;
           return;
@@ -90,6 +90,8 @@ export class GenerarLiquidacionComponent implements OnInit {
         this.resumen = {
           medicoId,
           medico: `${medico.apellido}, ${medico.nombre}`,
+          desde,
+          hasta,
           periodo: `${desde} al ${hasta}`,
           cantidad,
           montoUnitario,
@@ -110,13 +112,12 @@ export class GenerarLiquidacionComponent implements OnInit {
     if (!this.resumen) return;
 
     this.guardando = true;
-    const periodo = this.resumen.periodo;
 
     // Verificar si ya existe
-    this.liquidacionService.getLiquidacionExistente(this.resumen.medicoId, periodo).subscribe({
+    this.liquidacionService.getLiquidacionExistente(this.resumen.medicoId, this.resumen.desde, this.resumen.hasta).subscribe({
       next: (existente) => {
         if (existente) {
-          this.snackBar.open('FA2 — Esta liquidación ya fue generada', 'Cerrar', { duration: 3000 });
+          this.snackBar.open('Esta liquidación ya fue generada para este médico y período', 'Cerrar', { duration: 3000 });
           this.guardando = false;
           return;
         }
@@ -124,8 +125,10 @@ export class GenerarLiquidacionComponent implements OnInit {
         // Generar nueva
         this.liquidacionService.generarLiquidacion(
           this.resumen.medicoId,
-          periodo,
+          this.resumen.desde,
+          this.resumen.hasta,
           this.resumen.cantidad,
+          this.resumen.montoUnitario,
           this.resumen.montoTotal
         ).subscribe({
           next: (resultado) => {

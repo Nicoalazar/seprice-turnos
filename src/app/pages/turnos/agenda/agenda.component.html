@@ -3,29 +3,29 @@
     <header class="header-pagina">
         <div class="info-izquierda">
             <h1>Mi agenda del día</h1>
-            <p class="fecha-info">Lunes 5 de mayo, 2026 — Clínica Médica</p>
+            <p class="fecha-info">{{ fechaDisplay }}{{ especialidadMedico ? ' — ' + especialidadMedico : '' }}</p>
         </div>
     </header>
 
     <section class="stats-container">
         <div class="stat-card">
             <span class="stat-label">Pacientes asignados</span>
-            <div class="stat-valor color-violeta">8</div>
+            <div class="stat-valor color-violeta">{{ totalAsignados }}</div>
             <span class="stat-subtext">Para hoy</span>
         </div>
         <div class="stat-card">
             <span class="stat-label">Atendidos</span>
-            <div class="stat-valor color-verde">3</div>
+            <div class="stat-valor color-verde">{{ totalAtendidos }}</div>
             <span class="stat-subtext">registrados</span>
         </div>
         <div class="stat-card">
             <span class="stat-label">En espera</span>
-            <div class="stat-valor color-naranja">2</div>
+            <div class="stat-valor color-naranja">{{ totalEnEspera }}</div>
             <span class="stat-subtext">en sala</span>
         </div>
         <div class="stat-card">
             <span class="stat-label">Seguimiento</span>
-            <div class="stat-valor color-azul">1</div>
+            <div class="stat-valor color-azul">{{ totalSeguimiento }}</div>
             <span class="stat-subtext">solicitados</span>
         </div>
     </section>
