@@ -78,11 +78,27 @@ export class HeaderComponent {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, cerrar sesión',
-      cancelButtonText: 'No, cancelar'
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#FF6B35',
+      cancelButtonColor: '#6B7280',
+      background: '#1a1a2e',
+      color: '#ffffff',
+      iconColor: '#FBBF24',
     }).then((result) => {
       if (result.isConfirmed) {
         this.loginService.logout();
-        Swal.fire('¡Sesión cerrada!', 'Has cerrado sesión exitosamente.', 'success');
+        Swal.fire({
+          title: '¡Sesión cerrada!',
+          text: 'Has cerrado sesión exitosamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#10B981',
+          background: '#1a1a2e',
+          color: '#ffffff',
+          iconColor: '#10B981',
+          timer: 2000,
+          timerProgressBar: true
+        });
       }
     });
   }
