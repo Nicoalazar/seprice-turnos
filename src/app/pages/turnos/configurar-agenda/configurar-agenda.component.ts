@@ -1,12 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MedicosService } from '../../../core/services/medicos.service';
@@ -20,12 +15,7 @@ import { Agenda } from '../../../core/interfaces/agenda.d';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatSelectModule,
     MatIconModule,
-    MatCardModule,
     MatSnackBarModule
   ],
   templateUrl: './configurar-agenda.component.html',
@@ -38,6 +28,8 @@ export class ConfigurarAgendaComponent implements OnInit {
   formulario!: FormGroup;
   cargando = false;
   guardando = false;
+  agendaConfirmandoId: string | null = null;
+  agendaEditandoId: string | null = null;
 
   diasSemana = [
     { valor: 0, label: 'Lunes' },
@@ -89,6 +81,13 @@ export class ConfigurarAgendaComponent implements OnInit {
 
   seleccionarMedico(medico: Medico): void {
     this.medicoSeleccionado = medico;
+    const minDuracion = this.duracionesMinimas[medico.especialidad] || 15;
+    this.formulario.get('duracionMin')?.setValidators([
+      Validators.required,
+      Validators.min(minDuracion)
+    ]);
+    this.formulario.get('duracionMin')?.setValue(String(minDuracion));
+    this.formulario.get('duracionMin')?.updateValueAndValidity();
     this.cargarAgendaMedico();
   }
 
@@ -124,6 +123,7 @@ export class ConfigurarAgendaComponent implements OnInit {
         next: (resultado) => {
           if (resultado.ok) {
             this.snackBar.open('Agenda guardada exitosamente', 'Cerrar', { duration: 3000 });
+            this.agendaEditandoId = null;
             this.generarFranjasParaProximosMeses(resultado.agendaId!, horaInicio, horaFin, parseInt(duracionMin), parseInt(diaSemana));
             this.cargarAgendaMedico();
           } else {
@@ -160,6 +160,37 @@ export class ConfigurarAgendaComponent implements OnInit {
     }
 
     this.guardando = false;
+  }
+
+  editarFila(agenda: Agenda): void {
+    this.agendaEditandoId = agenda.id;
+    this.agendaConfirmandoId = null;
+    this.formulario.patchValue({
+      diaSemana: String(agenda.diaSemana),
+      horaInicio: agenda.horaInicio,
+      horaFin: agenda.horaFin,
+      duracionMin: String(agenda.duracionMin)
+    });
+  }
+
+  iniciarEliminacion(agendaId: string): void {
+    this.agendaConfirmandoId = agendaId;
+  }
+
+  confirmarEliminacion(agenda: Agenda): void {
+    this.agendaConfirmandoId = null;
+    this.agendaService.eliminarAgenda(agenda.id).subscribe({
+      next: (res) => {
+        if (res.ok) {
+          this.snackBar.open('Agenda eliminada', 'Cerrar', { duration: 3000 });
+          if (this.agendaEditandoId === agenda.id) this.agendaEditandoId = null;
+          this.cargarAgendaMedico();
+        } else {
+          this.snackBar.open(res.error ?? 'Error al eliminar', 'Cerrar', { duration: 3000 });
+        }
+      },
+      error: () => this.snackBar.open('Error al eliminar', 'Cerrar', { duration: 3000 })
+    });
   }
 
   obtenerDiaLabel(diaSemana: number): string {
