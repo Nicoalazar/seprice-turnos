@@ -12,7 +12,7 @@
         <p>Regla: máximo 1 sobreturno por hora por médico. El sistema validará antes de confirmar.</p>
     </div>
 
-    <form [formGroup]="sobreturnoForm" (ngSubmit)="onSubmit()" class="form-card">
+    <div class="main-content-layout">
 
         <!-- COLUMNA IZQUIERDA: Formulario -->
         <form [formGroup]="sobreturnoForm" (ngSubmit)="onSubmit()" class="form-card">
@@ -40,7 +40,6 @@
                         <span>DNI: {{ paciente.dni }} · OS: {{ paciente.obraSocial || 'Sin cobertura' }}</span>
                     </div>
                 </div>
-            </div>
 
                 <!-- Seleccionar modalidad -->
                 <div class="input-row" *ngIf="pacienteEncontrado()">
@@ -79,14 +78,12 @@
                         <input id="fecha" type="date" formControlName="fecha">
                     </div>
                 </div>
-            </div>
 
                 <p class="seleccionar-hint" *ngIf="sobreturnoForm.get('medicoId')?.value && !sobreturnoForm.get('franjaId')?.value">
                     <mat-icon>arrow_forward</mat-icon>
                     Elegí un horario del panel derecho
                 </p>
 
-                <!-- Franja seleccionada -->
                 <div *ngIf="sobreturnoForm.get('franjaId')?.value" class="franja-confirmada">
                     <mat-icon>schedule</mat-icon>
                     <span>Horario seleccionado: <strong>{{ getHoraSeleccionada() }}</strong></span>
@@ -114,7 +111,7 @@
         </form>
 
         <!-- COLUMNA DERECHA: Horarios del médico -->
-        <div class="agenda-card" *ngIf="sobreturnoForm.get('medicoId')?.value && sobreturnoForm.get('fecha')?.value">
+        <div class="agenda-card" *ngIf="pacienteEncontrado() && sobreturnoForm.get('medicoId')?.value && sobreturnoForm.get('fecha')?.value">
             <h2>Horarios disponibles</h2>
             <p class="date-sub">{{ sobreturnoForm.get('fecha')?.value }}</p>
 
@@ -123,13 +120,11 @@
                 <span class="counter-value">{{ sobreturnosAsignados() }}</span>
             </div>
 
-            <!-- FA1: Límite alcanzado -->
             <div class="limit-alert" *ngIf="limiteSobreturnoAlcanzado()">
                 <mat-icon>block</mat-icon>
                 <span>Límite alcanzado: ya existe 1 sobreturno a esta hora. Seleccioná otra.</span>
             </div>
 
-            <!-- Franjas para elegir -->
             <div *ngIf="franjas().length > 0" class="franjas-section">
                 <label>Seleccioná un horario</label>
                 <div class="franjas-grid">
@@ -142,13 +137,11 @@
                 </div>
             </div>
 
-            <!-- Sin franjas -->
             <div *ngIf="franjas().length === 0" class="empty-franjas">
                 <mat-icon>calendar_today</mat-icon>
                 <p>Sin agenda configurada para esta fecha</p>
             </div>
         </div>
-        <!-- FIN COLUMNA DERECHA -->
 
     </div>
 </div>
