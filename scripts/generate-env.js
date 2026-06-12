@@ -18,15 +18,15 @@ if (fs.existsSync(dotenvPath)) {
 }
 
 const supabaseUrl = process.env.SUPABASE_URL || vars.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY || vars.SUPABASE_ANON_KEY || vars.SUPABASE_KEY;
+const supabaseKey = process.env.SUPABASE_KEY || vars.SUPABASE_ANON_KEY || vars.SUPABASE_KEY;
 const production = process.env.NODE_ENV === 'production';
 
 if (!supabaseUrl || !supabaseKey) {
   if (fs.existsSync(envPath)) {
-    console.log('⚠ SUPABASE_URL / SUPABASE_ANON_KEY no definidas; se conserva el env.ts existente');
+    console.log('⚠ SUPABASE_URL / SUPABASE_KEY no definidas; se conserva el env.ts existente');
     process.exit(0);
   }
-  console.error('Error: SUPABASE_URL y SUPABASE_ANON_KEY deben estar definidas (variables de entorno o archivo .env)');
+  console.error('Error: SUPABASE_URL y SUPABASE_KEY deben estar definidas (variables de entorno o archivo .env)');
   process.exit(1);
 }
 
