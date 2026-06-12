@@ -12,7 +12,7 @@
         <p>Regla: máximo 1 sobreturno por hora por médico. El sistema validará antes de confirmar.</p>
     </div>
 
-    <div class="main-content-layout">
+    <form [formGroup]="sobreturnoForm" (ngSubmit)="onSubmit()" class="form-card">
 
         <!-- COLUMNA IZQUIERDA: Formulario -->
         <form [formGroup]="sobreturnoForm" (ngSubmit)="onSubmit()" class="form-card">
@@ -40,6 +40,7 @@
                         <span>DNI: {{ paciente.dni }} · OS: {{ paciente.obraSocial || 'Sin cobertura' }}</span>
                     </div>
                 </div>
+            </div>
 
                 <!-- Seleccionar modalidad -->
                 <div class="input-row" *ngIf="pacienteEncontrado()">
@@ -78,6 +79,7 @@
                         <input id="fecha" type="date" formControlName="fecha">
                     </div>
                 </div>
+            </div>
 
                 <p class="seleccionar-hint" *ngIf="sobreturnoForm.get('medicoId')?.value && !sobreturnoForm.get('franjaId')?.value">
                     <mat-icon>arrow_forward</mat-icon>
