@@ -13,8 +13,8 @@ export class SupabaseService {
   constructor() {
     // Crear la conexión usando la URL y la clave desde el archivo de configuración
     this.supabase = createClient(
-      environment.supabaseUrl,
-      environment.supabaseKey
+      environment.SUPABASE_URL,
+      environment.SUPABASE_KEY
     );
   }
 
