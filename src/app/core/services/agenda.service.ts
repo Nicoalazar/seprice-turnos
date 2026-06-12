@@ -73,32 +73,25 @@ export class AgendaService {
   }
 
   getFranjasParaSobreturno(medicoId: string, fecha: string): Observable<Franja[]> {
-    // Calcular el día de la semana (1=lunes, 7=domingo)
-    const fechaObj = new Date(fecha + 'T00:00:00');
-    const diaSemana = fechaObj.getDay(); // 0=domingo, 1=lunes, ..., 6=sábado
-    const diaSemanaSQL = diaSemana === 0 ? 7 : diaSemana; // Convertir: 0->7, 1->1, ..., 6->6
+    const diaSemana = new Date(fecha + 'T00:00:00').getDay();
 
-    // Obtener la agenda específica del médico para ese día de la semana
     return from(
       this.supabase
         .from('Agenda')
         .select('id')
         .eq('medicoId', medicoId)
-        .eq('diaSemana', diaSemanaSQL)
+        .eq('diaSemana', diaSemana)
     ).pipe(
       switchMap(({ data: agendas }) => {
         if (!agendas || agendas.length === 0) return of([]);
         const agendaId = (agendas[0] as any).id;
 
-        // Obtener las franjas de sobreturno de esa agenda específica
         return from(
           this.supabase
             .from('Franja')
             .select('*')
             .eq('agendaId', agendaId)
             .eq('fecha', fecha)
-            .eq('disponible', true)
-            .eq('sobreturno', true)
             .order('hora', { ascending: true })
         ).pipe(
           map(({ data }) => (data as Franja[]) || [])
@@ -163,24 +156,62 @@ export class AgendaService {
     return from(
       this.supabase
         .from('Agenda')
-        .upsert(
-          {
-            medicoId,
-            diaSemana,
-            horaInicio,
-            horaFin,
-            duracionMin
-          },
-          { onConflict: 'medicoId,diaSemana' }
-        )
         .select('id')
-        .single()
+        .eq('medicoId', medicoId)
+        .eq('diaSemana', diaSemana)
+        .maybeSingle()
     ).pipe(
+      switchMap(({ data: existente }: any) => {
+        if (existente?.id) {
+          return from(
+            this.supabase
+              .from('Agenda')
+              .update({ horaInicio, horaFin, duracionMin })
+              .eq('id', existente.id)
+              .select('id')
+              .single()
+          );
+        } else {
+          return from(
+            this.supabase
+              .from('Agenda')
+              .insert([{ id: crypto.randomUUID(), medicoId, diaSemana, horaInicio, horaFin, duracionMin }])
+              .select('id')
+              .single()
+          );
+        }
+      }),
       map(({ data, error }: any) => {
         if (error || !data) {
+          console.error('[AgendaService] Error al guardar:', error);
           return { ok: false, error: 'Error al guardar la agenda' };
         }
         return { ok: true, agendaId: data.id };
+      })
+    );
+  }
+
+  eliminarAgenda(agendaId: string): Observable<{ ok: boolean; error?: string }> {
+    const hoy = new Date().toISOString().split('T')[0];
+    return from(
+      this.supabase
+        .from('Franja')
+        .delete()
+        .eq('agendaId', agendaId)
+        .eq('disponible', true)
+        .gte('fecha', hoy)
+    ).pipe(
+      switchMap(({ error: errorFranjas }) => {
+        if (errorFranjas) return of({ ok: false as const, error: 'Error al eliminar franjas futuras' });
+        return from(
+          this.supabase.from('Agenda').delete().eq('id', agendaId)
+        ).pipe(
+          map(({ error }) =>
+            error
+              ? { ok: false as const, error: 'No se puede eliminar: hay turnos asignados en esta agenda' }
+              : { ok: true as const }
+          )
+        );
       })
     );
   }

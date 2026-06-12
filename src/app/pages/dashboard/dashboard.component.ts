@@ -174,7 +174,7 @@ export class DashboardComponent implements OnInit {
   }
 
   registrarAtencion() {
-    alert('Función para registrar atención');
+    this.router.navigate(['/registrar-atencion']);
   }
 
   turnoSeguimiento() {
