@@ -17,23 +17,23 @@ if (fs.existsSync(dotenvPath)) {
   }
 }
 
-const supabaseUrl = process.env.SUPABASE_URL || vars.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY || vars.SUPABASE_ANON_KEY || vars.SUPABASE_KEY;
+const supabaseUrl = process.env.supabaseUrl || vars.supabaseUrl;
+const supabaseKey = process.env.supabaseKey || vars.supabaseKey;
 const production = process.env.NODE_ENV === 'production';
 
 if (!supabaseUrl || !supabaseKey) {
   if (fs.existsSync(envPath)) {
-    console.log('⚠ SUPABASE_URL / SUPABASE_KEY no definidas; se conserva el env.ts existente');
+    console.log('⚠ supabaseUrl / supabaseKey no definidas; se conserva el env.ts existente');
     process.exit(0);
   }
-  console.error('Error: SUPABASE_URL y SUPABASE_KEY deben estar definidas (variables de entorno o archivo .env)');
+  console.error('Error: supabaseUrl y supabaseKey deben estar definidas (variables de entorno o archivo .env)');
   process.exit(1);
 }
 
 const content = `export const environment = {
   production: ${production},
-  SUPABASE_URL: '${supabaseUrl}',
-  SUPABASE_KEY: '${supabaseKey}'
+  supabaseUrl: '${supabaseUrl}',
+  supabaseKey: '${supabaseKey}'
 };`;
 
 fs.writeFileSync(envPath, content, 'utf-8');
