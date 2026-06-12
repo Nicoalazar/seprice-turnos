@@ -59,7 +59,7 @@ export class AgendaComponent implements OnChanges, OnInit {
   // Métricas del día calculadas sobre los turnos cargados
   get totalAsignados(): number { return this.turnosDelDia.length; }
   get totalAtendidos(): number { return this.turnosDelDia.filter(t => t.estado === 'ATENDIDO').length; }
-  get totalEnEspera(): number { return this.turnosDelDia.filter(t => t.estado === 'PRESENTE_EN_SALA').length; }
+  get totalEnEspera(): number { return this.turnosDelDia.filter(t => t.estado === 'PRESENTE EN SALA').length; }
   get totalSeguimiento(): number { return this.turnosDelDia.filter(t => t.tipo === 'SEGUIMIENTO').length; }
 
   get fechaDisplay(): string {

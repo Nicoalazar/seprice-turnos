@@ -1,44 +1,36 @@
 .container {
   width: 100%;
-  max-width: 100%; /* Elimina el límite de 600px para que cubra los costados */
+  max-width: 100%;
   margin: 0;
-  padding: 20px;
-  background-color: var(--bg-noche); /* Aplica el fondo oscuro profundo */
+  padding: 40px;
+  background-color: var(--bg-app);
   min-height: 100vh;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centra el contenido en pantallas grandes */
+  align-items: center;
 }
 
 .header {
-  display: flex;
-  justify-content: center; /* Centra el contenido horizontalmente */
-  text-align: center;      /* Asegura el centrado del texto */
   width: 100%;
   max-width: 600px;
   margin-bottom: 32px;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
 .header h1 {
   margin: 0;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
-  color: var(--texto-primario);
+  color: var(--color-text-primary);
 }
 
 .form-card {
-  background-color: var(--bg-surface);
-  border-radius: 8px;
+  background-color: var(--color-bg-card-alt);
+  border: 1px solid var(--color-border-default);
+  border-radius: 12px;
   margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
 }
 
 .formulario {
@@ -58,9 +50,11 @@
 }
 
 .resumen-card {
-  background-color: var(--bg-surface);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-bg-card-alt);
+  border: 1px solid var(--color-border-default);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
 }
 
 .resumen-grid {
@@ -77,27 +71,28 @@
 
 .resumen-item label {
   font-size: 12px;
-  color: var(--texto-secundario);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
+  letter-spacing: 0.5px;
   margin-bottom: 8px;
 }
 
 .resumen-item .valor {
   font-size: 20px;
   font-weight: 700;
-  color: var(--texto-primario);
+  color: var(--color-text-primary);
 }
 
 .resumen-item.total {
   grid-column: 1 / -1;
-  border-top: 2px solid var(--border-color);
-  padding-top: 12px;
-  margin-top: 12px;
+  border-top: 1px solid var(--color-border-default);
+  padding-top: 16px;
+  margin-top: 16px;
 }
 
 .resumen-item.total .valor {
   font-size: 28px;
-  color: var(--color-accent-primary);
+  color: var(--color-naranja);
 }
 
 .form-actions {
@@ -105,7 +100,7 @@
   gap: 12px;
   justify-content: flex-end;
   padding: 16px;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--color-border-default);
 }
 
 
@@ -114,14 +109,14 @@
 
 /* Asegurar fondo correcto en el contenedor del input */
 :host ::ng-deep .mdc-text-field--outlined {
-  background-color: var(--bg-input) !important;
+  background-color: var(--color-bg-input) !important;
   border-radius: var(--radio-sm) !important;
 }
 
 /*  Forzar que los textos seleccionados, escritos o las fechas se vean BLANCOS */
 :host ::ng-deep .mat-mdc-select-value-text,
 :host ::ng-deep input.mat-mdc-input-element {
-  color: var(--texto-primario) !important;
+  color: var(--color-text-primary) !important;
   font-size: var(--fuente-size-md) !important;
 }
 
@@ -129,32 +124,32 @@
 :host ::ng-deep .mat-mdc-form-field-label,
 :host ::ng-deep .mdc-floating-label,
 :host ::ng-deep .mdc-floating-label span {
-  color: var(--texto-secundario) !important;
+  color: var(--color-text-secondary) !important;
 }
 
 /*  Color para los placeholders ("Seleccioná médico...", "dd/mm/aaaa") */
 :host ::ng-deep .mat-mdc-select-placeholder,
 :host ::ng-deep input.mat-mdc-input-element::placeholder {
-  color: var(--texto-muted) !important;
+  color: var(--color-text-tertiary) !important;
   opacity: 1 !important;
 }
 
 /* Color de la flechita del selector en blanco/lila para que se vea */
 :host ::ng-deep .mat-mdc-select-arrow svg {
-  fill: var(--texto-primario) !important;
+  fill: var(--color-text-primary) !important;
 }
 
 /*  Color de los bordes (por defecto y en focus) */
 :host ::ng-deep .mdc-notched-outline__leading,
 :host ::ng-deep .mdc-notched-outline__notch,
 :host ::ng-deep .mdc-notched-outline__trailing {
-  border-color: var(--border-light) !important;
+  border-color: var(--color-border-light) !important;
 }
 
 :host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
 :host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
 :host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-  border-color: var(--border-focus) !important;
+  border-color: var(--color-border-focus) !important;
 }
 
 
@@ -164,23 +159,23 @@
 
 /*  Fondo oscuro para el panel de opciones de esta pantalla */
 ::ng-deep .mat-mdc-select-panel.combo-medicos-oscuro {
-  background-color: var(--bg-surface-2) !important;
-  box-shadow: var(--sombra-card) !important;
+  background-color: var(--color-bg-card) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
 /*  Color lila/gris claro para los nombres de los médicos */
 ::ng-deep .combo-medicos-oscuro .mat-mdc-option {
-  color: var(--texto-secundario) !important;
+  color: var(--color-text-secondary) !important;
 }
 
 /*  Color blanco brillante para el médico seleccionado o activo */
 ::ng-deep .combo-medicos-oscuro .mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text {
-  color: var(--texto-primario) !important;
+  color: var(--color-text-primary) !important;
 }
 
 /*  Efecto hover al pasar el mouse sobre un médico de la lista */
 ::ng-deep .combo-medicos-oscuro .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
-  background-color: var(--bg-input) !important;
+  background-color: var(--color-bg-input) !important;
 }
 
 /*  Color magenta para el tilde de selección */
@@ -192,9 +187,21 @@
 
 /*  Forzar el color correcto para el título interno de la tarjeta */
 .form-card mat-card-title {
-  color: var(--texto-secundario) !important; /* El lila claro de SePrice */
-  font-size: var(--fuente-size-lg) !important; /* Asegura el tamaño correcto */
-  font-weight: 600 !important;
+  color: var(--color-text-primary) !important;
+  font-size: var(--fuente-size-lg) !important;
+  font-weight: 700 !important;
+}
+
+.resumen-card mat-card-title {
+  color: var(--color-text-primary) !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+}
+
+.resumen-card mat-card-subtitle {
+  color: var(--color-text-secondary) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
 }
 
 
@@ -207,6 +214,14 @@
 
 /*  Forzar el color lila claro en el texto del botón cuando está deshabilitado */
 .full-width[disabled] {
-  color: var(--texto-secundario) !important;
+  color: var(--color-text-secondary) !important;
   opacity: 0.6 !important; /* Le da ese toque sutil de estar deshabilitado, pero súper legible */
+}
+
+/* Mejorar contraste del botón Atrás */
+:host ::ng-deep .form-actions button[mat-button] {
+  color: var(--color-text-primary) !important;
+  font-weight: 600 !important;
+  border: 1px solid var(--color-border-light) !important;
+  border-radius: 6px !important;
 }

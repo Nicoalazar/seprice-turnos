@@ -11,7 +11,7 @@ export interface CoberturaMock {
 }
 
 export interface PacienteVerificacion {
-  id: number;
+  id: string;
   iniciales: string;
   colorAvatar: string;
   nombre: string;

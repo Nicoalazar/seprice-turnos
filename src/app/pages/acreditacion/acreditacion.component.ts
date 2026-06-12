@@ -152,7 +152,7 @@ export class AcreditacionComponent implements OnInit {
       next: (result) => {
         this.cargando = false;
         if (result.ok) {
-          this.turnoHoy!.estado = 'PRESENTE_EN_SALA';
+          this.turnoHoy!.estado = 'PRESENTE EN SALA';
           this.acreditacionConfirmada = true;
         }
       },

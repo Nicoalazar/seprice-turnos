@@ -73,6 +73,21 @@
           <label class="field-label">Nombre completo <span class="req">*</span></label>
           <input class="field-input" type="text" placeholder="Apellido, Nombre"
             [formControl]="controlNombreManual">
+            <div class="two-col">
+              <div>
+                <label class="field-label">DNI <span class="req">*</span></label>
+                <input class="field-input" type="text" placeholder="Número de documento"
+                  [formControl]="controlDniManual">
+              </div>
+              <div>
+                <label class="field-label">Teléfono <span class="req">*</span></label>
+                <input class="field-input" type="text" placeholder="Número de teléfono"
+                  [formControl]="controlTelefonoManual">
+              </div>
+            </div>
+          <!-- <label class="field-label">Obra social <span class="req">*</span></label>
+          <input class="field-input" type="text" placeholder="Obra social"
+            [formControl]="controlNombreManual"> -->
         </ng-container>
  
         <!-- Obra social y modalidad -->

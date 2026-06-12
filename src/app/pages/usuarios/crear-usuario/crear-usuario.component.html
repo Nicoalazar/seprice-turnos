@@ -4,7 +4,7 @@
   </div>
 
   <!-- Paso 1: Búsqueda de Persona -->
-  <mat-card class="step-card" *ngIf="!personaSeleccionada">
+  <mat-card class="step-card" *ngIf="!personaSeleccionada && !creandoPersona">
     <mat-card-header>
       <mat-card-title>Paso 1: Buscar Persona</mat-card-title>
     </mat-card-header>
@@ -46,21 +46,145 @@
             <div matListItemLine>
               {{ obtenerSubtexto(persona) }}
             </div>
-            <mat-icon matListItemMeta *ngIf="persona.usuarioId" class="error-icon">
-              error
-            </mat-icon>
           </mat-list-item>
         </mat-list>
 
         <div *ngIf="personas.length === 0" class="no-results">
           <mat-icon>search_off</mat-icon>
           <p>No se encontraron resultados</p>
+          <button mat-raised-button color="primary" (click)="mostrarCrearPersona()">
+            <mat-icon>person_add</mat-icon> Registrar nueva persona
+          </button>
         </div>
       </div>
     </mat-card-content>
   </mat-card>
 
-  <!-- Paso 2: Crear Usuario -->
+  <!-- Paso 1B: Crear nueva persona y usuario -->
+  <mat-card class="step-card" *ngIf="creandoPersona && !personaSeleccionada">
+    <mat-card-header>
+      <mat-card-title>Paso 1B: Registrar Nueva Persona y Usuario</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="personaForm" (ngSubmit)="crearPersona()">
+        <!-- Sección de datos de persona -->
+        <div class="form-section">
+          <h4 class="section-title">Datos de la Persona</h4>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Tipo de Persona</mat-label>
+            <mat-select formControlName="tipo">
+              <mat-option value="ADMINISTRATIVO">Personal Administrativo</mat-option>
+              <mat-option value="MEDICO">Médico</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre">
+            <mat-error *ngIf="personaForm.get('nombre')?.hasError('required')">
+              Nombre requerido
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Apellido</mat-label>
+            <input matInput formControlName="apellido">
+            <mat-error *ngIf="personaForm.get('apellido')?.hasError('required')">
+              Apellido requerido
+            </mat-error>
+          </mat-form-field>
+
+          <ng-container *ngIf="personaForm.get('tipo')?.value === 'MEDICO'">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Especialidad</mat-label>
+              <input matInput formControlName="especialidad">
+              <mat-error *ngIf="personaForm.get('especialidad')?.hasError('required')">
+                Especialidad requerida
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Matrícula</mat-label>
+              <input matInput formControlName="matricula">
+              <mat-error *ngIf="personaForm.get('matricula')?.hasError('required')">
+                Matrícula requerida
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Tarifa</mat-label>
+              <input matInput type="number" formControlName="tarifa">
+              <mat-error *ngIf="personaForm.get('tarifa')?.hasError('required')">
+                Tarifa requerida
+              </mat-error>
+              <mat-error *ngIf="personaForm.get('tarifa')?.hasError('min')">
+                La tarifa debe ser mayor a 0
+              </mat-error>
+            </mat-form-field>
+          </ng-container>
+        </div>
+
+        <!-- Sección de credenciales -->
+        <div class="form-section">
+          <h4 class="section-title">Credenciales de Acceso</h4>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email">
+            <mat-error *ngIf="personaForm.get('email')?.hasError('required')">
+              Email requerido
+            </mat-error>
+            <mat-error *ngIf="personaForm.get('email')?.hasError('email')">
+              Email inválido
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Contraseña</mat-label>
+            <input matInput type="password" formControlName="password">
+            <mat-error *ngIf="personaForm.get('password')?.hasError('required')">
+              Contraseña requerida
+            </mat-error>
+            <mat-error *ngIf="personaForm.get('password')?.hasError('minlength')">
+              Mínimo 6 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Rol de Acceso</mat-label>
+            <mat-select formControlName="rol">
+              <mat-option value="MEDICO">Médico</mat-option>
+              <mat-option value="RECEPCIONISTA">Recepcionista</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="actions">
+          <button
+            mat-button
+            type="button"
+            (click)="cancelarCrearPersona()"
+            [disabled]="guardandoPersona"
+          >
+            Atrás
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="personaForm.invalid || guardandoPersona"
+          >
+            <mat-icon *ngIf="!guardandoPersona">check</mat-icon>
+            <mat-spinner *ngIf="guardandoPersona" diameter="20" class="inline-spinner"></mat-spinner>
+            Crear Persona y Usuario
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Paso 2: Crear Usuario para persona existente -->
   <mat-card class="step-card" *ngIf="personaSeleccionada">
     <mat-card-header>
       <mat-card-title>Paso 2: Asignar Credenciales</mat-card-title>
@@ -104,6 +228,8 @@
           <mat-select formControlName="rol">
             <mat-option value="MEDICO">Médico</mat-option>
             <mat-option value="ADMIN">Administrativo</mat-option>
+            <mat-option value="SUPER">Superusuario</mat-option>
+            <mat-option value="RECEPCIONISTA">Recepcionista</mat-option>
           </mat-select>
         </mat-form-field>
 

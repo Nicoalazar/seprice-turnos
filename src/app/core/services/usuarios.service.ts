@@ -154,4 +154,174 @@ export class UsuariosService {
 
     return !data;
   }
+
+  async crearPersonaConUsuario(datos: {
+    tipo: 'MEDICO' | 'ADMINISTRATIVO';
+    nombre: string;
+    apellido: string;
+    especialidad?: string;
+    matricula?: string;
+    tarifa?: number;
+    email: string;
+    password: string;
+    rol: RolUsuario;
+  }): Promise<{ exito: boolean; persona?: Persona; error?: string }> {
+    const supabase = this.supabaseService.getClient();
+
+    try {
+      const personaId = crypto.randomUUID();
+      const usuarioId = crypto.randomUUID();
+
+      // Crear Usuario primero
+      const { error: usuarioError } = await supabase
+        .from('Usuario')
+        .insert([
+          {
+            id: usuarioId,
+            email: datos.email,
+            password: datos.password,
+            rol: datos.rol,
+            activo: true,
+            creadoEn: new Date().toISOString()
+          }
+        ]);
+
+      if (usuarioError) {
+        return { exito: false, error: 'Error al crear el usuario' };
+      }
+
+      // Crear Persona
+      const tabla = datos.tipo === 'MEDICO' ? 'Medico' : 'Administrativo';
+
+      if (datos.tipo === 'MEDICO') {
+        const { error: personaError } = await supabase
+          .from('Medico')
+          .insert([
+            {
+              id: personaId,
+              nombre: datos.nombre,
+              apellido: datos.apellido,
+              especialidad: datos.especialidad || '',
+              matricula: datos.matricula || '',
+              tarifa: datos.tarifa || 0,
+              usuarioId
+            }
+          ]);
+
+        if (personaError) {
+          return { exito: false, error: 'Error al crear el médico' };
+        }
+
+        const persona: Persona = {
+          id: personaId,
+          nombre: datos.nombre,
+          apellido: datos.apellido,
+          tipo: 'MEDICO',
+          usuarioId,
+          especialidad: datos.especialidad,
+          matricula: datos.matricula
+        };
+
+        return { exito: true, persona };
+      } else {
+        const { error: personaError } = await supabase
+          .from('Administrativo')
+          .insert([
+            {
+              id: personaId,
+              nombre: datos.nombre,
+              apellido: datos.apellido,
+              usuarioId
+            }
+          ]);
+
+        if (personaError) {
+          return { exito: false, error: 'Error al crear el administrativo' };
+        }
+
+        const persona: Persona = {
+          id: personaId,
+          nombre: datos.nombre,
+          apellido: datos.apellido,
+          tipo: 'ADMINISTRATIVO',
+          usuarioId
+        };
+
+        return { exito: true, persona };
+      }
+    } catch (error: any) {
+      return { exito: false, error: error.message || 'Error inesperado' };
+    }
+  }
+
+  async crearPersona(datos: {
+    tipo: 'MEDICO' | 'ADMINISTRATIVO';
+    nombre: string;
+    apellido: string;
+    especialidad?: string;
+    matricula?: string;
+    tarifa?: number;
+  }): Promise<{ exito: boolean; persona?: Persona; error?: string }> {
+    const supabase = this.supabaseService.getClient();
+
+    try {
+      const id = crypto.randomUUID();
+      const tabla = datos.tipo === 'MEDICO' ? 'Medico' : 'Administrativo';
+
+      if (datos.tipo === 'MEDICO') {
+        const { error } = await supabase
+          .from('Medico')
+          .insert([
+            {
+              id,
+              nombre: datos.nombre,
+              apellido: datos.apellido,
+              especialidad: datos.especialidad || '',
+              matricula: datos.matricula || '',
+              tarifa: datos.tarifa || 0
+            }
+          ]);
+
+        if (error) {
+          return { exito: false, error: 'Error al crear el médico' };
+        }
+
+        const persona: Persona = {
+          id,
+          nombre: datos.nombre,
+          apellido: datos.apellido,
+          tipo: 'MEDICO',
+          especialidad: datos.especialidad,
+          matricula: datos.matricula
+        };
+
+        return { exito: true, persona };
+      } else {
+        const { error } = await supabase
+          .from('Administrativo')
+          .insert([
+            {
+              id,
+              nombre: datos.nombre,
+              apellido: datos.apellido
+            }
+          ]);
+
+        if (error) {
+          return { exito: false, error: 'Error al crear el administrativo' };
+        }
+
+        const persona: Persona = {
+          id,
+          nombre: datos.nombre,
+          apellido: datos.apellido,
+          tipo: 'ADMINISTRATIVO'
+        };
+
+        return { exito: true, persona };
+      }
+    } catch (error: any) {
+      return { exito: false, error: error.message || 'Error inesperado' };
+    }
+  }
 }
