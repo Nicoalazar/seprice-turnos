@@ -11,8 +11,13 @@ export class AtencionService {
   private supabase = inject(SupabaseService).getClient();
 
   crearAtencion(atencion: Omit<Atencion, 'id' | 'registradoEn'>): Observable<Atencion | null> {
+    const nueva = {
+      id: crypto.randomUUID(),
+      ...atencion,
+      registradoEn: new Date().toISOString()
+    };
     return new Observable(subscriber => {
-      this.supabase.from('Atencion').insert([atencion]).then(({ data, error }: any) => {
+      this.supabase.from('Atencion').insert([nueva]).select().then(({ data, error }: any) => {
         if (error || !data || !data[0]) {
           subscriber.next(null);
         } else {

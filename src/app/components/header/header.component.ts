@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RolUsuario } from '../../core/interfaces/usuario';
 import { LoginService } from '../../auth/login.service';
 import Swal from 'sweetalert2';
@@ -11,7 +12,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatMenuModule, MatIconModule, MatDividerModule],
+  imports: [CommonModule, MatButtonModule, MatMenuModule, MatIconModule, MatDividerModule, MatSnackBarModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
@@ -19,6 +20,7 @@ import Swal from 'sweetalert2';
 export class HeaderComponent {
 
   private loginService = inject(LoginService);
+  private snackBar = inject(MatSnackBar);
 
   @Output() rolActivoChange = new EventEmitter<RolUsuario>();
 
@@ -86,7 +88,7 @@ export class HeaderComponent {
   }
 
   irAPerfil(): void {
-    alert('Función para ir al perfil del usuario');
+    this.snackBar.open('Funcionalidad en desarrollo: perfil de usuario', 'Cerrar', { duration: 3000 });
   }
 
 }

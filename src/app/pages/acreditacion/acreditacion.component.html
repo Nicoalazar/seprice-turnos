@@ -101,7 +101,7 @@
         <!-- FA1: paciente sin turno hoy -->
         <div *ngIf="esSinTurno" class="estado-turno estado-sin-turno">
           <mat-icon style="font-size:16px;">event_busy</mat-icon>
-          FA1 — Sin turno activo para hoy
+          Sin turno activo para hoy
         </div>
 
       </div>
@@ -182,13 +182,13 @@
 
             <!-- FA1 dentro del paso 4 -->
             <div *ngIf="esSinTurno" class="alerta alerta-warning">
-              <mat-icon>warning</mat-icon> FA1 — El paciente no tiene turno para hoy. Derivar a sobreturno.
+              <mat-icon>warning</mat-icon> El paciente no tiene turno para hoy. Derivar a sobreturno.
               <button class="btn-link" (click)="irASobreturno()">Gestionar sobreturno →</button>
             </div>
 
             <!-- FA3 dentro del paso 4 -->
             <div *ngIf="mostrarAdvertenciaFA3" class="alerta alerta-fa3">
-              <mat-icon>warning</mat-icon> FA3 — Sin cobertura válida: registrar como particular o cancelar el turno
+              <mat-icon>warning</mat-icon> Sin cobertura válida: registrar como particular o cancelar el turno
               <button class="btn-link" (click)="registrarComoParticular()">Registrar como particular →</button>
             </div>
 

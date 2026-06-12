@@ -1,8 +1,10 @@
 export interface Liquidacion {
   id: string;
   medicoId: string;
-  periodo: string;
-  prestaciones: number;
+  periodoDesde: string;
+  periodoHasta: string;
+  cantTurnos: number;
+  montoUnitario: number;
   montoTotal: number;
-  generadaEn: Date;
+  generadaEn: string;
 }

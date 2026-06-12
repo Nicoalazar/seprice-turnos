@@ -7,13 +7,14 @@ import { TurnosService } from '../../core/services/turnos.service';
 import { MedicosService } from '../../core/services/medicos.service';
 import { LoginService } from '../../auth/login.service';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TurnoConDetalles } from '../../core/interfaces/turno.d';
 import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, MatSnackBarModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -24,6 +25,7 @@ export class DashboardComponent implements OnInit {
   private turnosService = inject(TurnosService);
   private medicosService = inject(MedicosService);
   private loginService = inject(LoginService);
+  private snackBar = inject(MatSnackBar);
 
   @Input() rolActivo: RolUsuario = 'ADMIN';
 
@@ -31,6 +33,18 @@ export class DashboardComponent implements OnInit {
   turnosMedico: any[] = [];
   cargando = false;
   rolRealUsuario: string = 'RECEPCIONISTA';
+
+  // Métricas del día (vista administrativo)
+  metricaTurnosHoy = 0;
+  metricaPendientesAcreditacion = 0;
+  metricaSobreturnos = 0;
+  metricaCancelaciones = 0;
+  metricaAcreditados = 0;
+
+  // Métricas del día (vista médico)
+  metricaAsignados = 0;
+  metricaAtendidos = 0;
+  metricaEnEspera = 0;
 
   constructor() {
     this.cargarRolRealUsuario();
@@ -66,10 +80,18 @@ export class DashboardComponent implements OnInit {
   private cargarTurnos(): void {
     this.cargando = true;
 
-    // Para admin: todos los turnos de hoy
-    this.turnosService.getTurnosDeHoy().subscribe({
+    // Para admin: todos los turnos de hoy (incluye cancelados para las métricas)
+    this.turnosService.getTurnosDeHoy(true).subscribe({
       next: (turnos) => {
-        this.turnosAdmin = turnos.map(t => ({
+        const activos = turnos.filter(t => t.estado !== 'CANCELADO');
+
+        this.metricaTurnosHoy = activos.length;
+        this.metricaPendientesAcreditacion = activos.filter(t => t.estado === 'CONFIRMADO').length;
+        this.metricaSobreturnos = activos.filter(t => t.tipo === 'SOBRETURNO').length;
+        this.metricaCancelaciones = turnos.filter(t => t.estado === 'CANCELADO').length;
+        this.metricaAcreditados = activos.filter(t => t.estado === 'PRESENTE_EN_SALA' || t.estado === 'ATENDIDO').length;
+
+        this.turnosAdmin = activos.map(t => ({
           hora: t.franja?.hora || '',
           paciente: `${t.paciente?.apellido}, ${t.paciente?.nombre}`,
           medico: `Dr/a. ${t.medico?.apellido}`,
@@ -91,6 +113,10 @@ export class DashboardComponent implements OnInit {
                   const hoy = `${año}-${mes}-${día}`;
                   this.turnosService.getTurnosDeMedico(medico.id, hoy).subscribe({
                     next: (turnosMedico) => {
+                      this.metricaAsignados = turnosMedico.length;
+                      this.metricaAtendidos = turnosMedico.filter(t => t.estado === 'ATENDIDO').length;
+                      this.metricaEnEspera = turnosMedico.filter(t => t.estado === 'PRESENTE_EN_SALA').length;
+
                       this.turnosMedico = turnosMedico.map(t => ({
                         hora: t.franja?.hora || '',
                         paciente: `${t.paciente?.apellido}, ${t.paciente?.nombre}`,
@@ -178,6 +204,6 @@ export class DashboardComponent implements OnInit {
   }
 
   turnoSeguimiento() {
-    alert('Función para recitar turno de seguimiento');
+    this.snackBar.open('Funcionalidad en desarrollo: turno de seguimiento', 'Cerrar', { duration: 3000 });
   }
 }

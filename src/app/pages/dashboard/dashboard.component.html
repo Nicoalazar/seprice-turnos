@@ -11,23 +11,23 @@
       <div class="metricas">
         <div class="metrica-card">
           <p class="metrica-label">Turnos hoy</p>
-          <p class="metrica-valor">24</p>
-          <p class="metrica-sub">3 pendientes de acreditación</p>
+          <p class="metrica-valor">{{ metricaTurnosHoy }}</p>
+          <p class="metrica-sub">{{ metricaPendientesAcreditacion }} pendientes de acreditación</p>
         </div>
         <div class="metrica-card">
           <p class="metrica-label">Sobreturnos</p>
-          <p class="metrica-valor">2</p>
+          <p class="metrica-valor">{{ metricaSobreturnos }}</p>
           <p class="metrica-sub">del día</p>
         </div>
         <div class="metrica-card">
           <p class="metrica-label">Cancelaciones</p>
-          <p class="metrica-valor">1</p>
-          <p class="metrica-sub">slot liberado</p>
+          <p class="metrica-valor">{{ metricaCancelaciones }}</p>
+          <p class="metrica-sub">del día</p>
         </div>
         <div class="metrica-card">
-          <p class="metrica-label">Autorizaciones</p>
-          <p class="metrica-valor">21</p>
-          <p class="metrica-sub">obras sociales</p>
+          <p class="metrica-label">Acreditados</p>
+          <p class="metrica-valor">{{ metricaAcreditados }}</p>
+          <p class="metrica-sub">presentes o atendidos</p>
         </div>
       </div>
 
@@ -115,17 +115,17 @@
       <div class="metricas">
         <div class="metrica-card">
           <p class="metrica-label">Pacientes asignados</p>
-          <p class="metrica-valor">8</p>
+          <p class="metrica-valor">{{ metricaAsignados }}</p>
           <p class="metrica-sub">para hoy</p>
         </div>
         <div class="metrica-card">
           <p class="metrica-label">Atendidos</p>
-          <p class="metrica-valor">3</p>
+          <p class="metrica-valor">{{ metricaAtendidos }}</p>
           <p class="metrica-sub">registrados</p>
         </div>
         <div class="metrica-card">
           <p class="metrica-label">En espera</p>
-          <p class="metrica-valor">2</p>
+          <p class="metrica-valor">{{ metricaEnEspera }}</p>
           <p class="metrica-sub">en sala</p>
         </div>
       </div>

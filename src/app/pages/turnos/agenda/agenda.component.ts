@@ -37,6 +37,7 @@ export class AgendaComponent implements OnChanges, OnInit {
   @Output() atencionRegistrada = new EventEmitter<TurnoConDetalles>();
 
   turnosDelDia: TurnoConDetalles[] = [];
+  especialidadMedico = '';
   franjasHorarias: FranjaVista[] = [];
   turnoDetalle = signal<TurnoConDetalles | null>(null);
   cargando = false;
@@ -55,6 +56,20 @@ export class AgendaComponent implements OnChanges, OnInit {
 
   volverAlDashboard(): void { this.router.navigate(['/dashboard']); }
 
+  // Métricas del día calculadas sobre los turnos cargados
+  get totalAsignados(): number { return this.turnosDelDia.length; }
+  get totalAtendidos(): number { return this.turnosDelDia.filter(t => t.estado === 'ATENDIDO').length; }
+  get totalEnEspera(): number { return this.turnosDelDia.filter(t => t.estado === 'PRESENTE_EN_SALA').length; }
+  get totalSeguimiento(): number { return this.turnosDelDia.filter(t => t.tipo === 'SEGUIMIENTO').length; }
+
+  get fechaDisplay(): string {
+    if (!this.fechaSeleccionada) return '';
+    const texto = new Date(this.fechaSeleccionada + 'T00:00:00').toLocaleDateString('es-AR', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+  }
+
   ngOnInit(): void {
     // Si no hay inputs, intentar auto-cargar para el médico actual
     if (!this.medicoSeleccionado || !this.fechaSeleccionada) {
@@ -64,7 +79,9 @@ export class AgendaComponent implements OnChanges, OnInit {
           next: (medico) => {
             if (medico) {
               this.medicoSeleccionado = medico.id;
-              this.fechaSeleccionada = new Date().toISOString().split('T')[0];
+              this.especialidadMedico = medico.especialidad;
+              const hoy = new Date();
+              this.fechaSeleccionada = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
               this.cargarAgenda();
             }
           }

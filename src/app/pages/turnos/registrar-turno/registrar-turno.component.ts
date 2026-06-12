@@ -9,7 +9,7 @@ import { AgendaService } from '../../../core/services/agenda.service';
 import { Paciente } from '../../../core/interfaces/paciente.d';
 import { Medico } from '../../../core/interfaces/medico.d';
 import { Franja } from '../../../core/interfaces/franja.d';
-import { Turno, TipoTurno } from '../../../core/interfaces/turno.d';
+import { Turno, TipoTurno, ModalidadPago } from '../../../core/interfaces/turno.d';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { Subject, Subscription, of } from 'rxjs';
@@ -272,12 +272,15 @@ export class RegistrarTurnoComponent implements OnInit, OnDestroy {
   }
 
   private registrarTurnoConPaciente(medicoId: string, pacienteId: string, franjaId: string, tipo: TipoTurno): void {
+    const modalidadElegida = this.formPaciente.get('modalidadPago')?.value as string;
+    const modalidadPago: ModalidadPago = modalidadElegida === 'particular' ? 'PARTICULAR' : 'OBRA_SOCIAL';
+
     this.turnosService.registrarTurno({
       pacienteId,
       medicoId,
       franjaId,
       tipo,
-      modalidadPago: 'OBRA_SOCIAL',
+      modalidadPago,
     }).subscribe({
       next: (result) => {
         this.cargando.set(false);
