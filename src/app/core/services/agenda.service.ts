@@ -198,6 +198,31 @@ export class AgendaService {
     );
   }
 
+  eliminarAgenda(agendaId: string): Observable<{ ok: boolean; error?: string }> {
+    const hoy = new Date().toISOString().split('T')[0];
+    return from(
+      this.supabase
+        .from('Franja')
+        .delete()
+        .eq('agendaId', agendaId)
+        .eq('disponible', true)
+        .gte('fecha', hoy)
+    ).pipe(
+      switchMap(({ error: errorFranjas }) => {
+        if (errorFranjas) return of({ ok: false as const, error: 'Error al eliminar franjas futuras' });
+        return from(
+          this.supabase.from('Agenda').delete().eq('id', agendaId)
+        ).pipe(
+          map(({ error }) =>
+            error
+              ? { ok: false as const, error: 'No se puede eliminar: hay turnos asignados en esta agenda' }
+              : { ok: true as const }
+          )
+        );
+      })
+    );
+  }
+
   generarFranjasParaAgenda(
     agendaId: string,
     fecha: string,

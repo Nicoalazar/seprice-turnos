@@ -36,14 +36,36 @@
           <th>Inicio</th>
           <th>Fin</th>
           <th>Duración (min)</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let agenda of agendaActual">
+        <tr *ngFor="let agenda of agendaActual" [class.fila-editando]="agendaEditandoId === agenda.id">
           <td>{{ obtenerDiaLabel(agenda.diaSemana) }}</td>
           <td>{{ agenda.horaInicio }}</td>
           <td>{{ agenda.horaFin }}</td>
           <td>{{ agenda.duracionMin }}</td>
+          <td>
+            <div class="acciones-fila">
+              <button class="btn-accion btn-editar" [class.activo]="agendaEditandoId === agenda.id" (click)="editarFila(agenda)" title="Editar">
+                <mat-icon>edit_note</mat-icon>
+              </button>
+              <ng-container *ngIf="agendaConfirmandoId !== agenda.id; else confirmarEliminar">
+                <button class="btn-accion btn-eliminar" (click)="iniciarEliminacion(agenda.id)" title="Eliminar">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </ng-container>
+              <ng-template #confirmarEliminar>
+                <span class="confirmar-label">¿Eliminar?</span>
+                <button class="btn-accion btn-si" (click)="confirmarEliminacion(agenda)" title="Confirmar">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button class="btn-accion btn-no" (click)="agendaConfirmandoId = null" title="Cancelar">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </ng-template>
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>
