@@ -163,24 +163,62 @@ export class AgendaService {
     return from(
       this.supabase
         .from('Agenda')
-        .upsert(
-          {
-            medicoId,
-            diaSemana,
-            horaInicio,
-            horaFin,
-            duracionMin
-          },
-          { onConflict: 'medicoId,diaSemana' }
-        )
         .select('id')
-        .single()
+        .eq('medicoId', medicoId)
+        .eq('diaSemana', diaSemana)
+        .maybeSingle()
     ).pipe(
+      switchMap(({ data: existente }: any) => {
+        if (existente?.id) {
+          return from(
+            this.supabase
+              .from('Agenda')
+              .update({ horaInicio, horaFin, duracionMin })
+              .eq('id', existente.id)
+              .select('id')
+              .single()
+          );
+        } else {
+          return from(
+            this.supabase
+              .from('Agenda')
+              .insert([{ id: crypto.randomUUID(), medicoId, diaSemana, horaInicio, horaFin, duracionMin }])
+              .select('id')
+              .single()
+          );
+        }
+      }),
       map(({ data, error }: any) => {
         if (error || !data) {
+          console.error('[AgendaService] Error al guardar:', error);
           return { ok: false, error: 'Error al guardar la agenda' };
         }
         return { ok: true, agendaId: data.id };
+      })
+    );
+  }
+
+  eliminarAgenda(agendaId: string): Observable<{ ok: boolean; error?: string }> {
+    const hoy = new Date().toISOString().split('T')[0];
+    return from(
+      this.supabase
+        .from('Franja')
+        .delete()
+        .eq('agendaId', agendaId)
+        .eq('disponible', true)
+        .gte('fecha', hoy)
+    ).pipe(
+      switchMap(({ error: errorFranjas }) => {
+        if (errorFranjas) return of({ ok: false as const, error: 'Error al eliminar franjas futuras' });
+        return from(
+          this.supabase.from('Agenda').delete().eq('id', agendaId)
+        ).pipe(
+          map(({ error }) =>
+            error
+              ? { ok: false as const, error: 'No se puede eliminar: hay turnos asignados en esta agenda' }
+              : { ok: true as const }
+          )
+        );
       })
     );
   }
