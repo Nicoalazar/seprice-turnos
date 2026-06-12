@@ -12,6 +12,7 @@ import { AtencionService } from '../../../core/services/atencion.service';
 import { MedicosService } from '../../../core/services/medicos.service';
 import { LoginService } from '../../../auth/login.service';
 import { TurnoConDetalles } from '../../../core/interfaces/turno.d';
+import { FranjaVista } from '../../../core/interfaces/franja.d';
 
 @Component({
   selector: 'app-agenda',
@@ -36,7 +37,8 @@ export class AgendaComponent implements OnChanges, OnInit {
   @Output() atencionRegistrada = new EventEmitter<TurnoConDetalles>();
 
   turnosDelDia: TurnoConDetalles[] = [];
-  franjasHorarias: any[] = [];
+  franjasHorarias: FranjaVista[] = [];
+  turnoDetalle = signal<TurnoConDetalles | null>(null);
   cargando = false;
   formularioAtencion: FormGroup | null = null;
   turnoActualAtencion = signal<TurnoConDetalles | null>(null);
@@ -86,9 +88,11 @@ export class AgendaComponent implements OnChanges, OnInit {
         next: (datos) => {
           this.turnosDelDia = datos;
           this.franjasHorarias = datos.map(t => ({
-            hora: t.franja?.hora,
+            hora: t.franja?.hora ?? '',
             paciente: `${t.paciente?.apellido}, ${t.paciente?.nombre}`,
             motivo: t.tipo,
+            obraSocial: t.paciente?.obraSocial ?? '—',
+            tipo: t.tipo,
             estado: t.estado,
             turnoId: t.id,
           }));
@@ -102,7 +106,7 @@ export class AgendaComponent implements OnChanges, OnInit {
       });
   }
 
-  seleccionarFranja(franja: any): void {
+  seleccionarFranja(franja: FranjaVista): void {
     const turno = this.turnosDelDia.find(t => t.id === franja.turnoId);
     if (turno && turno.estado === 'CONFIRMADO') {
       this.turnoSeleccionado.emit(turno);
@@ -115,7 +119,7 @@ export class AgendaComponent implements OnChanges, OnInit {
     }
   }
 
-  abrirFormularioAtencion(franja: any): void {
+  abrirFormularioAtencion(franja: FranjaVista): void {
     const turno = this.turnosDelDia.find(t => t.id === franja.turnoId);
     if (!turno) return;
 
@@ -176,17 +180,12 @@ export class AgendaComponent implements OnChanges, OnInit {
     this.formularioAtencion = null;
   }
 
-  verDetalle(turno: TurnoConDetalles): void {
-    const detalle = `
-Paciente: ${turno.paciente?.apellido}, ${turno.paciente?.nombre}
-DNI: ${turno.paciente?.dni}
-Médico: Dr. ${turno.medico?.apellido}, ${turno.medico?.nombre}
-Especialidad: ${turno.medico?.especialidad}
-Fecha: ${turno.franja?.fecha}
-Hora: ${turno.franja?.hora}
-Estado: ${turno.estado}
-Modalidad: ${turno.modalidadPago}
-    `.trim();
-    alert(detalle);
+  verDetalle(franja: FranjaVista): void {
+    const turno = this.turnosDelDia.find(t => t.id === franja.turnoId);
+    if (turno) this.turnoDetalle.set(turno);
+  }
+
+  cerrarDetalle(): void {
+    this.turnoDetalle.set(null);
   }
 }
