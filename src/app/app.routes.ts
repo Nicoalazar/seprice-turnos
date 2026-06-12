@@ -82,6 +82,12 @@ export const routes: Routes = [
         .then(m => m.ConsultarLiquidacionComponent)
   },
   {
+    path: 'registrar-atencion',
+    loadComponent: () =>
+      import('./pages/registrar-atencion/registrar-atencion.component')
+        .then(m => m.RegistrarAtencionComponent)
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'
