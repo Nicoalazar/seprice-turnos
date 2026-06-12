@@ -1,9 +1,23 @@
 .container {
-  max-width: 600px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%; /* Elimina el límite de 600px para que cubra los costados */
+  margin: 0;
   padding: 20px;
-  background-color: var(--bg-app);
+  background-color: var(--bg-noche); /* Aplica el fondo oscuro profundo */
   min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra el contenido en pantallas grandes */
+}
+
+.header {
+  display: flex;
+  justify-content: center; /* Centra el contenido horizontalmente */
+  text-align: center;      /* Asegura el centrado del texto */
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 32px;
 }
 
 .header {
@@ -92,4 +106,107 @@
   justify-content: flex-end;
   padding: 16px;
   border-top: 1px solid var(--border-color);
+}
+
+
+
+/* FIX DE COLORES REAL */
+
+/* Asegurar fondo correcto en el contenedor del input */
+:host ::ng-deep .mdc-text-field--outlined {
+  background-color: var(--bg-input) !important;
+  border-radius: var(--radio-sm) !important;
+}
+
+/*  Forzar que los textos seleccionados, escritos o las fechas se vean BLANCOS */
+:host ::ng-deep .mat-mdc-select-value-text,
+:host ::ng-deep input.mat-mdc-input-element {
+  color: var(--texto-primario) !important;
+  font-size: var(--fuente-size-md) !important;
+}
+
+/* Forzar que las etiquetas fijas y flotantes tengan buen contraste (lila claro) */
+:host ::ng-deep .mat-mdc-form-field-label,
+:host ::ng-deep .mdc-floating-label,
+:host ::ng-deep .mdc-floating-label span {
+  color: var(--texto-secundario) !important;
+}
+
+/*  Color para los placeholders ("Seleccioná médico...", "dd/mm/aaaa") */
+:host ::ng-deep .mat-mdc-select-placeholder,
+:host ::ng-deep input.mat-mdc-input-element::placeholder {
+  color: var(--texto-muted) !important;
+  opacity: 1 !important;
+}
+
+/* Color de la flechita del selector en blanco/lila para que se vea */
+:host ::ng-deep .mat-mdc-select-arrow svg {
+  fill: var(--texto-primario) !important;
+}
+
+/*  Color de los bordes (por defecto y en focus) */
+:host ::ng-deep .mdc-notched-outline__leading,
+:host ::ng-deep .mdc-notched-outline__notch,
+:host ::ng-deep .mdc-notched-outline__trailing {
+  border-color: var(--border-light) !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: var(--border-focus) !important;
+}
+
+
+
+
+/*    MENU DESPLEGABLE OSCURO EXCLUSIVO PARA ESTA PANTALLA */
+
+/*  Fondo oscuro para el panel de opciones de esta pantalla */
+::ng-deep .mat-mdc-select-panel.combo-medicos-oscuro {
+  background-color: var(--bg-surface-2) !important;
+  box-shadow: var(--sombra-card) !important;
+}
+
+/*  Color lila/gris claro para los nombres de los médicos */
+::ng-deep .combo-medicos-oscuro .mat-mdc-option {
+  color: var(--texto-secundario) !important;
+}
+
+/*  Color blanco brillante para el médico seleccionado o activo */
+::ng-deep .combo-medicos-oscuro .mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text {
+  color: var(--texto-primario) !important;
+}
+
+/*  Efecto hover al pasar el mouse sobre un médico de la lista */
+::ng-deep .combo-medicos-oscuro .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background-color: var(--bg-input) !important;
+}
+
+/*  Color magenta para el tilde de selección */
+::ng-deep .combo-medicos-oscuro .mat-mdc-option.mdc-list-item--selected .mat-pseudo-checkbox-minimal::after {
+  border-color: var(--color-magenta) !important;
+}
+
+
+
+/*  Forzar el color correcto para el título interno de la tarjeta */
+.form-card mat-card-title {
+  color: var(--texto-secundario) !important; /* El lila claro de SePrice */
+  font-size: var(--fuente-size-lg) !important; /* Asegura el tamaño correcto */
+  font-weight: 600 !important;
+}
+
+
+/*AJUSTES FINOS DE ESPACIADO Y BOTÓN
+ Mover el título un poco más arriba y separarlo del input de médico */
+.form-card mat-card-header {
+  padding-bottom: 12px !important; /* Le da aire por debajo del título */
+  margin-top: -4px !important;     /* Lo empuja sutilmente hacia arriba */
+}
+
+/*  Forzar el color lila claro en el texto del botón cuando está deshabilitado */
+.full-width[disabled] {
+  color: var(--texto-secundario) !important;
+  opacity: 0.6 !important; /* Le da ese toque sutil de estar deshabilitado, pero súper legible */
 }
