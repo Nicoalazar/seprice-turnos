@@ -111,7 +111,7 @@
         </form>
 
         <!-- COLUMNA DERECHA: Horarios del médico -->
-        <div class="agenda-card" *ngIf="sobreturnoForm.get('medicoId')?.value && sobreturnoForm.get('fecha')?.value">
+        <div class="agenda-card" *ngIf="pacienteEncontrado() && sobreturnoForm.get('medicoId')?.value && sobreturnoForm.get('fecha')?.value">
             <h2>Horarios disponibles</h2>
             <p class="date-sub">{{ sobreturnoForm.get('fecha')?.value }}</p>
 
