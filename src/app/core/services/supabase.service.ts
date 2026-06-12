@@ -15,8 +15,8 @@ export class SupabaseService {
     // La sesión propia se maneja en LoginService (tabla Usuario), por lo que se
     // desactiva la persistencia de sesión de Supabase Auth (evita errores de LockManager).
     this.supabase = createClient(
-      environment.SUPABASE_URL,
-      environment.SUPABASE_KEY,
+      environment.supabaseUrl,
+      environment.supabaseKey,
       { auth: { persistSession: false, autoRefreshToken: false } }
     );
   }
