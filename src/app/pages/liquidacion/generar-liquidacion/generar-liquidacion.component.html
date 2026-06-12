@@ -1,12 +1,14 @@
 <div class="container">
   <div class="header">
+    <!-- El botón de volver queda comentado por si se necesita restaurar 
+    
     <button mat-icon-button (click)="volver()">
       <mat-icon>arrow_back</mat-icon>
     </button>
+    -->
     <h1>Generar Liquidación</h1>
   </div>
 
-  <!-- Formulario -->
   <mat-card class="form-card" *ngIf="!resumen">
     <mat-card-header>
       <mat-card-title>Liquidación de Honorarios</mat-card-title>
@@ -15,12 +17,14 @@
       <form [formGroup]="formulario" class="formulario">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Médico</mat-label>
-          <mat-select formControlName="medicoId">
+          
+          <mat-select formControlName="medicoId" panelClass="combo-medicos-oscuro">
             <mat-option value="">Seleccioná médico...</mat-option>
             <mat-option *ngFor="let medico of medicos" [value]="medico.id">
               {{ medico.apellido }}, {{ medico.nombre }} ({{ medico.especialidad }})
             </mat-option>
           </mat-select>
+          
         </mat-form-field>
 
         <div class="fecha-row">
@@ -44,7 +48,6 @@
     </mat-card-content>
   </mat-card>
 
-  <!-- Resumen -->
   <mat-card class="resumen-card" *ngIf="resumen">
     <mat-card-header>
       <mat-card-title>{{ resumen.medico }}</mat-card-title>
@@ -79,3 +82,5 @@
     </mat-card-content>
   </mat-card>
 </div>
+
+
