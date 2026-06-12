@@ -1,3 +1,13 @@
+export interface FranjaVista {
+  hora: string;
+  paciente: string;
+  motivo: string;
+  obraSocial: string;
+  tipo: string;
+  estado: string;
+  turnoId: string;
+}
+
 export interface Franja {
   id: string;
   agendaId: string;

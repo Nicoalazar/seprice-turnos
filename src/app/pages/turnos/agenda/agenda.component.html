@@ -71,8 +71,8 @@
                                 Registrar atención
                             </button>
 
-                            <button *ngIf="franja.estado === 'Atendido'" (click)="verDetalle(franja)" class="btn-accion"
-                                style="background-color: #2b244d; color: #a5a1b8;">
+                            <button *ngIf="franja.estado === 'Atendido'" (click)="verDetalle(franja)"
+                                class="btn-accion btn-ver-detalle">
                                 Ver detalle
                             </button>
                         </td>
@@ -122,10 +122,48 @@
         </div>
     </div>
 
-    <footer class="alert-banner">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        <p><strong>FAT —</strong> Si no hay pacientes asignados para el día, el sistema mostrará un mensaje informando
-            que la agenda está vacía.</p>
-    </footer>
+    <!-- Estado vacío: sin turnos para el día (FA1 de CU-03) -->
+    <div *ngIf="franjasHorarias.length === 0 && !cargando" class="agenda-vacia">
+        <mat-icon>event_busy</mat-icon>
+        <p>No hay turnos asignados para el día de hoy.</p>
+    </div>
+
+    <!-- Panel de detalle de atención -->
+    <div *ngIf="turnoDetalle()" class="modal-overlay" (click)="cerrarDetalle()">
+        <div class="modal-detalle" (click)="$event.stopPropagation()">
+            <div class="modal-detalle-header">
+                <h3>Detalle de atención</h3>
+                <button class="btn-cerrar" (click)="cerrarDetalle()">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+            <div class="detalle-grid">
+                <div class="detalle-item">
+                    <span class="detalle-label">Paciente</span>
+                    <span class="detalle-valor">{{ turnoDetalle()!.paciente.apellido }}, {{ turnoDetalle()!.paciente.nombre }}</span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">DNI</span>
+                    <span class="detalle-valor">{{ turnoDetalle()!.paciente.dni }}</span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">Médico</span>
+                    <span class="detalle-valor">Dr. {{ turnoDetalle()!.medico.apellido }}, {{ turnoDetalle()!.medico.nombre }}</span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">Especialidad</span>
+                    <span class="detalle-valor">{{ turnoDetalle()!.medico.especialidad }}</span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">Hora</span>
+                    <span class="detalle-valor">{{ turnoDetalle()!.franja.hora }}</span>
+                </div>
+                <div class="detalle-item">
+                    <span class="detalle-label">Modalidad</span>
+                    <span class="detalle-valor">{{ turnoDetalle()!.modalidadPago }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
