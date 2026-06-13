@@ -1,9 +1,6 @@
 <div class="sobreturno-container">
 
     <header class="page-header">
-        <button (click)="volverAlDashboard()" style="background:none; border:none; cursor:pointer;">
-            <mat-icon>arrow_back</mat-icon>
-        </button>
         <div>
             <h1>Registrar Sobreturno</h1>
             <p class="subtitle">Agregá un paciente fuera de la agenda regular</p>
@@ -15,79 +12,121 @@
         <p>Regla: máximo 1 sobreturno por hora por médico. El sistema validará antes de confirmar.</p>
     </div>
 
-    <form [formGroup]="sobreturnoForm" (ngSubmit)="onSubmit()" class="form-card">
+    <div class="main-content-layout">
 
-        <!-- 1. PACIENTE -->
-        <div class="form-section">
-            <h3 class="section-title">1. BUSCAR PACIENTE</h3>
+        <!-- COLUMNA IZQUIERDA: Formulario -->
+        <form [formGroup]="sobreturnoForm" (ngSubmit)="onSubmit()" class="form-card">
 
-            <div class="input-group full-width">
-                <label for="pacienteDni">DNI o Nombre</label>
-                <div class="input-with-button">
-                    <input id="pacienteDni" type="text" formControlName="pacienteDni"
-                        placeholder="Buscar por DNI o nombre..." (keyup.enter)="buscarPaciente()">
-                    <button type="button" (click)="buscarPaciente()" [disabled]="cargando()">
-                        <mat-icon>search</mat-icon>
-                    </button>
+            <!-- 1. PACIENTE -->
+            <div class="form-section">
+                <h3 class="section-title">1. BUSCAR PACIENTE</h3>
+
+                <div class="input-group full-width">
+                    <label for="pacienteDni">DNI o Nombre</label>
+                    <div class="input-with-button">
+                        <input id="pacienteDni" type="text" formControlName="pacienteDni"
+                            placeholder="Buscar por DNI o nombre..." (keyup.enter)="buscarPaciente()">
+                        <button type="button" (click)="buscarPaciente()" [disabled]="cargando()">
+                            <mat-icon>search</mat-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Paciente encontrado -->
+                <div *ngIf="pacienteEncontrado() as paciente" class="paciente-encontrado">
+                    <mat-icon>check_circle</mat-icon>
+                    <div>
+                        <strong>{{ paciente.apellido }}, {{ paciente.nombre }}</strong>
+                        <span>DNI: {{ paciente.dni }} · OS: {{ paciente.obraSocial || 'Sin cobertura' }}</span>
+                    </div>
+                </div>
+
+                <!-- Seleccionar modalidad -->
+                <div class="input-row" *ngIf="pacienteEncontrado()">
+                    <div class="input-group">
+                        <label for="modalidadPago">Modalidad de pago</label>
+                        <select id="modalidadPago" formControlName="modalidadPago">
+                            <option value="obraSocial">Obra social</option>
+                            <option value="particular">Particular</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="motivo">Motivo</label>
+                        <input id="motivo" type="text" formControlName="motivo" placeholder="Ej: Urgencia...">
+                    </div>
                 </div>
             </div>
 
-            <!-- Paciente encontrado -->
-            <div *ngIf="pacienteEncontrado() as paciente" class="paciente-encontrado">
-                <mat-icon>check_circle</mat-icon>
-                <div>
-                    <strong>{{ paciente.apellido }}, {{ paciente.nombre }}</strong>
-                    <span>DNI: {{ paciente.dni }} · OS: {{ paciente.obraSocial || 'Sin cobertura' }}</span>
+            <hr class="section-divider">
+
+            <!-- 2. MÉDICO Y FECHA -->
+            <div class="form-section" *ngIf="pacienteEncontrado()">
+                <h3 class="section-title">2. MÉDICO Y FECHA</h3>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="medicoId">Médico</label>
+                        <select id="medicoId" formControlName="medicoId">
+                            <option value="">Seleccioná médico...</option>
+                            <option *ngFor="let medico of medicos()" [value]="medico.id">
+                                Dr. {{ medico.apellido }}, {{ medico.nombre }} ({{ medico.especialidad }})
+                            </option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="fecha">Fecha</label>
+                        <input id="fecha" type="date" formControlName="fecha">
+                    </div>
+                </div>
+
+                <p class="seleccionar-hint" *ngIf="sobreturnoForm.get('medicoId')?.value && !sobreturnoForm.get('franjaId')?.value">
+                    <mat-icon>arrow_forward</mat-icon>
+                    Elegí un horario del panel derecho
+                </p>
+
+                <div *ngIf="sobreturnoForm.get('franjaId')?.value" class="franja-confirmada">
+                    <mat-icon>schedule</mat-icon>
+                    <span>Horario seleccionado: <strong>{{ getHoraSeleccionada() }}</strong></span>
                 </div>
             </div>
 
-            <!-- Seleccionar modalidad -->
-            <div class="input-row" *ngIf="pacienteEncontrado()">
-                <div class="input-group">
-                    <label for="modalidadPago">Modalidad de pago</label>
-                    <select id="modalidadPago" formControlName="modalidadPago">
-                        <option value="obraSocial">Obra social</option>
-                        <option value="particular">Particular</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="motivo">Motivo</label>
-                    <input id="motivo" type="text" formControlName="motivo" placeholder="Ej: Urgencia...">
-                </div>
-            </div>
-        </div>
-
-        <hr class="section-divider">
-
-        <!-- 2. MÉDICO Y FRANJA -->
-        <div class="form-section" *ngIf="pacienteEncontrado()">
-            <h3 class="section-title">2. MÉDICO Y FRANJA HORARIA</h3>
-
-            <div class="input-row">
-                <div class="input-group">
-                    <label for="medicoId">Médico</label>
-                    <select id="medicoId" formControlName="medicoId">
-                        <option value="">Seleccioná médico...</option>
-                        <option *ngFor="let medico of medicos()" [value]="medico.id">
-                            Dr. {{ medico.apellido }}, {{ medico.nombre }} ({{ medico.especialidad }})
-                        </option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="fecha">Fecha</label>
-                    <input id="fecha" type="date" formControlName="fecha">
-                </div>
+            <!-- Banner de resultado -->
+            <div *ngIf="mensajeEstado()" class="mensaje-estado"
+                 [class.mensaje-exito]="mensajeEstado()!.tipo === 'exito'"
+                 [class.mensaje-error]="mensajeEstado()!.tipo === 'error'">
+                <mat-icon>{{ mensajeEstado()!.tipo === 'exito' ? 'check_circle' : 'error' }}</mat-icon>
+                <span>{{ mensajeEstado()!.texto }}</span>
             </div>
 
-            <!-- FA1: Límite alcanzado -->
+            <!-- Botones de acción -->
+            <div class="form-actions">
+                <button type="button" (click)="volverAlDashboard()" class="btn-cancelar">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-confirmar"
+                        [disabled]="!pacienteEncontrado() || limiteSobreturnoAlcanzado() || sobreturnoForm.invalid || cargando()">
+                    {{ cargando() ? 'Registrando...' : 'Registrar Sobreturno' }}
+                </button>
+            </div>
+        </form>
+
+        <!-- COLUMNA DERECHA: Horarios del médico -->
+        <div class="agenda-card" *ngIf="pacienteEncontrado() && sobreturnoForm.get('medicoId')?.value && sobreturnoForm.get('fecha')?.value">
+            <h2>Horarios disponibles</h2>
+            <p class="date-sub">{{ sobreturnoForm.get('fecha')?.value }}</p>
+
+            <div class="counter-box" *ngIf="sobreturnosAsignados() > 0">
+                <span>Sobreturnos en la hora seleccionada</span>
+                <span class="counter-value">{{ sobreturnosAsignados() }}</span>
+            </div>
+
             <div class="limit-alert" *ngIf="limiteSobreturnoAlcanzado()">
                 <mat-icon>block</mat-icon>
-                <span>FA1 — Límite alcanzado: ya existe 1 sobreturno a esta hora. Seleccioná otra.</span>
+                <span>Límite alcanzado: ya existe 1 sobreturno a esta hora. Seleccioná otra.</span>
             </div>
 
-            <!-- Franjas disponibles -->
-            <div *ngIf="franjas().length > 0 && !limiteSobreturnoAlcanzado()" class="franjas-section">
-                <label>Franjas disponibles ({{ franjas().length }})</label>
+            <div *ngIf="franjas().length > 0" class="franjas-section">
+                <label>Seleccioná un horario</label>
                 <div class="franjas-grid">
                     <button *ngFor="let franja of franjas()" type="button"
                             class="franja-btn"
@@ -98,22 +137,11 @@
                 </div>
             </div>
 
-            <div *ngIf="franjas().length === 0 && sobreturnoForm.get('medicoId')?.value && sobreturnoForm.get('fecha')?.value"
-                 class="empty-franjas">
+            <div *ngIf="franjas().length === 0" class="empty-franjas">
                 <mat-icon>calendar_today</mat-icon>
-                <p>No hay franjas de sobreturno disponibles para esta fecha</p>
+                <p>Sin agenda configurada para esta fecha</p>
             </div>
         </div>
 
-        <!-- Botones de acción -->
-        <div class="form-actions">
-            <button type="button" (click)="volverAlDashboard()" class="btn-cancelar">
-                Cancelar
-            </button>
-            <button type="submit" class="btn-confirmar"
-                    [disabled]="!pacienteEncontrado() || limiteSobreturnoAlcanzado() || sobreturnoForm.invalid || cargando()">
-                {{ cargando() ? 'Registrando...' : 'Registrar Sobreturno' }}
-            </button>
-        </div>
-    </form>
+    </div>
 </div>

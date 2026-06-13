@@ -73,32 +73,27 @@ export class AgendaService {
   }
 
   getFranjasParaSobreturno(medicoId: string, fecha: string): Observable<Franja[]> {
-    // Calcular el día de la semana (1=lunes, 7=domingo)
-    const fechaObj = new Date(fecha + 'T00:00:00');
-    const diaSemana = fechaObj.getDay(); // 0=domingo, 1=lunes, ..., 6=sábado
-    const diaSemanaSQL = diaSemana === 0 ? 7 : diaSemana; // Convertir: 0->7, 1->1, ..., 6->6
+    // Misma convención que getFranjasDisponibles: 1=Lunes ... 7=Domingo
+    const diaJS = new Date(fecha + 'T00:00:00').getDay();
+    const diaSemana = diaJS === 0 ? 7 : diaJS;
 
-    // Obtener la agenda específica del médico para ese día de la semana
     return from(
       this.supabase
         .from('Agenda')
         .select('id')
         .eq('medicoId', medicoId)
-        .eq('diaSemana', diaSemanaSQL)
+        .eq('diaSemana', diaSemana)
     ).pipe(
       switchMap(({ data: agendas }) => {
         if (!agendas || agendas.length === 0) return of([]);
         const agendaId = (agendas[0] as any).id;
 
-        // Obtener las franjas de sobreturno de esa agenda específica
         return from(
           this.supabase
             .from('Franja')
             .select('*')
             .eq('agendaId', agendaId)
             .eq('fecha', fecha)
-            .eq('disponible', true)
-            .eq('sobreturno', true)
             .order('hora', { ascending: true })
         ).pipe(
           map(({ data }) => (data as Franja[]) || [])
@@ -109,7 +104,7 @@ export class AgendaService {
 
   crearFranja(franja: Omit<Franja, 'id' | 'creadoEn'>): Observable<Franja | null> {
     return from(
-      this.supabase.from('Franja').insert([franja]) as any
+      this.supabase.from('Franja').insert([{ id: crypto.randomUUID(), ...franja }]).select() as any
     ).pipe(
       map(({ data, error }: any) => (error || !data || !data[0]) ? null : (data[0] as Franja))
     );
@@ -232,22 +227,41 @@ export class AgendaService {
   ): Observable<{ ok: boolean; error?: string; cantidad?: number }> {
     const franjas = this.generarFranjasHorarias(horaInicio, horaFin, duracionMin);
 
-    const franjaObjects = franjas.map(hora => ({
-      agendaId,
-      fecha,
-      hora,
-      disponible: true,
-      sobreturno: false
-    }));
-
+    // No duplicar franjas si ya fueron generadas para esa fecha
     return from(
-      this.supabase.from('Franja').insert(franjaObjects) as any
+      this.supabase
+        .from('Franja')
+        .select('hora')
+        .eq('agendaId', agendaId)
+        .eq('fecha', fecha)
     ).pipe(
-      map(({ data, error }: any) => {
-        if (error) {
-          return { ok: false, error: 'Error al generar franjas' };
+      switchMap(({ data: existentes }: any) => {
+        const horasExistentes = new Set((existentes ?? []).map((f: any) => f.hora));
+        const franjaObjects = franjas
+          .filter(hora => !horasExistentes.has(hora))
+          .map(hora => ({
+            id: crypto.randomUUID(),
+            agendaId,
+            fecha,
+            hora,
+            disponible: true,
+            sobreturno: false
+          }));
+
+        if (franjaObjects.length === 0) {
+          return of({ ok: true, cantidad: 0 });
         }
-        return { ok: true, cantidad: data?.length || 0 };
+
+        return from(
+          this.supabase.from('Franja').insert(franjaObjects) as any
+        ).pipe(
+          map(({ error }: any) => {
+            if (error) {
+              return { ok: false, error: 'Error al generar franjas' };
+            }
+            return { ok: true, cantidad: franjaObjects.length };
+          })
+        );
       })
     );
   }

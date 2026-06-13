@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -7,6 +7,8 @@ import { MedicosService } from '../../../core/services/medicos.service';
 import { AgendaService } from '../../../core/services/agenda.service';
 import { PacientesService } from '../../../core/services/pacientes.service';
 import { Franja } from '../../../core/interfaces/franja.d';
+import { Medico } from '../../../core/interfaces/medico.d';
+import { Paciente } from '../../../core/interfaces/paciente.d';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -24,16 +26,22 @@ export class SobreturnoComponent implements OnInit {
   private pacientesService = inject(PacientesService);
 
   sobreturnoForm!: FormGroup;
-  medicos = signal<any[]>([]);
+  medicos = signal<Medico[]>([]);
   franjas = signal<Franja[]>([]);
   cargando = signal(false);
   franjasSeleccionada = signal<Franja | null>(null);
+  mensajeEstado = signal<{ tipo: 'exito' | 'error'; texto: string } | null>(null);
 
   limiteSobreturnoAlcanzado = signal(false);
   sobreturnosAsignados = signal(0);
-  pacienteEncontrado = signal<any | null>(null);
+  pacienteEncontrado = signal<Paciente | null>(null);
 
   volverAlDashboard(): void { this.router.navigate(['/dashboard']); }
+
+  getHoraSeleccionada(): string {
+    const id = this.sobreturnoForm?.get('franjaId')?.value as string;
+    return this.franjas().find(f => f.id === id)?.hora ?? '';
+  }
 
   constructor(private fb: FormBuilder) {
     this.initForm();
@@ -42,7 +50,7 @@ export class SobreturnoComponent implements OnInit {
   ngOnInit(): void {
     this.cargando.set(true);
     this.medicosService.getTodosMedicos().subscribe({
-      next: (medicos: any[]) => {
+      next: (medicos: Medico[]) => {
         this.medicos.set(medicos);
         if (medicos.length > 0) {
           this.sobreturnoForm.patchValue({ medicoId: medicos[0].id });
@@ -145,11 +153,12 @@ export class SobreturnoComponent implements OnInit {
 
   onSubmit(): void {
     if (this.sobreturnoForm.invalid || !this.pacienteEncontrado() || this.limiteSobreturnoAlcanzado()) {
-      alert('Por favor, completá todos los campos y asegurate que el paciente existe.');
+      this.mensajeEstado.set({ tipo: 'error', texto: 'Completá todos los campos y verificá que el paciente exista.' });
       return;
     }
 
     this.cargando.set(true);
+    this.mensajeEstado.set(null);
     const formValues = this.sobreturnoForm.value;
     const paciente = this.pacienteEncontrado()!;
 
@@ -164,7 +173,7 @@ export class SobreturnoComponent implements OnInit {
       next: (response) => {
         this.cargando.set(false);
         if (response.ok) {
-          alert('¡Sobreturno registrado con éxito!');
+          this.mensajeEstado.set({ tipo: 'exito', texto: 'Sobreturno registrado con éxito.' });
           this.sobreturnoForm.reset({
             modalidadPago: 'obraSocial',
             fecha: new Date().toISOString().split('T')[0]
@@ -174,12 +183,12 @@ export class SobreturnoComponent implements OnInit {
           this.limiteSobreturnoAlcanzado.set(false);
           this.sobreturnosAsignados.set(0);
         } else {
-          alert('Error: ' + response.error);
+          this.mensajeEstado.set({ tipo: 'error', texto: 'No se pudo registrar el sobreturno. Intentá nuevamente.' });
         }
       },
       error: () => {
         this.cargando.set(false);
-        alert('Error al registrar el sobreturno');
+        this.mensajeEstado.set({ tipo: 'error', texto: 'Error de conexión. Intentá nuevamente.' });
       }
     });
   }

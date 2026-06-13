@@ -1,0 +1,243 @@
+:host {
+  display: block;
+  width: 100%;
+  background: var(--bg-app);
+  min-height: 100vh;
+}
+
+.ra-layout {
+  background: var(--bg-app);
+  min-height: 100vh;
+  padding: 32px 40px;
+  font-family: var(--fuente-principal);
+  color: var(--color-text-primary);
+  box-sizing: border-box;
+}
+
+.ra-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Encabezado ── */
+.ra-header { display: flex; align-items: flex-start; }
+
+.ra-titulo { margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px; color: var(--color-text-primary); }
+.ra-subtitulo { margin: 4px 0 0 0; font-size: var(--fuente-size-md); color: var(--color-text-secondary); }
+
+/* ── Cargando ── */
+.ra-cargando {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 60px 20px; gap: 16px; color: var(--color-text-secondary);
+}
+.ra-spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--color-border-light);
+  border-top-color: var(--color-naranja);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Vacío ── */
+.ra-vacio {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 72px 24px; text-align: center;
+  background: var(--color-bg-card-alt);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radio-xl);
+}
+.ra-vacio-icono { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+.ra-vacio-titulo { margin: 0 0 8px 0; font-size: 20px; font-weight: 700; color: var(--color-text-primary); }
+.ra-vacio-desc { margin: 0; font-size: var(--fuente-size-md); color: var(--color-text-secondary); max-width: 420px; line-height: 1.5; }
+
+/* ── Sección label ── */
+.ra-seccion-label {
+  font-size: var(--fuente-size-sm); font-weight: 600;
+  color: var(--color-text-secondary); text-transform: uppercase;
+  letter-spacing: 0.6px; margin: 0 0 12px 0;
+}
+
+/* ── Lista pacientes ── */
+.ra-lista-pacientes { display: flex; flex-direction: column; gap: 10px; }
+
+.ra-paciente-card {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 20px;
+  background: var(--color-bg-card-alt);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radio-lg);
+  cursor: pointer;
+  transition: all var(--transicion);
+}
+.ra-paciente-card:hover { border-color: var(--color-naranja); background: var(--color-bg-card); box-shadow: 0 4px 12px rgba(255, 107, 53, 0.1); }
+
+.ra-paciente-info { flex: 1; }
+.ra-paciente-nombre { margin: 0 0 4px 0; font-weight: 600; font-size: var(--fuente-size-md); }
+.ra-paciente-meta { margin: 0; font-size: var(--fuente-size-sm); color: var(--color-text-secondary); }
+.ra-sep { margin: 0 6px; color: var(--color-text-tertiary); }
+
+.ra-badge-tipo {
+  padding: 4px 10px; border-radius: var(--radio-pill);
+  font-size: var(--fuente-size-sm); font-weight: 500;
+  background: var(--estado-ok-fondo); color: var(--estado-ok-texto); border: 1px solid var(--estado-ok-borde);
+}
+.ra-sobreturno { background: var(--estado-pendiente-fondo); color: var(--estado-pendiente-texto); border-color: var(--estado-pendiente-borde); }
+.ra-seguimiento { background: var(--estado-especial-fondo); color: var(--estado-especial-texto); border-color: var(--estado-especial-borde); }
+.ra-flecha { color: var(--color-text-tertiary); font-size: 18px; }
+
+/* ── Banner del turno ── */
+.ra-turno-banner {
+  display: flex; flex-wrap: wrap;
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.05) 0%, rgba(232, 25, 90, 0.05) 100%);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radio-lg);
+  overflow: hidden;
+}
+.ra-turno-dato {
+  flex: 1; min-width: 120px;
+  padding: 16px 20px;
+  border-right: 1px solid var(--color-border-darker);
+}
+.ra-turno-dato:last-child { border-right: none; }
+.ra-turno-label { margin: 0 0 4px 0; font-size: var(--fuente-size-xs); color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; }
+.ra-turno-valor { margin: 0; font-size: var(--fuente-size-md); font-weight: 700; color: var(--color-text-primary); }
+
+/* ── Grid principal ── */
+.ra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+/* ── Paneles ── */
+.ra-panel-form,
+.ra-panel-historial {
+  background: var(--color-bg-card-alt);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radio-xl);
+  padding: 28px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.ra-panel-titulo { margin: 0; font-size: 18px; font-weight: 700; color: var(--color-text-primary); }
+
+/* ── Campos ── */
+.ra-campo { display: flex; flex-direction: column; gap: 6px; }
+.ra-label { font-size: var(--fuente-size-xs); font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.6px; }
+.ra-campo-desc { margin: 0; font-size: var(--fuente-size-sm); color: var(--color-text-tertiary); }
+
+.ra-textarea, .ra-input {
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radio-md);
+  color: var(--color-text-primary);
+  font-family: var(--fuente-principal);
+  font-size: var(--fuente-size-md);
+  padding: 12px 14px;
+  resize: vertical;
+  transition: border-color var(--transicion), box-shadow var(--transicion);
+  width: 100%; box-sizing: border-box;
+}
+.ra-textarea:focus, .ra-input:focus { outline: none; border-color: var(--color-border-focus); box-shadow: 0 0 0 2px rgba(155, 31, 232, 0.1); }
+.ra-textarea::placeholder, .ra-input::placeholder { color: var(--color-text-tertiary); }
+
+/* ── Toggle seguimiento ── */
+.ra-toggle-seguimiento { display: flex; gap: 10px; flex-wrap: wrap; }
+.ra-btn-seg {
+  flex: 1; padding: 10px 14px;
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radio-md);
+  color: var(--color-text-secondary);
+  font-family: var(--fuente-principal);
+  font-size: var(--fuente-size-sm);
+  cursor: pointer;
+  transition: all var(--transicion);
+}
+.ra-btn-seg.activo { background: var(--grad-marca); border-color: transparent; color: white; font-weight: 600; }
+
+/* ── Alertas ── */
+.ra-alerta {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 16px; border-radius: var(--radio-sm);
+  font-size: var(--fuente-size-sm); line-height: 1.5;
+}
+.ra-alerta-info { background: var(--color-status-success-dark); color: var(--color-status-success); border: 1px solid var(--color-status-success); }
+.ra-alerta-warning { background: var(--color-status-warning-dark); color: var(--color-status-warning); border: 1px solid var(--color-status-warning); }
+.ra-alerta-error { background: var(--color-status-error-dark); color: var(--color-status-error); border: 1px solid var(--color-status-error); }
+
+/* ── Botones ── */
+.ra-acciones { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+
+.ra-btn-confirmar {
+  flex: 1; padding: 12px 20px;
+  background: var(--grad-marca);
+  border: none; border-radius: 6px;
+  color: var(--color-text-primary); font-family: var(--fuente-principal);
+  font-size: var(--fuente-size-md); font-weight: 600;
+  cursor: pointer; transition: all var(--transicion);
+  box-shadow: 0 4px 12px rgba(232, 25, 90, 0.3);
+}
+.ra-btn-confirmar:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(232, 25, 90, 0.4); transform: translateY(-2px); }
+.ra-btn-confirmar:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.ra-btn-secundario {
+  padding: 12px 20px;
+  background: transparent;
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  color: var(--color-text-secondary);
+  font-family: var(--fuente-principal);
+  font-size: var(--fuente-size-md);
+  font-weight: 600;
+  cursor: pointer; transition: all var(--transicion);
+}
+.ra-btn-secundario:hover { border-color: var(--color-border-default); color: var(--color-text-primary); background-color: rgba(255, 107, 53, 0.05); }
+
+/* ── Historial ── */
+.ra-historial-sub { margin: -12px 0 4px 0; font-size: var(--fuente-size-sm); color: var(--color-text-secondary); }
+.ra-historial-vacio { font-size: var(--fuente-size-sm); color: var(--color-text-tertiary); text-align: center; padding: 24px 0; }
+
+.ra-historial-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border-default);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.ra-historial-item:last-child { border-bottom: none; }
+.ra-historial-header { display: flex; align-items: center; gap: 10px; }
+.ra-historial-fecha { font-size: var(--fuente-size-sm); color: var(--color-text-secondary); }
+.ra-historial-badge {
+  padding: 2px 8px; border-radius: var(--radio-pill);
+  font-size: var(--fuente-size-xs);
+  background: var(--color-bg-card); color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-default);
+}
+.ra-historial-diagnostico { margin: 0; font-size: var(--fuente-size-sm); color: var(--color-text-primary); font-weight: 500; }
+.ra-historial-prescripcion { margin: 0; font-size: var(--fuente-size-sm); color: var(--color-text-secondary); }
+
+/* ── Confirmado ── */
+.ra-confirmado {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: 72px 24px;
+  background: var(--color-bg-card-alt);
+  border: 1px solid var(--color-status-success);
+  border-radius: var(--radio-xl);
+  gap: 16px;
+}
+.ra-confirmado-icono {
+  width: 64px; height: 64px;
+  background: var(--color-status-success-dark);
+  border: 2px solid var(--color-status-success);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; color: var(--color-status-success);
+}
+.ra-confirmado-titulo { margin: 0; font-size: 24px; font-weight: 700; color: var(--color-status-success); }
+.ra-confirmado-desc { margin: 0; font-size: var(--fuente-size-md); color: var(--color-text-secondary); max-width: 460px; line-height: 1.6; }
+.ra-confirmado-acciones { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 8px; width: 100%; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .ra-layout { padding: 20px 16px; }
+  .ra-grid { grid-template-columns: 1fr; }
+  .ra-turno-dato { min-width: 100px; }
+}

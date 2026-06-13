@@ -1,10 +1,10 @@
 <div class="container">
   <div class="header">
-    <button mat-icon-button (click)="volver()">
+    <!--<button mat-icon-button (click)="volver()">
       <mat-icon>arrow_back</mat-icon>
-    </button>
+    </button>  -->
     <h1>Mis Liquidaciones</h1>
-  </div>
+  </div> 
 
   <!-- Lista de liquidaciones -->
   <div *ngIf="!seleccionada" class="lista-container">
@@ -18,9 +18,9 @@
     <div class="liquidaciones-grid" *ngIf="!cargando && liquidaciones.length > 0">
       <mat-card *ngFor="let liq of liquidaciones" class="liquidacion-card" (click)="verDetalle(liq)">
         <mat-card-content>
-          <div class="periodo">{{ liq.periodo }}</div>
+          <div class="periodo">{{ liq.periodoDesde }} al {{ liq.periodoHasta }}</div>
           <div class="monto">${{ liq.montoTotal | number }}</div>
-          <div class="prestaciones">{{ liq.prestaciones }} prestación{{ liq.prestaciones !== 1 ? 'es' : '' }}</div>
+          <div class="prestaciones">{{ liq.cantTurnos }} prestación{{ liq.cantTurnos !== 1 ? 'es' : '' }}</div>
         </mat-card-content>
       </mat-card>
     </div>
@@ -38,15 +38,15 @@
       <div class="detalle-grid">
         <div class="detalle-item">
           <label>Período</label>
-          <span class="valor">{{ seleccionada.periodo }}</span>
+          <span class="valor">{{ seleccionada.periodoDesde }} al {{ seleccionada.periodoHasta }}</span>
         </div>
         <div class="detalle-item">
           <label>Prestaciones</label>
-          <span class="valor">{{ seleccionada.prestaciones }}</span>
+          <span class="valor">{{ seleccionada.cantTurnos }}</span>
         </div>
         <div class="detalle-item">
           <label>Monto por Prestación</label>
-          <span class="valor">${{ (seleccionada.montoTotal / seleccionada.prestaciones) | number }}</span>
+          <span class="valor">${{ seleccionada.montoUnitario | number }}</span>
         </div>
         <div class="detalle-item total">
           <label>Total</label>

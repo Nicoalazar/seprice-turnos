@@ -9,7 +9,7 @@ import { AgendaService } from '../../../core/services/agenda.service';
 import { Paciente } from '../../../core/interfaces/paciente.d';
 import { Medico } from '../../../core/interfaces/medico.d';
 import { Franja } from '../../../core/interfaces/franja.d';
-import { Turno, TipoTurno } from '../../../core/interfaces/turno.d';
+import { Turno, TipoTurno, ModalidadPago } from '../../../core/interfaces/turno.d';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { Subject, Subscription, of } from 'rxjs';
@@ -96,6 +96,14 @@ export class RegistrarTurnoComponent implements OnInit, OnDestroy {
     return this.formPaciente.get('nombreManual') as FormControl<string | null>;
   }
 
+  get controlDniManual(): FormControl<string | null> {
+    return this.formPaciente.get('dniManual') as FormControl<string | null>;
+  }
+
+  get controlTelefonoManual(): FormControl<string | null> {
+    return this.formPaciente.get('telefonoManual') as FormControl<string | null>;
+  }
+
   constructor(
     private fb: FormBuilder,
     private turnosService: TurnosService,
@@ -119,6 +127,8 @@ export class RegistrarTurnoComponent implements OnInit, OnDestroy {
     this.formPaciente = this.fb.group({
       busqueda: [''],
       nombreManual: [''],
+      dniManual: [''],
+      telefonoManual: [''],
       obraSocial: [''],
       modalidadPago: ['obra social'],
     });
@@ -243,13 +253,14 @@ export class RegistrarTurnoComponent implements OnInit, OnDestroy {
       const [apellido, nombre] = nombreCompleto.includes(',')
         ? nombreCompleto.split(',').map(s => s.trim())
         : ['', nombreCompleto];
-
+      const dni = this.formPaciente.get('dniManual')!.value as string;
+      const telefono = this.formPaciente.get('telefonoManual')!.value as string;
       this.pacientesService.crearPaciente({
-        dni: '',
+        dni: dni,
         nombre: nombre || nombreCompleto,
         apellido: apellido || '',
         fechaNac: new Date().toISOString(),
-        telefono: '',
+        telefono: telefono,
         obraSocial: this.formPaciente.get('obraSocial')?.value || null,
       }).subscribe({
         next: (pacienteCreado) => {
@@ -272,12 +283,15 @@ export class RegistrarTurnoComponent implements OnInit, OnDestroy {
   }
 
   private registrarTurnoConPaciente(medicoId: string, pacienteId: string, franjaId: string, tipo: TipoTurno): void {
+    const modalidadElegida = this.formPaciente.get('modalidadPago')?.value as string;
+    const modalidadPago: ModalidadPago = modalidadElegida === 'particular' ? 'PARTICULAR' : 'OBRA_SOCIAL';
+
     this.turnosService.registrarTurno({
       pacienteId,
       medicoId,
       franjaId,
       tipo,
-      modalidadPago: 'OBRA_SOCIAL',
+      modalidadPago,
     }).subscribe({
       next: (result) => {
         this.cargando.set(false);

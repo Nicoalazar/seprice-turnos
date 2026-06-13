@@ -1,20 +1,23 @@
 .container {
-  max-width: 600px;
+  width: 100%;
+  max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px;
+  background-color: var(--bg-app);
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
   margin-bottom: 32px;
 }
 
 .header h1 {
   margin: 0;
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.5px;
 }
 
 .back-button {
@@ -23,15 +26,20 @@
 
 .step-card {
   margin-bottom: 20px;
+  background-color: var(--color-bg-card-alt);
+  border: 1px solid var(--color-border-default);
 }
 
 mat-card-header {
-  margin-bottom: 16px;
+  border-bottom: 1px solid var(--color-border-default);
+  padding-bottom: 12px !important;
+  margin-bottom: 16px !important;
 }
 
 mat-card-title {
   font-size: 18px;
-  color: var(--texto-primario);
+  font-weight: 700;
+  color: var(--color-text-primary);
 }
 
 .full-width {
@@ -47,24 +55,57 @@ mat-list {
   padding: 0;
 }
 
+:host ::ng-deep .mat-mdc-list-base .mdc-list__group__subheader {
+  color: var(--color-text-secondary) !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
 mat-list-item {
   cursor: pointer;
   border-radius: 8px;
   margin-bottom: 8px;
-  transition: background-color 0.2s;
+  transition: all var(--transicion);
+}
+
+mat-list-item ::ng-deep .mat-mdc-list-item-icon {
+  color: var(--color-naranja) !important;
+}
+
+mat-list-item ::ng-deep .mat-mdc-list-item-title {
+  color: var(--color-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+mat-list-item ::ng-deep .mat-mdc-list-item-line {
+  color: var(--color-text-secondary) !important;
+  font-size: 13px !important;
 }
 
 mat-list-item:hover {
-  background-color: var(--bg-surface);
+  background-color: var(--color-bg-card);
+  border-left: 4px solid var(--color-naranja);
+  padding-left: 12px;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.15);
+}
+
+mat-list-item:hover ::ng-deep .mat-mdc-list-item-title {
+  color: var(--color-naranja) !important;
+  font-weight: 700 !important;
+}
+
+mat-list-item:hover ::ng-deep .mat-mdc-list-item-line {
+  color: var(--color-text-primary) !important;
 }
 
 .no-results {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 32px 16px;
-  color: var(--texto-secundario);
+  gap: 16px;
+  padding: 48px 24px;
   text-align: center;
 }
 
@@ -72,7 +113,19 @@ mat-list-item:hover {
   font-size: 48px;
   width: 48px;
   height: 48px;
-  color: var(--border-secundario);
+  color: var(--color-text-tertiary);
+}
+
+.no-results p {
+  margin: 0;
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.no-results button {
+  margin-top: 12px;
+  font-weight: 600;
 }
 
 .persona-info {
@@ -80,7 +133,8 @@ mat-list-item:hover {
   align-items: center;
   gap: 16px;
   padding: 16px;
-  background-color: var(--bg-surface);
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.05) 0%, rgba(232, 25, 90, 0.05) 100%);
+  border: 1px solid var(--color-border-light);
   border-radius: 8px;
   margin-bottom: 24px;
 }
@@ -90,22 +144,33 @@ mat-list-item:hover {
   width: 40px;
   height: 40px;
   color: var(--color-naranja);
+  flex-shrink: 0;
 }
 
 .persona-info h3 {
-  margin: 0 0 4px 0;
-  font-size: 16px;
-  font-weight: 500;
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.3px;
 }
 
 .persona-info p {
   margin: 0;
-  font-size: 14px;
-  color: var(--texto-secundario);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .error-icon {
-  color: #d32f2f;
+  color: var(--color-status-error) !important;
+  font-size: 20px !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .actions {
@@ -113,10 +178,56 @@ mat-list-item:hover {
   gap: 12px;
   justify-content: flex-end;
   margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-default);
+}
+
+.actions button[mat-button] {
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  background-color: transparent;
+  transition: all var(--transicion);
+}
+
+.actions button[mat-button]:hover:not(:disabled) {
+  color: var(--color-text-primary);
+  border-color: var(--color-border-default);
+  background-color: rgba(255, 107, 53, 0.05);
 }
 
 button {
   min-width: 120px;
+  font-weight: 600;
+}
+
+.results-section h2 {
+  color: var(--color-text-secondary) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.form-section {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 24px;
+  padding-bottom: 0;
+}
+
+.section-title {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .inline-spinner {
@@ -126,4 +237,111 @@ button {
 
 mat-form-field {
   display: block;
+}
+
+/* Mejorar contraste del input y label */
+:host ::ng-deep .mat-mdc-text-field--outlined {
+  background-color: var(--color-bg-input) !important;
+}
+
+:host ::ng-deep input.mat-mdc-input-element {
+  color: var(--color-text-primary) !important;
+}
+
+:host ::ng-deep input.mat-mdc-input-element::placeholder {
+  color: var(--color-text-tertiary) !important;
+  opacity: 1 !important;
+}
+
+/* Forzar que el label esté siempre arriba */
+:host ::ng-deep .mdc-floating-label {
+  color: var(--color-text-secondary) !important;
+  position: absolute !important;
+  top: -10px !important;
+  left: 16px !important;
+  background: var(--color-bg-input) !important;
+  padding: 0 4px !important;
+  font-size: 12px !important;
+  transform: none !important;
+}
+
+:host ::ng-deep .mdc-floating-label--float-above {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Mejorar contraste de bordes */
+:host ::ng-deep .mdc-notched-outline__leading,
+:host ::ng-deep .mdc-notched-outline__notch,
+:host ::ng-deep .mdc-notched-outline__trailing {
+  border-color: var(--color-border-light) !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: var(--color-border-focus) !important;
+}
+
+/* Mejorar contraste del botón primary */
+:host ::ng-deep .mat-mdc-raised-button[color="primary"] {
+  background: linear-gradient(90deg, var(--color-naranja), var(--color-magenta)) !important;
+  color: var(--color-text-primary) !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(232, 25, 90, 0.3) !important;
+}
+
+:host ::ng-deep .mat-mdc-raised-button[color="primary"]:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(232, 25, 90, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+:host ::ng-deep .mat-mdc-raised-button[color="primary"]:disabled {
+  opacity: 0.5 !important;
+}
+
+/* Mejorar contraste de mat-error */
+:host ::ng-deep .mat-mdc-form-field-error {
+  color: var(--color-status-error) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/* Mejorar mat-select y opciones */
+:host ::ng-deep .mat-mdc-select {
+  background-color: var(--color-bg-input) !important;
+}
+
+:host ::ng-deep .mat-mdc-select-value {
+  color: var(--color-text-primary) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+:host ::ng-deep .mat-mdc-select-trigger {
+  color: var(--color-text-primary) !important;
+}
+
+:host ::ng-deep .mat-mdc-select-arrow {
+  color: var(--color-text-primary) !important;
+}
+
+:host ::ng-deep .mat-mdc-option {
+  color: var(--color-text-secondary) !important;
+  font-size: 14px !important;
+  min-height: 48px !important;
+}
+
+:host ::ng-deep .mat-mdc-option.mdc-list-item--selected {
+  color: var(--color-text-primary) !important;
+  background-color: rgba(155, 31, 232, 0.1) !important;
+}
+
+:host ::ng-deep .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background-color: var(--color-bg-card) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* Mejorar subheader de mat-select */
+:host ::ng-deep .mat-mdc-optgroup-label {
+  color: var(--color-text-secondary) !important;
 }

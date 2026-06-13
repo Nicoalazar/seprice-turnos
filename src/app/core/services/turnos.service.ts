@@ -62,23 +62,26 @@ export class TurnosService {
     );
   }
 
-  getTurnosDeHoy(): Observable<TurnoConDetalles[]> {
+  getTurnosDeHoy(incluirCancelados = false): Observable<TurnoConDetalles[]> {
     const año = new Date().getFullYear();
     const mes = String(new Date().getMonth() + 1).padStart(2, '0');
     const día = String(new Date().getDate()).padStart(2, '0');
     const hoy = `${año}-${mes}-${día}`;
 
-    return from(
-      this.supabase
-        .from('Turno')
-        .select(`
-          *,
-          paciente:Paciente(nombre, apellido, dni, telefono, obraSocial),
-          medico:Medico(nombre, apellido, especialidad),
-          franja:Franja(fecha, hora)
-        `)
-        .neq('estado', 'CANCELADO')
-    ).pipe(
+    let consulta = this.supabase
+      .from('Turno')
+      .select(`
+        *,
+        paciente:Paciente(nombre, apellido, dni, telefono, obraSocial),
+        medico:Medico(nombre, apellido, especialidad),
+        franja:Franja(fecha, hora)
+      `);
+
+    if (!incluirCancelados) {
+      consulta = consulta.neq('estado', 'CANCELADO');
+    }
+
+    return from(consulta).pipe(
       map(({ data }) => {
         if (!data) return [];
         return (data as any[])
@@ -114,22 +117,36 @@ export class TurnosService {
     const q = queryDniONombre.trim().toLowerCase();
     if (q.length < 2) return of(null);
 
+    // Primero buscar el/los pacientes que coincidan y luego su turno confirmado
+    // (PostgREST no permite usar or() sobre columnas de una tabla embebida)
     return from(
       this.supabase
-        .from('Turno')
-        .select(`
-          *,
-          paciente:Paciente(nombre, apellido, dni, telefono, obraSocial),
-          medico:Medico(nombre, apellido, especialidad),
-          franja:Franja(fecha, hora)
-        `)
-        .or(`paciente.dni.eq.${q},paciente.nombre.ilike.%${q}%,paciente.apellido.ilike.%${q}%`)
-        .eq('estado', 'CONFIRMADO')
-        .limit(1)
+        .from('Paciente')
+        .select('id')
+        .or(`dni.eq.${q},nombre.ilike.%${q}%,apellido.ilike.%${q}%`)
     ).pipe(
-      map(({ data }) => {
-        if (!data || data.length === 0) return null;
-        return data[0] as TurnoConDetalles;
+      switchMap(({ data: pacientes }) => {
+        if (!pacientes || pacientes.length === 0) return of(null);
+        const ids = (pacientes as any[]).map(p => p.id);
+
+        return from(
+          this.supabase
+            .from('Turno')
+            .select(`
+              *,
+              paciente:Paciente(nombre, apellido, dni, telefono, obraSocial),
+              medico:Medico(nombre, apellido, especialidad),
+              franja:Franja(fecha, hora)
+            `)
+            .in('pacienteId', ids)
+            .eq('estado', 'CONFIRMADO')
+            .limit(1)
+        ).pipe(
+          map(({ data }) => {
+            if (!data || data.length === 0) return null;
+            return data[0] as TurnoConDetalles;
+          })
+        );
       })
     );
   }
@@ -225,7 +242,7 @@ export class TurnosService {
   }
 
   acreditarTurno(turnoId: string): Observable<{ ok: boolean; error?: string }> {
-    return this.cambiarEstadoTurno(turnoId, 'PRESENTE_EN_SALA');
+    return this.cambiarEstadoTurno(turnoId, 'PRESENTE EN SALA');
   }
 
   marcarComoAtendido(turnoId: string): Observable<{ ok: boolean; error?: string }> {
@@ -253,11 +270,10 @@ export class TurnosService {
     return from(
       this.supabase
         .from('Turno')
-        .select('id', { count: 'exact' })
+        .select('id, franja:Franja(fecha, hora)')
         .eq('medicoId', medicoId)
         .eq('tipo', 'SOBRETURNO')
-        .neq('estado', 'CANCELADO')
-        .in('estado', ['CONFIRMADO', 'PRESENTE_EN_SALA', 'ATENDIDO', 'AUSENTE'])
+        .in('estado', ['CONFIRMADO', 'PRESENTE EN SALA', 'ATENDIDO', 'AUSENTE'])
     ).pipe(
       switchMap(({ data, error }: any) => {
         if (error || !data) return of(0);
@@ -299,7 +315,7 @@ export class TurnosService {
           franja:Franja(fecha, hora)
         `)
         .eq('medicoId', medicoId)
-        .eq('estado', 'PRESENTE_EN_SALA')
+        .eq('estado', 'PRESENTE EN SALA')
     ).pipe(
       map(({ data }) => {
         if (!data) return [];

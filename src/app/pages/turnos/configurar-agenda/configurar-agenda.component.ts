@@ -31,14 +31,15 @@ export class ConfigurarAgendaComponent implements OnInit {
   agendaConfirmandoId: string | null = null;
   agendaEditandoId: string | null = null;
 
+  // Convención ISO: 1=Lunes ... 7=Domingo (misma que usa AgendaService)
   diasSemana = [
-    { valor: 0, label: 'Lunes' },
-    { valor: 1, label: 'Martes' },
-    { valor: 2, label: 'Miércoles' },
-    { valor: 3, label: 'Jueves' },
-    { valor: 4, label: 'Viernes' },
-    { valor: 5, label: 'Sábado' },
-    { valor: 6, label: 'Domingo' }
+    { valor: 1, label: 'Lunes' },
+    { valor: 2, label: 'Martes' },
+    { valor: 3, label: 'Miércoles' },
+    { valor: 4, label: 'Jueves' },
+    { valor: 5, label: 'Viernes' },
+    { valor: 6, label: 'Sábado' },
+    { valor: 7, label: 'Domingo' }
   ];
 
   duracionesMinimas: { [key: string]: number } = {
@@ -72,7 +73,7 @@ export class ConfigurarAgendaComponent implements OnInit {
     });
 
     this.formulario = this.fb.group({
-      diaSemana: ['0', Validators.required],
+      diaSemana: ['1', Validators.required],
       horaInicio: ['09:00', Validators.required],
       horaFin: ['18:00', Validators.required],
       duracionMin: ['15', Validators.required]
@@ -167,8 +168,11 @@ export class ConfigurarAgendaComponent implements OnInit {
       const fecha = new Date(hoy);
       fecha.setDate(fecha.getDate() + i);
 
-      if (fecha.getDay() === diaSemana) {
-        const fechaStr = fecha.toISOString().split('T')[0];
+      // Convertir getDay() de JS (0=Domingo) a la convención ISO (1=Lunes..7=Domingo)
+      const diaISO = fecha.getDay() === 0 ? 7 : fecha.getDay();
+      if (diaISO === diaSemana) {
+        // Fecha en horario local (toISOString usa UTC y puede correr un día)
+        const fechaStr = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
 
         this.agendaService.generarFranjasParaAgenda(agendaId, fechaStr, horaInicio, horaFin, duracionMin).subscribe();
       }

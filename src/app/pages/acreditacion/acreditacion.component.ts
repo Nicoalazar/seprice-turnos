@@ -84,7 +84,7 @@ export class AcreditacionComponent implements OnInit {
               // Mapear TurnoConDetalles a formato esperado por template
               (this.paciente! as any).turnoHoy = {
                 id: turnoDelPaciente.id,
-                fecha: new Date(turnoDelPaciente.franja?.fecha || '').toLocaleDateString('es-AR'),
+                fecha: new Date((turnoDelPaciente.franja?.fecha || '') + 'T00:00:00').toLocaleDateString('es-AR'),
                 hora: turnoDelPaciente.franja?.hora || '',
                 medico: `Dr/a. ${turnoDelPaciente.medico?.apellido}`,
                 especialidad: turnoDelPaciente.medico?.especialidad || '',
@@ -152,7 +152,7 @@ export class AcreditacionComponent implements OnInit {
       next: (result) => {
         this.cargando = false;
         if (result.ok) {
-          this.turnoHoy!.estado = 'PRESENTE_EN_SALA';
+          this.turnoHoy!.estado = 'PRESENTE EN SALA';
           this.acreditacionConfirmada = true;
         }
       },

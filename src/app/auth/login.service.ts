@@ -31,22 +31,21 @@ export class LoginService {
         .eq('email', email)
         .single();
 
-      // Si hay error o no encuentra el usuario
+      // FA1/FA3 — mensaje genérico: no se revela si falló el usuario o la contraseña
       if (error || !data) {
-        return { exito: false, error: 'Usuario no encontrado' };
+        return { exito: false, error: 'Usuario o contraseña incorrectos' };
       }
 
       // Castear los datos como un usuario (convertir a tipo Usuario)
       const usuario = data as Usuario;
 
-      // Verificar que la contraseña sea correcta
       if (usuario.password !== password) {
-        return { exito: false, error: 'Contraseña incorrecta' };
+        return { exito: false, error: 'Usuario o contraseña incorrectos' };
       }
 
-      // Verificar que el usuario esté activo
+      // FA2 — cuenta inactiva
       if (!usuario.activo) {
-        return { exito: false, error: 'Este usuario está desactivado' };
+        return { exito: false, error: 'Su cuenta está deshabilitada. Contacte al administrador' };
       }
 
       // Si todo está bien, guardar el usuario en la sesión

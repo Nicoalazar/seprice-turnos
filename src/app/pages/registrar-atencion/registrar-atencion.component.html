@@ -1,0 +1,182 @@
+<div class="ra-layout" translate="no">
+  <main class="ra-main">
+ 
+    <!-- Encabezado -->
+    <div class="ra-header">
+      <div>
+        <h1 class="ra-titulo">Registrar atención</h1>
+        <p class="ra-subtitulo">Completá los datos de la consulta para cerrar el turno</p>
+      </div>
+    </div>
+ 
+    <!-- Cargando -->
+    <div *ngIf="cargando" class="ra-cargando">
+      <div class="ra-spinner"></div>
+      <p>Cargando pacientes...</p>
+    </div>
+ 
+    <!-- Sin turno seleccionado: lista de pacientes en espera -->
+    <ng-container *ngIf="!cargando && !turnoSeleccionado">
+ 
+      <!-- FA1: Sin pacientes -->
+      <div *ngIf="pacientesEnEspera.length === 0" class="ra-vacio">
+        <div class="ra-vacio-icono">🗓</div>
+        <h2 class="ra-vacio-titulo">No hay pacientes en espera</h2>
+        <p class="ra-vacio-desc">No hay turnos con estado "Presente en sala" para atender.</p>
+      </div>
+ 
+      <!-- Lista de pacientes -->
+      <div *ngIf="pacientesEnEspera.length > 0">
+        <p class="ra-seccion-label">Seleccioná un paciente para registrar su atención</p>
+        <div class="ra-lista-pacientes">
+          <div
+            *ngFor="let turno of pacientesEnEspera"
+            class="ra-paciente-card"
+            (click)="seleccionarPaciente(turno)"
+          >
+            <div class="ra-paciente-info">
+              <p class="ra-paciente-nombre">{{ obtenerNombrePaciente(turno) }}</p>
+              <p class="ra-paciente-meta">
+                DNI {{ turno.paciente?.dni }}
+                <span class="ra-sep">·</span>
+                {{ turno.franja?.hora }} hs
+                <span class="ra-sep">·</span>
+                {{ turno.paciente?.obraSocial ?? 'Particular' }}
+              </p>
+            </div>
+            <span class="ra-badge-tipo"
+              [class.ra-sobreturno]="turno.tipo === 'SOBRETURNO'"
+              [class.ra-seguimiento]="turno.tipo === 'SEGUIMIENTO'">
+              {{ obtenerTipoLabel(turno.tipo) }}
+            </span>
+            <span class="ra-flecha">→</span>
+          </div>
+        </div>
+      </div>
+ 
+    </ng-container>
+ 
+    <!-- Formulario de atención -->
+    <ng-container *ngIf="!cargando && turnoSeleccionado && !confirmado">
+ 
+      <!-- Datos del turno -->
+      <div class="ra-turno-banner">
+        <div class="ra-turno-dato">
+          <p class="ra-turno-label">Paciente</p>
+          <p class="ra-turno-valor">{{ obtenerNombrePaciente(turnoSeleccionado) }}</p>
+        </div>
+        <div class="ra-turno-dato">
+          <p class="ra-turno-label">DNI</p>
+          <p class="ra-turno-valor">{{ turnoSeleccionado.paciente?.dni }}</p>
+        </div>
+        <div class="ra-turno-dato">
+          <p class="ra-turno-label">Obra social</p>
+          <p class="ra-turno-valor">{{ turnoSeleccionado.paciente?.obraSocial ?? 'Particular' }}</p>
+        </div>
+        <div class="ra-turno-dato">
+          <p class="ra-turno-label">Médico</p>
+          <p class="ra-turno-valor">Dr. {{ medicoActual?.apellido }}</p>
+        </div>
+        <div class="ra-turno-dato">
+          <p class="ra-turno-label">Hora</p>
+          <p class="ra-turno-valor">{{ turnoSeleccionado.franja?.hora }} hs</p>
+        </div>
+        <div class="ra-turno-dato">
+          <p class="ra-turno-label">Tipo</p>
+          <p class="ra-turno-valor">{{ obtenerTipoLabel(turnoSeleccionado.tipo) }}</p>
+        </div>
+      </div>
+ 
+      <!-- Grid principal -->
+      <div class="ra-grid">
+ 
+        <!-- Panel izquierdo: formulario -->
+        <div class="ra-panel-form">
+          <h3 class="ra-panel-titulo">Datos de la atención</h3>
+ 
+          <div class="ra-campo">
+            <label class="ra-label">1. DIAGNÓSTICO</label>
+            <p class="ra-campo-desc">Diagnóstico principal</p>
+            <textarea class="ra-textarea" [(ngModel)]="diagnostico" placeholder="Diagnóstico principal de la consulta..." rows="4"></textarea>
+          </div>
+ 
+          <div class="ra-campo">
+            <label class="ra-label">2. PRESCRIPCIONES (OPCIONAL)</label>
+            <p class="ra-campo-desc">Medicamentos y dosis</p>
+            <textarea class="ra-textarea" [(ngModel)]="prescripciones" placeholder="Medicamentos y dosis..." rows="3"></textarea>
+          </div>
+ 
+          <div class="ra-campo">
+            <label class="ra-label">3. DERIVACIÓN (OPCIONAL)</label>
+            <p class="ra-campo-desc">Derivación a especialidad</p>
+            <input class="ra-input" [(ngModel)]="derivacion" placeholder="Sin derivación" />
+          </div>
+ 
+          <div class="ra-campo">
+            <label class="ra-label">4. ¿REQUIERE SEGUIMIENTO?</label>
+            <div class="ra-toggle-seguimiento">
+              <button class="ra-btn-seg" [class.activo]="requiereSeguimiento" (click)="requiereSeguimiento = true">
+                Sí — Solicitar turno de seguimiento
+              </button>
+              <button class="ra-btn-seg" [class.activo]="!requiereSeguimiento" (click)="requiereSeguimiento = false">
+                No — Alta definitiva
+              </button>
+            </div>
+          </div>
+ 
+          <div class="ra-alerta ra-alerta-info">
+            <span>●</span> Al confirmar, el turno cambiará a estado "Atendido" y quedará disponible para liquidación.
+          </div>
+          <div *ngIf="derivacion.trim()" class="ra-alerta ra-alerta-warning">
+            <span>▲</span> Si hay derivación, el sistema registra la especialidad destino antes de cerrar el turno.
+          </div>
+          <div *ngIf="error" class="ra-alerta ra-alerta-error">
+            <span>✕</span> {{ error }}
+          </div>
+ 
+          <div class="ra-acciones">
+            <button class="ra-btn-secundario" (click)="turnoSeleccionado = null">Volver</button>
+            <button class="ra-btn-confirmar" [disabled]="!puedeConfirmar || guardando" (click)="confirmarAtencion()">
+              {{ guardando ? 'Guardando...' : 'Confirmar atención — Cerrar turno' }}
+            </button>
+          </div>
+        </div>
+ 
+        <!-- Panel derecho: historial -->
+        <div class="ra-panel-historial">
+          <h3 class="ra-panel-titulo">Historial del paciente</h3>
+          <p class="ra-historial-sub">{{ obtenerNombrePaciente(turnoSeleccionado) }} — Últimas atenciones</p>
+ 
+          <div *ngIf="atencionesPrevias.length === 0" class="ra-historial-vacio">
+            Sin atenciones previas registradas.
+          </div>
+ 
+          <div *ngFor="let a of atencionesPrevias" class="ra-historial-item">
+            <div class="ra-historial-header">
+              <span class="ra-historial-fecha">{{ formatearFecha(a.registradoEn) }}</span>
+              <span class="ra-historial-badge">Consulta</span>
+            </div>
+            <p class="ra-historial-diagnostico">{{ a.diagnostico }}</p>
+            <p *ngIf="a.prescripciones" class="ra-historial-prescripcion">{{ a.prescripciones }}</p>
+          </div>
+        </div>
+ 
+      </div>
+    </ng-container>
+ 
+    <!-- Confirmación exitosa -->
+    <div *ngIf="confirmado" class="ra-confirmado">
+      <div class="ra-confirmado-icono">✓</div>
+      <h2 class="ra-confirmado-titulo">Atención registrada</h2>
+      <p class="ra-confirmado-desc">
+        El turno de <strong>{{ obtenerNombrePaciente(turnoSeleccionado!) }}</strong>
+        fue cerrado correctamente y quedará disponible para liquidación.
+      </p>
+      <div class="ra-confirmado-acciones">
+        <button class="ra-btn-confirmar" (click)="nuevaAtencion()">Registrar otra atención</button>
+        <button class="ra-btn-secundario" (click)="volver()">Volver al dashboard</button>
+      </div>
+    </div>
+ 
+  </main>
+</div>

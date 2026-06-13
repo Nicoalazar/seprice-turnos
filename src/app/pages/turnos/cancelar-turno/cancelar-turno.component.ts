@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TurnosService } from '../../../core/services/turnos.service';
 import { AgendaService } from '../../../core/services/agenda.service';
 import { MedicosService } from '../../../core/services/medicos.service';
@@ -13,7 +14,7 @@ import { Medico } from '../../../core/interfaces/medico.d';
 @Component({
   selector: 'app-cancelar-turno',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatIconModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatIconModule, MatSnackBarModule],
   templateUrl: './cancelar-turno.component.html',
   styleUrl: './cancelar-turno.component.css'
 })
@@ -22,6 +23,7 @@ export class CancelarTurnoComponent implements OnInit {
   private turnosService = inject(TurnosService);
   private agendaService = inject(AgendaService);
   private medicosService = inject(MedicosService);
+  private snackBar = inject(MatSnackBar);
 
   volverAlDashboard(): void { this.router.navigate(['/dashboard']); }
 
@@ -81,7 +83,7 @@ export class CancelarTurnoComponent implements OnInit {
 
   ejecutarCancelacion(): void {
     if (!this.motivoCancelacion || !this.turnoActual) {
-      alert('Por favor, seleccioná un motivo de cancelación.');
+      this.snackBar.open('Por favor, seleccioná un motivo de cancelación.', 'Cerrar', { duration: 3000 });
       return;
     }
 
@@ -90,22 +92,22 @@ export class CancelarTurnoComponent implements OnInit {
       next: (result) => {
         this.cargando = false;
         if (result.ok) {
-          alert(`¡Turno Cancelado con Éxito!\nMotivo: ${this.motivoCancelacion}\nNota: ${this.notaCancelacion || 'Ninguna'}`);
+          this.snackBar.open(`Turno cancelado con éxito. Motivo: ${this.motivoCancelacion}`, 'Cerrar', { duration: 4000 });
           this.reseteoCompleto();
         } else {
-          alert('Error al cancelar el turno: ' + (result.error || 'Error desconocido'));
+          this.snackBar.open('Error al cancelar el turno: ' + (result.error || 'Error desconocido'), 'Cerrar', { duration: 4000 });
         }
       },
       error: () => {
         this.cargando = false;
-        alert('Error al cancelar el turno');
+        this.snackBar.open('Error al cancelar el turno', 'Cerrar', { duration: 3000 });
       }
     });
   }
 
   cargarFranjasDisponibles(): void {
     if (!this.nuevaFecha || !this.nuevoMedicoId || !this.turnoActual) {
-      alert('Completá la fecha y el médico para cargar las franjas disponibles.');
+      this.snackBar.open('Completá la fecha y el médico para cargar las franjas disponibles.', 'Cerrar', { duration: 3000 });
       return;
     }
 
@@ -115,19 +117,19 @@ export class CancelarTurnoComponent implements OnInit {
         this.franjasDisponibles.set(franjas);
         this.cargandoReasignacion = false;
         if (franjas.length === 0) {
-          alert('No hay franjas disponibles para esa fecha y médico.');
+          this.snackBar.open('No hay franjas disponibles para esa fecha y médico.', 'Cerrar', { duration: 3000 });
         }
       },
       error: () => {
         this.cargandoReasignacion = false;
-        alert('Error al cargar franjas disponibles.');
+        this.snackBar.open('Error al cargar franjas disponibles.', 'Cerrar', { duration: 3000 });
       }
     });
   }
 
   ejecutarReasignacion(): void {
     if (!this.franjaSeleccionada() || !this.turnoActual) {
-      alert('Por favor, seleccioná una franja disponible para la reasignación.');
+      this.snackBar.open('Por favor, seleccioná una franja disponible para la reasignación.', 'Cerrar', { duration: 3000 });
       return;
     }
 
@@ -138,15 +140,15 @@ export class CancelarTurnoComponent implements OnInit {
       next: (result) => {
         this.cargando = false;
         if (result.ok) {
-          alert('¡Turno reasignado con éxito!');
+          this.snackBar.open('¡Turno reasignado con éxito!', 'Cerrar', { duration: 4000 });
           this.reseteoCompleto();
         } else {
-          alert('Error al reasignar el turno: ' + (result.error || 'Error desconocido'));
+          this.snackBar.open('Error al reasignar el turno: ' + (result.error || 'Error desconocido'), 'Cerrar', { duration: 4000 });
         }
       },
       error: () => {
         this.cargando = false;
-        alert('Error al reasignar el turno');
+        this.snackBar.open('Error al reasignar el turno', 'Cerrar', { duration: 3000 });
       }
     });
   }

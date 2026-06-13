@@ -10,6 +10,15 @@ import { Paciente } from '../interfaces/paciente.d';
 export class PacientesService {
   private supabase = inject(SupabaseService).getClient();
 
+  getall(): Observable<Paciente[]> {
+    return from(
+      this.supabase.from('Paciente')
+        .select('*')
+    ).pipe(
+      map(({ data }) => (data ?? []) as Paciente[])
+    );
+  }
+
   buscarPaciente(query: string): Observable<Paciente[]> {
     const q = query.trim().toLowerCase();
     if (!q || q.length < 2) return of([]);
@@ -52,10 +61,16 @@ export class PacientesService {
   }
 
   crearPaciente(paciente: Omit<Paciente, 'id' | 'creadoEn'>): Observable<Paciente | null> {
+    const nuevo = {
+      id: crypto.randomUUID(),
+      ...paciente,
+      creadoEn: new Date().toISOString()
+    };
     return from(
       this.supabase
         .from('Paciente')
-        .insert([paciente]) as any
+        .insert([nuevo])
+        .select() as any
     ).pipe(
       map(({ data, error }: any) => (error || !data || !data[0]) ? null : (data[0] as Paciente))
     );

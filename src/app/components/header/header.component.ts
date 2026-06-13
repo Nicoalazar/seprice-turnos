@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RolUsuario } from '../../core/interfaces/usuario';
 import { LoginService } from '../../auth/login.service';
 import Swal from 'sweetalert2';
@@ -11,7 +12,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatMenuModule, MatIconModule, MatDividerModule],
+  imports: [CommonModule, MatButtonModule, MatMenuModule, MatIconModule, MatDividerModule, MatSnackBarModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
@@ -19,6 +20,7 @@ import Swal from 'sweetalert2';
 export class HeaderComponent {
 
   private loginService = inject(LoginService);
+  private snackBar = inject(MatSnackBar);
 
   @Output() rolActivoChange = new EventEmitter<RolUsuario>();
 
@@ -76,17 +78,33 @@ export class HeaderComponent {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, cerrar sesión',
-      cancelButtonText: 'No, cancelar'
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#FF6B35',
+      cancelButtonColor: '#6B7280',
+      background: '#1a1a2e',
+      color: '#ffffff',
+      iconColor: '#FBBF24',
     }).then((result) => {
       if (result.isConfirmed) {
         this.loginService.logout();
-        Swal.fire('¡Sesión cerrada!', 'Has cerrado sesión exitosamente.', 'success');
+        Swal.fire({
+          title: '¡Sesión cerrada!',
+          text: 'Has cerrado sesión exitosamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#10B981',
+          background: '#1a1a2e',
+          color: '#ffffff',
+          iconColor: '#10B981',
+          timer: 2000,
+          timerProgressBar: true
+        });
       }
     });
   }
 
   irAPerfil(): void {
-    alert('Función para ir al perfil del usuario');
+    this.snackBar.open('Funcionalidad en desarrollo: perfil de usuario', 'Cerrar', { duration: 3000 });
   }
 
 }

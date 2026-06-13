@@ -1,23 +1,27 @@
 .container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 40px;
   background-color: var(--bg-app);
   min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  width: 100%;
+  max-width: 1000px;
   margin-bottom: 32px;
 }
 
 .header h1 {
   margin: 0;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
-  color: var(--texto-primario);
+  color: var(--color-text-primary);
 }
 
 .lista-container {
@@ -31,16 +35,16 @@
   align-items: center;
   justify-content: center;
   gap: 16px;
-  padding: 40px;
+  padding: 60px 40px;
   text-align: center;
-  color: var(--texto-secundario);
+  color: var(--color-text-secondary);
 }
 
 .message mat-icon {
   font-size: 48px;
   width: 48px;
   height: 48px;
-  color: var(--border-color);
+  color: var(--color-text-tertiary);
 }
 
 .liquidaciones-grid {
@@ -50,38 +54,44 @@
 }
 
 .liquidacion-card {
-  background-color: var(--bg-surface);
+  background-color: var(--color-bg-card-alt);
+  border: 1px solid var(--color-border-default);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all var(--transicion);
 }
 
 .liquidacion-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-naranja);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.15);
+  transform: translateY(-2px);
 }
 
 .periodo {
   font-size: 12px;
-  color: var(--texto-secundario);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
+  letter-spacing: 0.5px;
   margin-bottom: 12px;
 }
 
 .monto {
   font-size: 28px;
   font-weight: 700;
-  color: var(--color-accent-primary);
+  color: var(--color-naranja);
   margin-bottom: 8px;
 }
 
 .prestaciones {
   font-size: 13px;
-  color: var(--texto-secundario);
+  color: var(--color-text-secondary);
 }
 
 .detalle-card {
-  background-color: var(--bg-surface);
-  border-radius: 8px;
+  background-color: var(--color-bg-card-alt);
+  border: 1px solid var(--color-border-default);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
 }
 
 .detalle-grid {
@@ -98,27 +108,29 @@
 
 .detalle-item label {
   font-size: 12px;
-  color: var(--texto-secundario);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
+  letter-spacing: 0.5px;
   margin-bottom: 8px;
 }
 
 .detalle-item .valor {
   font-size: 18px;
   font-weight: 700;
-  color: var(--texto-primario);
+  color: var(--color-text-primary);
 }
 
 .detalle-item.total {
   grid-column: 1 / -1;
-  border-top: 2px solid var(--border-color);
-  padding-top: 12px;
-  margin-top: 12px;
+  border-top: 1px solid var(--color-border-default);
+  padding-top: 16px;
+  margin-top: 16px;
 }
 
 .detalle-item.total .valor {
-  font-size: 24px;
-  color: var(--color-accent-primary);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-naranja);
 }
 
 mat-card-header {
@@ -126,10 +138,19 @@ mat-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid var(--color-border-default);
+  padding-bottom: 12px;
 }
 
 mat-card-header button {
   position: absolute;
   right: 8px;
   top: 8px;
+  color: var(--color-text-primary);
+}
+
+mat-card-title {
+  color: var(--color-text-primary) !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
 }
