@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, from, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { SupabaseService } from './supabase.service';
+import { FechaService } from './fecha.service';
 import { Agenda } from '../interfaces/agenda.d';
 import { Franja } from '../interfaces/franja.d';
 
@@ -10,6 +11,7 @@ import { Franja } from '../interfaces/franja.d';
 })
 export class AgendaService {
   private supabase = inject(SupabaseService).getClient();
+  private fechaService = inject(FechaService);
 
   getAgendaPorMedico(medicoId: string): Observable<Agenda[]> {
     return from(
@@ -194,7 +196,7 @@ export class AgendaService {
   }
 
   eliminarAgenda(agendaId: string): Observable<{ ok: boolean; error?: string }> {
-    const hoy = new Date().toISOString().split('T')[0];
+    const hoy = this.fechaService.obtenerHoy();
     return from(
       this.supabase
         .from('Franja')
