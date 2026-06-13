@@ -45,6 +45,11 @@
           <p class="accion-titulo">Sobreturno</p>
           <p class="accion-desc">Agregar fuera de agenda</p>
         </div>
+        <div class="accion-card" (click)="cancelarOModificarTurno()">
+          <mat-icon class="accion-icon">edit_calendar</mat-icon>
+          <p class="accion-titulo">Cancelar / Reasignar</p>
+          <p class="accion-desc">Modificar turno existente</p>
+        </div>
         <div class="accion-card" (click)="acreditarPaciente()">
           <mat-icon class="accion-icon">badge</mat-icon>
           <p class="accion-titulo">Acreditar paciente</p>

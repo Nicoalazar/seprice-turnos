@@ -167,6 +167,10 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/sobreturnos']);
   }
 
+  cancelarOModificarTurno() {
+    this.router.navigate(['/cancelar-turno']);
+  }
+
   acreditarPaciente() {
     this.router.navigate(['/acreditacion']);
   }
