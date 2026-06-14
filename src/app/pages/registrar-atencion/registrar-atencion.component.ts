@@ -8,6 +8,7 @@ import { TurnosService } from '../../core/services/turnos.service';
 import { AtencionService } from '../../core/services/atencion.service';
 import { MedicosService } from '../../core/services/medicos.service';
 import { LoginService } from '../../auth/login.service';
+import { FechaService } from '../../core/services/fecha.service';
 import { TurnoConDetalles } from '../../core/interfaces/turno.d';
 import { Medico } from '../../core/interfaces/medico.d';
  
@@ -24,6 +25,7 @@ export class RegistrarAtencionComponent implements OnInit {
   private atencionService = inject(AtencionService);
   private medicosService = inject(MedicosService);
   private loginService = inject(LoginService);
+  private fechaService = inject(FechaService);
  
   medicoActual: Medico | null = null;
   pacientesEnEspera: TurnoConDetalles[] = [];
@@ -39,8 +41,8 @@ export class RegistrarAtencionComponent implements OnInit {
   guardando = false;
   confirmado = false;
   error = '';
- 
-  hoy = new Date().toISOString().split('T')[0];
+
+  hoy = this.fechaService.obtenerHoy();
  
   ngOnInit(): void {
     this.cargarMedicoYPacientes();

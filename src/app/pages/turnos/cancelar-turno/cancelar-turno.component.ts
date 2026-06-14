@@ -7,6 +7,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TurnosService } from '../../../core/services/turnos.service';
 import { AgendaService } from '../../../core/services/agenda.service';
 import { MedicosService } from '../../../core/services/medicos.service';
+import { FechaService } from '../../../core/services/fecha.service';
 import { TurnoConDetalles } from '../../../core/interfaces/turno.d';
 import { Franja } from '../../../core/interfaces/franja.d';
 import { Medico } from '../../../core/interfaces/medico.d';
@@ -24,6 +25,7 @@ export class CancelarTurnoComponent implements OnInit {
   private agendaService = inject(AgendaService);
   private medicosService = inject(MedicosService);
   private snackBar = inject(MatSnackBar);
+  private fechaService = inject(FechaService);
 
   volverAlDashboard(): void { this.router.navigate(['/dashboard']); }
 
@@ -45,7 +47,7 @@ export class CancelarTurnoComponent implements OnInit {
   medicos = signal<Medico[]>([]);
   cargandoReasignacion = false;
 
-  readonly hoy = new Date().toISOString().split('T')[0];
+  readonly hoy = this.fechaService.obtenerHoy();
 
   ngOnInit(): void {
     this.medicosService.getTodosMedicos().subscribe((medicos) => {
