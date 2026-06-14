@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  publish = "dist/seprice-turnos"
+  publish = "dist/seprice-turnos/browser"
 
 [[redirects]]
   from = "/*"
