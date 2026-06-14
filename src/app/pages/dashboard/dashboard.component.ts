@@ -6,6 +6,7 @@ import { RolService } from '../../core/services/rol.service';
 import { TurnosService } from '../../core/services/turnos.service';
 import { MedicosService } from '../../core/services/medicos.service';
 import { LoginService } from '../../auth/login.service';
+import { FechaService } from '../../core/services/fecha.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TurnoConDetalles } from '../../core/interfaces/turno.d';
@@ -26,6 +27,7 @@ export class DashboardComponent implements OnInit {
   private medicosService = inject(MedicosService);
   private loginService = inject(LoginService);
   private snackBar = inject(MatSnackBar);
+  private fechaService = inject(FechaService);
 
   @Input() rolActivo: RolUsuario = 'ADMIN';
 
@@ -107,10 +109,7 @@ export class DashboardComponent implements OnInit {
             this.medicosService.getMedicoActual(usuarioActual.id).subscribe({
               next: (medico) => {
                 if (medico && medico.id) {
-                  const año = new Date().getFullYear();
-                  const mes = String(new Date().getMonth() + 1).padStart(2, '0');
-                  const día = String(new Date().getDate()).padStart(2, '0');
-                  const hoy = `${año}-${mes}-${día}`;
+                  const hoy = this.fechaService.obtenerHoy();
                   this.turnosService.getTurnosDeMedico(medico.id, hoy).subscribe({
                     next: (turnosMedico) => {
                       this.metricaAsignados = turnosMedico.length;
@@ -165,6 +164,10 @@ export class DashboardComponent implements OnInit {
 
   sobreturno() {
     this.router.navigate(['/sobreturnos']);
+  }
+
+  cancelarOModificarTurno() {
+    this.router.navigate(['/cancelar-turno']);
   }
 
   acreditarPaciente() {

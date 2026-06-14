@@ -3,6 +3,7 @@ import { Observable, from, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { SupabaseService } from './supabase.service';
 import { AgendaService } from './agenda.service';
+import { FechaService } from './fecha.service';
 import { Turno, TurnoConDetalles, EstadoTurno, TipoTurno, ModalidadPago } from '../interfaces/turno.d';
 
 export interface RespuestaRegistroTurno {
@@ -17,6 +18,7 @@ export interface RespuestaRegistroTurno {
 export class TurnosService {
   private supabase = inject(SupabaseService).getClient();
   private agendaService = inject(AgendaService);
+  private fechaService = inject(FechaService);
 
   private generarId(prefijo: string): string {
     return `${prefijo}-${Math.random().toString(36).substr(2, 9)}-${Date.now()}`;
@@ -63,10 +65,7 @@ export class TurnosService {
   }
 
   getTurnosDeHoy(incluirCancelados = false): Observable<TurnoConDetalles[]> {
-    const año = new Date().getFullYear();
-    const mes = String(new Date().getMonth() + 1).padStart(2, '0');
-    const día = String(new Date().getDate()).padStart(2, '0');
-    const hoy = `${año}-${mes}-${día}`;
+    const hoy = this.fechaService.obtenerHoy();
 
     let consulta = this.supabase
       .from('Turno')
