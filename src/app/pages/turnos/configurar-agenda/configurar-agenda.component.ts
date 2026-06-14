@@ -108,8 +108,23 @@ export class ConfigurarAgendaComponent implements OnInit {
   guardar(): void {
     if (!this.formulario.valid || !this.medicoSeleccionado) return;
 
-    this.guardando = true;
     const { diaSemana, horaInicio, horaFin, duracionMin } = this.formulario.value;
+
+    // FA1: si ya existe agenda para ese día y no estamos editándola, bloquear
+    const yaExiste = this.agendaActual.find(
+      a => a.diaSemana === parseInt(diaSemana) && a.id !== this.agendaEditandoId
+    );
+    if (yaExiste && !this.agendaEditandoId) {
+      const diaLabel = this.obtenerDiaLabel(parseInt(diaSemana));
+      this.snackBar.open(
+        `Ya existe una agenda para los ${diaLabel}. Usá el botón de editar para modificarla.`,
+        'Cerrar',
+        { duration: 4000 }
+      );
+      return;
+    }
+
+    this.guardando = true;
 
     this.agendaService
       .crearOActualizarAgenda(
