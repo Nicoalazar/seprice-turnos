@@ -6,6 +6,7 @@ import { TurnosService } from '../../../core/services/turnos.service';
 import { MedicosService } from '../../../core/services/medicos.service';
 import { AgendaService } from '../../../core/services/agenda.service';
 import { PacientesService } from '../../../core/services/pacientes.service';
+import { FechaService } from '../../../core/services/fecha.service';
 import { Franja } from '../../../core/interfaces/franja.d';
 import { Medico } from '../../../core/interfaces/medico.d';
 import { Paciente } from '../../../core/interfaces/paciente.d';
@@ -24,6 +25,7 @@ export class SobreturnoComponent implements OnInit {
   private medicosService = inject(MedicosService);
   private agendaService = inject(AgendaService);
   private pacientesService = inject(PacientesService);
+  private fechaService = inject(FechaService);
 
   sobreturnoForm!: FormGroup;
   medicos = signal<Medico[]>([]);
@@ -63,7 +65,7 @@ export class SobreturnoComponent implements OnInit {
   }
 
   private initForm(): void {
-    const hoy = new Date().toISOString().split('T')[0];
+    const hoy = this.fechaService.obtenerHoy();
     this.sobreturnoForm = this.fb.group({
       pacienteDni: ['', Validators.required],
       obraSocial: [''],
@@ -176,7 +178,7 @@ export class SobreturnoComponent implements OnInit {
           this.mensajeEstado.set({ tipo: 'exito', texto: 'Sobreturno registrado con éxito.' });
           this.sobreturnoForm.reset({
             modalidadPago: 'obraSocial',
-            fecha: new Date().toISOString().split('T')[0]
+            fecha: this.fechaService.obtenerHoy()
           });
           this.franjas.set([]);
           this.pacienteEncontrado.set(null);

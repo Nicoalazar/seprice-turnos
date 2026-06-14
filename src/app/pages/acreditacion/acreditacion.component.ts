@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { RolUsuario } from '../../core/interfaces/usuario';
 import { PacientesService } from '../../core/services/pacientes.service';
 import { TurnosService } from '../../core/services/turnos.service';
+import { FechaService } from '../../core/services/fecha.service';
 import { Paciente } from '../../core/interfaces/paciente.d';
 import { TurnoConDetalles } from '../../core/interfaces/turno.d';
 
@@ -20,6 +21,7 @@ export class AcreditacionComponent implements OnInit {
   private router = inject(Router);
   private pacientesService = inject(PacientesService);
   private turnosService = inject(TurnosService);
+  private fechaService = inject(FechaService);
 
   rolActivo: RolUsuario = 'ADMIN';
 
@@ -73,7 +75,7 @@ export class AcreditacionComponent implements OnInit {
             codigo: `${p.obraSocial?.toUpperCase()}-2026-00001` || undefined,
           },
         };
-        const hoy = new Date().toISOString().split('T')[0];
+        const hoy = this.fechaService.obtenerHoy();
 
         // Buscar turno de hoy para este paciente
         this.turnosService.getTurnosDeHoy().subscribe({

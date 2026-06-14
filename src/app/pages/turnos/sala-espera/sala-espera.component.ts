@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { TurnosService } from '../../../core/services/turnos.service';
 import { MedicosService } from '../../../core/services/medicos.service';
 import { LoginService } from '../../../auth/login.service';
+import { FechaService } from '../../../core/services/fecha.service';
 import { TurnoConDetalles } from '../../../core/interfaces/turno.d';
 import { Medico } from '../../../core/interfaces/medico.d';
 
@@ -21,13 +22,13 @@ export class SalaEsperaComponent implements OnInit {
   pacientesEnEspera: TurnoConDetalles[] = [];
   medicoActual: Medico | null = null;
   cargando = false;
-  hoy = new Date().toISOString().split('T')[0];
 
   constructor(
     private turnosService: TurnosService,
     private medicosService: MedicosService,
     private loginService: LoginService,
-    private router: Router
+    private router: Router,
+    private fechaService: FechaService
   ) {}
 
   ngOnInit(): void {
@@ -44,12 +45,13 @@ export class SalaEsperaComponent implements OnInit {
     }
 
     this.cargando = true;
+    const hoy = this.fechaService.obtenerHoy();
 
     this.medicosService.getMedicoActual(usuarioActual.id).subscribe({
       next: (medico) => {
         if (medico) {
           this.medicoActual = medico;
-          this.turnosService.getSalaDeEspera(medico.id, this.hoy).subscribe({
+          this.turnosService.getSalaDeEspera(medico.id, hoy).subscribe({
             next: (turnos) => {
               this.pacientesEnEspera = turnos;
               this.cargando = false;
