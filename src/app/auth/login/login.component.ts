@@ -63,7 +63,6 @@ export class LoginComponent {
     }
 
     // Si el login fue exitoso
-    console.log('¡Login exitoso! Usuario:', resultado.usuario);
     this.router.navigate(['/dashboard']);
   }
 }
