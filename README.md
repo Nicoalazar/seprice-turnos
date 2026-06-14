@@ -10,6 +10,8 @@ Desarrollado como trabajo integrador de la materia **Práctica Profesionalizante
 
 La Clínica SePrice se encuentra en proceso de modernización tecnológica. Este sistema cubre el circuito completo de consultorios externos: desde la toma de turnos hasta la liquidación de honorarios médicos, pasando por la acreditación del paciente y el registro de atenciones.
 
+**Deploy en vivo:** https://seprice.netlify.app/
+
 ## Estado final — Casos de uso
 
 | CU | Caso de uso | Ruta | Rol | Estado |
@@ -23,6 +25,7 @@ La Clínica SePrice se encuentra en proceso de modernización tecnológica. Este
 | CU-05 | Asignar sobreturno | `/sobreturnos` | Administrativo | ✅ Completo (límite de 1 sobreturno por hora) |
 | CU-06 | Acreditar paciente | `/acreditacion` | Administrativo | ✅ Completo (FA: sin turno hoy, sin cobertura → particular) |
 | CU-07 | Consultar sala de espera | `/sala-espera` | Médico | ✅ Completo (auto-refresco cada 30 s) |
+| CU-07B | Ver agenda médica | `/agenda` | Médico | ✅ Completo |
 | CU-08 | Registrar atención médica | `/registrar-atencion` | Médico | ✅ Completo (prescripción/derivación opcionales) |
 | CU-09 | Generar liquidación | `/liquidacion` | Administrativo | ✅ Completo (FA: sin prestaciones, liquidación duplicada) |
 | CU-10 | Consultar liquidación | `/mi-liquidacion` | Médico | ✅ Completo (FA: sin liquidaciones generadas) |
@@ -32,13 +35,21 @@ La Clínica SePrice se encuentra en proceso de modernización tecnológica. Este
 ## Seguridad y roles
 
 - Todas las rutas privadas están protegidas con `authGuard` (sesión iniciada).
-- Cada ruta valida el rol con `roleGuard`: las rutas administrativas admiten `SUPER`/`RECEPCIONISTA`, las de médico solo `MEDICO`, y crear usuario solo `SUPER` (gestor de usuarios). `SUPER` puede alternar entre vista administrativa y médica desde el header.
+- El sistema define 4 roles de usuario: `SUPER` (gestor/superusuario), `RECEPCIONISTA`, `MEDICO`, y un rol activo interno `ADMIN` (para vistas administrativas).
+- Cada ruta valida el rol con `roleGuard`: 
+  - Rutas administrativas (`ADMIN`) → accesibles por `SUPER` y `RECEPCIONISTA`
+  - Rutas médicas (`MEDICO`) → solo para `MEDICO`
+  - Crear usuario → solo `SUPER` (gestor de usuarios)
+  - `SUPER` puede alternar entre vista administrativa (`ADMIN`) y médica (`MEDICO`) desde el header
 
 ## Stack
 
 - **Frontend:** Angular 17 (componentes standalone, Signals)
+- **UI Components:** Angular Material
 - **Estilos:** CSS puro con paleta centralizada en `src/styles/colors.css`
 - **Backend:** Supabase (PostgreSQL)
+- **Alertas:** SweetAlert2 para diálogos de confirmación
+- **Arquitectura:** Componentes standalone (sin NgModules); todas las operaciones CRUD se realizan directamente desde el frontend usando el cliente Supabase JS
 
 ## Instalación
 
@@ -46,31 +57,33 @@ La Clínica SePrice se encuentra en proceso de modernización tecnológica. Este
 npm install
 ```
 
-Crear un archivo `.env` en la raíz (o definir variables de entorno) con:
+Crear un archivo `.env` en la raíz con las siguientes variables:
 
 ```
 SUPABASE_URL=<url del proyecto Supabase>
-SUPABASE_ANON_KEY=<clave pública>
+SUPABASE_ANON_KEY=<clave pública de Supabase>
 ```
 
-Luego:
+O definir estas como variables de entorno en tu shell.
+
+Luego iniciar el servidor:
 
 ```bash
 npm start
 ```
 
-`npm start` genera `src/environments/env.ts` a partir de las variables y levanta el servidor en `http://localhost:4200`. Si `env.ts` ya existe, se conserva aunque no haya variables definidas.
+**Nota importante:** `npm start` ejecuta automáticamente `scripts/generate-env.js`, que genera `src/environments/env.ts` a partir de las variables de entorno. Si `env.ts` ya existe, se conserva el archivo aunque no haya variables definidas. El servidor se levanta en `http://localhost:4200`.
 
 ## Usuarios de prueba
 
-| Email | Rol | Contraseña |
-|-------|-----|------------|
-| admin@seprice.com | SUPER (gestor, puede alternar vista admin/médico) | password123 |
-| raul@seprice.com | RECEPCIONISTA | password123 |
-| laura@seprice.com | MEDICO (Pediatría) | password123 |
-| carlos@seprice.com | MEDICO (Clínica Médica) | password123 |
+| Email | Rol | Notas | Contraseña |
+|-------|-----|-------|------------|
+| admin@seprice.com | SUPER | Gestor de usuarios; puede alternar entre vista administrativa (`ADMIN`) y médica (`MEDICO`) | password123 |
+| raul@seprice.com | RECEPCIONISTA | Acceso a funciones administrativas (vista `ADMIN`) | password123 |
+| laura@seprice.com | MEDICO | Especialidad: Pediatría | password123 |
+| carlos@seprice.com | MEDICO | Especialidad: Clínica Médica | password123 |
 
-Los datos iniciales se cargan con `seeds/seed-data.sql`.
+Los datos iniciales se cargan con la semilla de datos en la base de datos Supabase.
 
 ## Estructura de sprints
 
